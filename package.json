@@ -1,0 +1,29 @@
+{
+  "name": "hexabase-sdk",
+  "version": "0.0.1",
+  "description": "Hexabase SDK",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist/*",
+    "compile": "npx tsc -b",
+    "build": "npm-run-all clean compile",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r-asai/hexabase-sdk.git"
+  },
+  "author": "beee-devops <devops@b-eee.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/r-asai/hexabase-sdk#readme",
+  "devDependencies": {
+    "@types/node": "^12.12.62",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.0.3"
+  }
+}
