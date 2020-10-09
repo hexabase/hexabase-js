@@ -15,11 +15,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/r-asai/hexabase-sdk.git"
+    "url": "git+https://github.com/b-eee/hexabase-sdk.git"
   },
   "author": "beee-devops <devops@b-eee.com>",
   "license": "MIT",
-  "homepage": "https://github.com/r-asai/hexabase-sdk#readme",
+  "homepage": "https://github.com/b-eee/hexabase-sdk#readme",
   "devDependencies": {
     "@types/node": "^12.12.62",
     "npm-run-all": "^4.1.5",
