@@ -1,6 +1,6 @@
 {
   "name": "hexabase-sdk",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Hexabase SDK",
   "main": "dist/index.js",
   "files": [

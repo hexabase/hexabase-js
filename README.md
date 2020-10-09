@@ -1,11 +1,44 @@
-# 言語
-TypeScript
+# install
+```
+npm install hexabase-sdk
+```
 
-# 開発環境
-nodejs: 12.18
+# Sample
+## node.js
+```
+const { Hexabase, HexabaseSdkOptions, HexabaseSdkError } = require('hexabase-sdk');
 
-# ターゲット
-node.js
+const options = {
+  host: 'localhost',
+  port: 7575,
+  path: '/api/v0'
+};
+const hexa = new Hexabase(options);
+hexa.login('hexauser1@example.com', 'password').then((res) => {
+  console.info(`token:${res}`);
+}).catch((e) => {
+  if (e instanceof HexabaseSdkError) {
+    console.error(`hexabase sdk error:${e}`);
+  } else {
+    console.error(`error:${e}`);
+  }
+})
+```
 
-#
-tsc => 型チェック、トランスパイル
+## vue.js
+```
+import { Hexabase } from 'hexabase-sdk'
+const options = {
+  path: '/linker-api/api/v0'
+}
+const hexa = new Hexabase(options)
+hexa.login('hexauser1@example.com', 'password').then((res) => {
+  console.info(`token:${res}`)
+}).catch((e) => {
+  if (e instanceof HexabaseSdkError) {
+    console.error(`hexabase sdk error:${e}`)
+  } else {
+    console.error(`error:${e}`)
+  }
+})
+```
