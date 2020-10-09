@@ -42,3 +42,20 @@ hexa.login('hexauser1@example.com', 'password').then((res) => {
   }
 })
 ```
+
+set proxy
+```
+module.exports = {
+  dev: {
+    proxyTable: {
+      "/linker-api/": {
+        target: "http://localhost:7575",
+        pathRewrite: {
+          "^/linker-api": ""
+        },
+        logLevel: "debug"
+      }
+    }
+  }
+}
+```
