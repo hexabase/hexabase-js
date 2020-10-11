@@ -1,7 +1,9 @@
 import http from 'http';
 import https from 'https';
 
-import Auth from '../lib/auth/auth';
+import Auth from './auth/auth';
+import { UsersLoginReq, UsersLoginResp } from './models/users';
+import { HxbSessionStorage } from './storage/sessionStorage';
 
 class BaseError extends Error {
   constructor(e?: string) {
@@ -30,69 +32,23 @@ interface LoginRequest {
 }
 
 export class Hexabase {
-    public auth = new Auth();
+    public static auth = new Auth();
 
-  private options: HexabaseSdkOptions = {};
-  constructor(options? :HexabaseSdkOptions) {
-    if (options !== undefined) {
-      this.options = options;
-    }
-  }
-
-  public testFunction(msg?: string) {
-      console.log(`test msg: ${msg!}`);
-  }
-
-  public anotherFn(msg?: string) {
-      console.log(`another fn: ${msg!}`);
-  }
-
-  public login(email:string, password:string): Promise<string>{
-    return new Promise<string>((resolve, reject) => {
-      const usingSsl: boolean = this.options.protocol === 'https';
-      const httpModule = usingSsl ? https : http;
-      const params: LoginRequest = {
-        email: email,
-        password: password
-      }
-
-      const options: http.RequestOptions = {
-        host: this.options.host,
-        port: this.options.port,
-        path: `${this.options.path}/login`,
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json'
+    private options: HexabaseSdkOptions = {};
+    constructor(options? :HexabaseSdkOptions) 
+    {
+        if (options !== undefined) {
+        this.options = options;
         }
-      };
-      const req = httpModule.request(options, (res) => {
-        if (res.statusCode == 200) {
-          this.console(`login successfull`);
-          res.on('data', (chunk) => {
-            this.console(`login response data:${chunk}`);
-            resolve(JSON.parse(chunk).token);
-          })
-        } else {
-          this.console(`login failed. statusCode:${res.statusCode}`);
-          reject(new HexabaseSdkError('login failed'));
-        }
-      });
-      req.on('error', (err) => {
-        this.console(`login error:[${err}]`)
-        reject(err);
-      });
-      req.write(JSON.stringify(params));
-      // req.setTimeout(this.options.timeout || 2000 * 60, () => {
-      //   reject(new HexabaseSdkError('request timeout'));
-      // });
-
-      req.end();
-    });
-  }
-
-  private console(msg: string) {
-    if (this.options.debug) {
-      console.info(msg);
     }
-  }
+
+    /**
+     * @param  {UsersLoginReq} userReq
+     */
+    public static async initializeApp(userReq: UsersLoginReq) 
+    {
+        var respToken = await this.auth.loginAsync(userReq);
+        HxbSessionStorage.Write('token', respToken.token);
+        console.log(`users token: ${HxbSessionStorage.Read('token')} from sessionStorage`);
+    }
 }

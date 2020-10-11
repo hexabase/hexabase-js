@@ -1,4 +1,5 @@
-import Auth from '../lib/auth/auth';
+import Auth from './auth/auth';
+import { UsersLoginReq } from './models/users';
 declare class BaseError extends Error {
     constructor(e?: string);
 }
@@ -13,12 +14,12 @@ export interface HexabaseSdkOptions {
     debug?: boolean;
 }
 export declare class Hexabase {
-    auth: Auth;
+    static auth: Auth;
     private options;
     constructor(options?: HexabaseSdkOptions);
-    testFunction(msg?: string): void;
-    anotherFn(msg?: string): void;
-    login(email: string, password: string): Promise<string>;
-    private console;
+    /**
+     * @param  {UsersLoginReq} userReq
+     */
+    static initializeApp(userReq: UsersLoginReq): Promise<void>;
 }
 export {};
