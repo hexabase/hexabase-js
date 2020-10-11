@@ -1,6 +1,8 @@
 import http from 'http';
 import https from 'https';
 
+import Auth from '../lib/auth/auth';
+
 class BaseError extends Error {
   constructor(e?: string) {
     super(e);
@@ -28,11 +30,21 @@ interface LoginRequest {
 }
 
 export class Hexabase {
+    public auth = new Auth();
+
   private options: HexabaseSdkOptions = {};
   constructor(options? :HexabaseSdkOptions) {
     if (options !== undefined) {
       this.options = options;
     }
+  }
+
+  public testFunction(msg?: string) {
+      console.log(`test msg: ${msg!}`);
+  }
+
+  public anotherFn(msg?: string) {
+      console.log(`another fn: ${msg!}`);
   }
 
   public login(email:string, password:string): Promise<string>{

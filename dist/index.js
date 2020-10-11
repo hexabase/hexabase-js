@@ -1,4 +1,3 @@
-"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -12,13 +11,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Hexabase = exports.HexabaseSdkError = void 0;
-var http_1 = __importDefault(require("http"));
-var https_1 = __importDefault(require("https"));
+import http from 'http';
+import https from 'https';
+import Auth from '../lib/auth/auth';
 var BaseError = /** @class */ (function (_super) {
     __extends(BaseError, _super);
     function BaseError(e) {
@@ -37,19 +32,26 @@ var HexabaseSdkError = /** @class */ (function (_super) {
     }
     return HexabaseSdkError;
 }(BaseError));
-exports.HexabaseSdkError = HexabaseSdkError;
+export { HexabaseSdkError };
 var Hexabase = /** @class */ (function () {
     function Hexabase(options) {
+        this.auth = new Auth();
         this.options = {};
         if (options !== undefined) {
             this.options = options;
         }
     }
+    Hexabase.prototype.testFunction = function (msg) {
+        console.log("test msg: " + msg);
+    };
+    Hexabase.prototype.anotherFn = function (msg) {
+        console.log("another fn: " + msg);
+    };
     Hexabase.prototype.login = function (email, password) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var usingSsl = _this.options.protocol === 'https';
-            var httpModule = usingSsl ? https_1.default : http_1.default;
+            var httpModule = usingSsl ? https : http;
             var params = {
                 email: email,
                 password: password
@@ -94,4 +96,4 @@ var Hexabase = /** @class */ (function () {
     };
     return Hexabase;
 }());
-exports.Hexabase = Hexabase;
+export { Hexabase };
