@@ -5,7 +5,6 @@ import {UsersLoginReq, UsersLoginResp} from '../models/users';
 
 class Auth {
     constructor() {
-
     }
     
     /**
@@ -16,6 +15,13 @@ class Auth {
         return HttpAPI.Post<UsersLoginResp>(`login`, payload).then(
             resp => { return resp; }
         );
+    }
+    /**
+     * get temporary token
+     * @returns Promise
+     */
+    public async getTokenAsync(): Promise<UsersLoginResp> {
+        return await HttpAPI.Post<UsersLoginResp>(`token`, null).then(resp => resp);
     }
 }
 

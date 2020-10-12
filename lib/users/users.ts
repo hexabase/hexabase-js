@@ -2,11 +2,12 @@ import HttpAPI from "../httpApi";
 import { UserInfoResp } from "../models/users";
 
 export class Users {
-
-    public async userInfoAsync() {
-        var userInfo = await HttpAPI.Get<UserInfoResp>(`userinfo`, {}).then(resp => { return resp });
-        console.log('userinfo!')
-        console.log(userInfo)
+    /**
+     * return user basic informations
+     * @returns Promise
+     */
+    public async userInfoAsync(): Promise<UserInfoResp> {
+        return await HttpAPI.Get<UserInfoResp>(`userinfo`, {}).then(resp => { return resp });
     }
 }
 
