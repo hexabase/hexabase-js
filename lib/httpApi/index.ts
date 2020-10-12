@@ -7,10 +7,17 @@ axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
 export default class HttpAPI {
     
+    /**
+     * build http headers including user token
+     * @returns object
+     */
     private static commonHttpHeaders(): object {
-        return {
-            'Content-Type': 'application/json'
+        let headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
         };
+
+        return headers;
     }
 
     /**
@@ -30,5 +37,18 @@ export default class HttpAPI {
             .then(response => resolve(response.data as T))
             .catch(err => reject(err));
         })
+    }
+
+    public static Get<T>(apiUrl: string, payload: any): Promise<T> {
+        return new Promise((resolve, reject) =>
+        {
+            axios.get(`/api/${apiUrl}`, 
+            { 
+                params: payload, 
+                headers: this.commonHttpHeaders()
+            })
+            .then(response => resolve(response.data as T))
+            .catch(err => reject(err));
+        });
     }
 }
