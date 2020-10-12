@@ -7,6 +7,12 @@ axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
 export default class HttpAPI {
     
+    private static commonHttpHeaders(): object {
+        return {
+            'Content-Type': 'application/json'
+        };
+    }
+
     /**
      * @param  {string} apiUrl
      * @param  {any} payload
@@ -19,12 +25,10 @@ export default class HttpAPI {
             axios.post(`/api/${apiUrl}`, 
             payload,
             {
-                headers: 
-                {
-                    'Content-Type': 'application/json'
-                }
+                headers: this.commonHttpHeaders()
             })
-            .then(response => resolve(response.data as T));
+            .then(response => resolve(response.data as T))
+            .catch(err => reject(err));
         })
     }
 }
