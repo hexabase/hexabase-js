@@ -3,7 +3,6 @@ import Auth from "../../../lib/auth/auth";
 import Workspaces from '../../../lib/workspaces/workspaces';
 import {WorkspaceResp} from '../../../lib/models/workspaces';
 import {HxbSessionStorage} from '../../../lib/storage/sessionStorage';
-import {Awaited, ValueOf, assert as assrt} from 'ts-essentials';
 
 
 before(async () =>
@@ -13,15 +12,10 @@ before(async () =>
     HxbSessionStorage.Write('token', respToken.token);
 });
 
-const PromiseOK = <T>(val: T): Promise<T> => {
-    return Promise.resolve(val);
-};
-
 describe('Workspace', () =>
 {
     describe('#getWorkspacesAsync()', () =>
     {
-        console.log('starting test...')
         it('should get list of workspaces', async () =>
         {
             var workspaces = new Workspaces();
@@ -37,4 +31,18 @@ describe('Workspace', () =>
             assert.isNotNull(workspaceLists);
         })
     });
+
+    describe('#setCurrentWorkspace()', () =>
+    {
+        it('should set current workspace by id', async () =>
+        {
+            var workspaces = new Workspaces();
+            var workspaceLists = await workspaces.getWorkspacesAsync();
+            assert.isNotEmpty(workspaceLists.workspaces, 'workspace list is not empty');
+
+            var setWorkspaceResp = await workspaces.setCurrentWorkspace({ workspace_id: workspaceLists.workspaces[0].w_id });
+            assert.isNull(setWorkspaceResp, "success since received null response")
+            // TODO add more assertions
+        })
+    })
 });
