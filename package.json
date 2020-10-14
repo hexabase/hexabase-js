@@ -1,6 +1,6 @@
 {
   "name": "hexabase-sdk",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Hexabase SDK",
   "main": "dist/index.js",
   "files": [
@@ -9,10 +9,11 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
-    "compile": "npx tsc -b",
+    "compile": "npx tsc -b -v",
     "build": "npm-run-all clean compile",
     "prepublishOnly": "npm run build",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --require mock-local-storage -r ts-node/register 'unit.tests/**/*.ts'"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --require mock-local-storage -r ts-node/register 'unit.tests/**/*.ts'",
+    "_gtest": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --require mock-local-storage -r ts-node/register 'unit.tests/**/*.ts' --grep"
   },
   "repository": {
     "type": "git",

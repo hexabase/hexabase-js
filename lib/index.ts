@@ -2,7 +2,7 @@ import http from 'http';
 import https from 'https';
 
 import Auth from './auth/auth';
-import { UsersLoginReq, UsersLoginResp } from './models/users';
+import { HexabaseConfig, UsersLoginResp } from './models/users';
 import { HxbSessionStorage } from './storage/sessionStorage';
 import { Users } from './users/users';
 
@@ -46,13 +46,13 @@ export class Hexabase {
     /**
      * @param  {UsersLoginReq} userReq
      */
-    public static async initializeApp(userReq: UsersLoginReq) 
+    public static async initializeApp(hexabaseConfig: HexabaseConfig) 
     {
-        var respToken = await this.auth.loginAsync(userReq);
+        var respToken = await this.auth.hexabaseLoginAsync(hexabaseConfig);
         if(respToken.token)
         {
             HxbSessionStorage.Write('token', respToken.token);
-            console.log(`users token: ${HxbSessionStorage.Read('token')} from sessionStorage`);
+            // console.log(`users token: ${HxbSessionStorage.Read('token')} from sessionStorage`);
         } else
         {
             console.error(`users auth could not be retrieve`)

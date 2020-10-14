@@ -1,3 +1,8 @@
+export interface HexabaseConfig {
+    email: string;
+    password: string;
+}
+
 export interface UsersLoginReq {
     email: string;
     password: string;

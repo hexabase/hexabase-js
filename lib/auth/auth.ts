@@ -1,12 +1,21 @@
 import Http from 'http';
 
 import HttpAPI from '../httpApi/index';
-import {UsersLoginReq, UsersLoginResp} from '../models/users';
+import {HexabaseConfig, UsersLoginReq, UsersLoginResp} from '../models/users';
 
 class Auth {
     constructor() {
     }
-    
+    /**
+     * @param  {HexabaseConfig} payload
+     * @returns Promise
+     */
+    public async hexabaseLoginAsync(payload: HexabaseConfig): Promise<UsersLoginResp> {
+        return HttpAPI.Post<UsersLoginResp>(`login`, payload).then(
+            resp => { return resp; }
+        );
+    }
+
     /**
      * @param  {UsersLoginReq} payload
      * @returns Promise
