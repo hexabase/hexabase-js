@@ -6,15 +6,15 @@ export class HxbSessionStorage
      */
     public static Write(key: string, value: string) 
     {
-        sessionStorage.setItem(key, value);
+        localStorage.setItem(key, value);
     }
-    
+
     /**
      * @param  {string} key
      * @returns string
      */
     public static Read(key: string): string | null
     {
-        return sessionStorage.getItem(key);
+        return localStorage.getItem(key);
     }
 }

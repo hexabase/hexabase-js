@@ -1,11 +1,15 @@
 import { assert } from 'chai';
 import Auth from '../../../lib/auth/auth';
 
-// before(async () =>
-// {
-//     var auth = new Auth();
-//     await auth.loginAsync({ email: 'j.soliva@b-eee.com', password: 'jinpol0405' });    
-// })
+import {HxbSessionStorage} from '../../../lib/storage/sessionStorage';
+
+
+before(async () =>
+{
+    var auth = new Auth();
+    var respToken = await auth.loginAsync({ email: 'j.soliva@b-eee.com', password: 'jinpol0405' });
+    HxbSessionStorage.Write('token', respToken.token);
+});
 
 describe('Auth', () => {
     describe('#loginAsync()', () => 
@@ -26,8 +30,6 @@ describe('Auth', () => {
             {
                 var auth = new Auth();
                 var tokenResp = await auth.getTokenAsync();
-                console.log(tokenResp)
-                console.log('----------------')
                 assert.isNotNull(tokenResp.token, "got temporary token");    
             } catch(err)
             {

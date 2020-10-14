@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { resolve } from 'dns';
+import { HxbSessionStorage } from '../storage/sessionStorage';
 
 axios.defaults.baseURL = 'http://localhost:3000';
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
@@ -14,7 +15,7 @@ export default class HttpAPI {
     private static commonHttpHeaders(): object {
         let headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+            'Authorization': `Bearer ${HxbSessionStorage.Read('token')}`
         };
 
         return headers;
