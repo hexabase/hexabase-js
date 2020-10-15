@@ -9,6 +9,6 @@ export default class Applications {
      * @returns Promise
      */
     public async getApplications(getApplications: GetApplicationsReq): Promise<Array<ApplicationsRootObj>> {
-        return HttpAPI.Get<Array<ApplicationsRootObj>>(`/workspaces/${getApplications.workspace_id}/applications`, getApplications).then(resp => resp);
+        return HttpAPI.Get<Array<ApplicationsRootObj>>(`workspaces/${getApplications.workspace_id}/applications`, getApplications).then(resp => resp);
     }
 }

@@ -17,6 +17,6 @@ export default class Workspaces {
      * @returns Promise
      */
     public async setCurrentWorkspace(setWorkspaceReq: SetWorkspaceReq): Promise<object> {
-        return HttpAPI.Post<object>(`/workspaces/${setWorkspaceReq.workspace_id}/select`, setWorkspaceReq).then(resp => resp);
+        return HttpAPI.Post<object>(`workspaces/${setWorkspaceReq.workspace_id}/select`, setWorkspaceReq).then(resp => resp);
     }
 }

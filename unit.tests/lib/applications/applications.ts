@@ -23,7 +23,7 @@ describe('Applications', () =>
             assert.isNotEmpty(workspaceLists.workspaces, 'workspace list is not empty');
 
             var applications = new Applications();
-            var applicationsList = await applications.getApplications({ workspace_id: workspaceLists.workspaces[0].w_id });
+            var applicationsList = await applications.getApplications({ workspace_id: workspaceLists.workspaces[0].workspace_id });
             assert.isNotEmpty(applicationsList);
             assert.isArray(applicationsList);
         })

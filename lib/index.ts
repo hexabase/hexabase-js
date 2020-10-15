@@ -59,6 +59,9 @@ export class Hexabase {
         }
     }
 
+    /**
+     * @returns Users
+     */
     public static users(): Users
     {
         return new Users();

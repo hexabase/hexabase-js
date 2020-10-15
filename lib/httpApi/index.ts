@@ -26,11 +26,11 @@ export default class HttpAPI {
      * @param  {any} payload
      * @returns Promise
      */
-    public static Post<T>(apiUrl: string, payload: any): Promise<T> 
+    public static Post<T>(apiUrl: string, payload: any = null): Promise<T> 
     {
         return new Promise((resolve, reject) =>
         {
-            axios.post(`/api/${apiUrl}`, 
+            axios.post(this.APIurlBuilder(apiUrl, 'POST'), 
             payload,
             {
                 headers: this.commonHttpHeaders()
@@ -40,10 +40,10 @@ export default class HttpAPI {
         })
     }
 
-    public static Get<T>(apiUrl: string, payload: any): Promise<T> {
+    public static Get<T>(apiUrl: string, payload: any = null): Promise<T> {
         return new Promise((resolve, reject) =>
         {
-            axios.get(`/api/${apiUrl}`, 
+            axios.get(this.APIurlBuilder(apiUrl, 'GET'), 
             { 
                 params: payload, 
                 headers: this.commonHttpHeaders()
@@ -51,5 +51,10 @@ export default class HttpAPI {
             .then(response => resolve(response.data as T))
             .catch(err => reject(err));
         });
+    }
+
+    public static APIurlBuilder(apiUrl: string, method: string): string {
+        // console.log(`[info:${method}] -->> https://az-api.hexabase.com/api/v0/${apiUrl}`)
+        return `https://az-api.hexabase.com/api/v0/${apiUrl}`;
     }
 }
