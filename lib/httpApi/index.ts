@@ -6,6 +6,12 @@ axios.defaults.baseURL = 'http://localhost:3000';
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
+interface APIURLBuilderParams {
+    apiUrl: string;
+    method: string;
+    printApiURL: boolean;
+}
+
 export default class HttpAPI {
     
     /**
@@ -23,14 +29,15 @@ export default class HttpAPI {
 
     /**
      * @param  {string} apiUrl
-     * @param  {any} payload
+     * @param  {any=null} payload
+     * @param  {boolean=false} printApiURL
      * @returns Promise
      */
-    public static Post<T>(apiUrl: string, payload: any = null): Promise<T> 
+    public static Post<T>(apiUrl: string, payload: any = null, printApiURL: boolean = false): Promise<T> 
     {
         return new Promise((resolve, reject) =>
         {
-            axios.post(this.APIurlBuilder(apiUrl, 'POST'), 
+            axios.post(this.APIurlBuilder({ apiUrl, method: 'POST', printApiURL: printApiURL }), 
             payload,
             {
                 headers: this.commonHttpHeaders()
@@ -40,10 +47,16 @@ export default class HttpAPI {
         })
     }
 
-    public static Get<T>(apiUrl: string, payload: any = null): Promise<T> {
+    /**
+     * @param  {string} apiUrl
+     * @param  {any=null} payload
+     * @param  {boolean=false} printApiURL
+     * @returns Promise
+     */
+    public static Get<T>(apiUrl: string, payload: any = null, printApiURL: boolean = false): Promise<T> {
         return new Promise((resolve, reject) =>
         {
-            axios.get(this.APIurlBuilder(apiUrl, 'GET'), 
+            axios.get(this.APIurlBuilder({ apiUrl, method: 'GET', printApiURL }), 
             { 
                 params: payload, 
                 headers: this.commonHttpHeaders()
@@ -53,8 +66,10 @@ export default class HttpAPI {
         });
     }
 
-    public static APIurlBuilder(apiUrl: string, method: string): string {
-        // console.log(`[info:${method}] -->> https://az-api.hexabase.com/api/v0/${apiUrl}`)
-        return `https://az-api.hexabase.com/api/v0/${apiUrl}`;
+    public static APIurlBuilder(params: APIURLBuilderParams): string
+    public static APIurlBuilder(x: {apiUrl: string, method: string, printApiURL: boolean}): string {
+        if(x.printApiURL) console.log(`[info:${x.method}] -->> https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
+
+        return `https://az-api.hexabase.com/api/v0/${x.apiUrl}`;
     }
 }

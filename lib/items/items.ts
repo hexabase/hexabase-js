@@ -1,5 +1,6 @@
 import HttpAPI from "../httpApi";
-import { ItemDetailsReq, ItemDetailsResp, ItemsReq, ItemsResp, ItemsSearchConditionsReq, ItemsSearchConditionsResp } from "../models/items";
+import { ActionsNewResp } from "../models/actions";
+import { ItemDetailsReq, ItemDetailsResp, ItemsReq, ItemsResp, ItemsSearchConditionsReq, ItemsSearchConditionsResp, NewItemActionReq } from "../models/items";
 
 export default class Items {
     
@@ -35,5 +36,23 @@ export default class Items {
         return HttpAPI.Get<ItemDetailsResp>(
             `applications/${request.project_id}/datastores/${request.datastore_id}/items/details/${request.datastore_id}`
         ).then(resp => resp);
+    }
+
+    public async getItemID(datastoreID: string): Promise<{ item_id: string }> 
+    {
+        return HttpAPI.Post<{ item_id: string }>(`datastores/${datastoreID}/items/create-id`, null).then(resp => resp);
+    }
+
+    public async createItemAsync(request: NewItemActionReq, actionID: string): Promise<any> {
+        
+        var itemID = await this.getItemID(request.datastore_id);
+
+        var newItemResp = await HttpAPI.Post<any>(
+            `items/${itemID.item_id}/new-actions/${actionID}`, 
+            request,
+            true).then(resp => resp);
+            
+        console.log(newItemResp)
+        return Promise.resolve();
     }
 }

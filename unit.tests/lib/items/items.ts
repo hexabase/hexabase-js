@@ -1,7 +1,10 @@
 import { assert } from "chai";
+import Applications from "../../../lib/applications/applications";
 import Auth from "../../../lib/auth/auth";
 import Items from '../../../lib/items/items';
 import {HxbSessionStorage} from '../../../lib/storage/sessionStorage';
+import Workspaces from "../../../lib/workspaces/workspaces";
+import Actions from '../../../lib/actions/actions';
 
 
 before(async () =>
@@ -50,8 +53,44 @@ describe('Items', () =>
         it('should load all complete datastore item details', async () =>
         {
             var items = new Items();
-            let datastoreItemDetails = items.getDatastoreItemDetailsAsync({ project_id: 'newproject', datastore_id: 'newdb1', item_id: '5b0faa3a00f7c300061dee4c' });
-            console.log(datastoreItemDetails);
+            let datastoreItemDetails = await items.getDatastoreItemDetailsAsync({ project_id: 'newproject', datastore_id: 'newdb1', item_id: '5b0faa3a00f7c300061dee4c' });
+            assert.isNotNull(datastoreItemDetails);
+            assert.isArray(datastoreItemDetails.field_values);
+            assert.isArray(datastoreItemDetails.item_actions);
+            // assert.isArray(datastoreItemDetails.status_actions);
+            assert.isNotNull(datastoreItemDetails.title);
         });
-    })
+    });
+
+    describe('#createItemAsync()', () =>
+    {
+        it('should be able to create new item from first datastore', async () =>
+        {
+            let ws = new Workspaces();
+            var currentWs = await ws.getWorkspacesAsync();
+
+            let application = new Applications();
+            var applicationsList = await application.getApplications({ workspace_id: currentWs.workspaces[0].workspace_id });
+
+            if(applicationsList[0] && applicationsList[0].datastores[0])
+            {
+                var item = new Items();
+                var actions = new Actions();
+                let datastoreID = applicationsList[0].datastores[0].datastore_id;
+                var actionResp = await actions.getActionByDatastoreID(datastoreID);
+                console.log(actionResp)
+                console.log(actionResp)
+
+                let newItemsResult = await item.createItemAsync({ 
+                    datastore_id: datastoreID, 
+                    project_id: 'newproject', 
+                    use_display_id: true, 
+                    is_notify_to_sender: false,
+                    item: {}, 
+                    related_ds_items: {}, 
+                    return_item_result: true },
+                    actionResp.actions[0].action_id);
+            }
+        });
+    });
 })

@@ -129,3 +129,13 @@ export interface ItemDetailsReq {
     datastore_id: string;
     item_id: string;
 }
+
+export interface NewItemActionReq {
+    datastore_id: string;
+    project_id?: string;
+    use_display_id?: boolean;
+    is_notify_to_sender: boolean;
+    item: any;
+    related_ds_items: any;
+    return_item_result: boolean;
+}
