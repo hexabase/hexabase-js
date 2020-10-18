@@ -1,7 +1,8 @@
 import HttpAPI from "../httpApi";
 import { ApplicationsRootObj, GetApplicationsReq } from "../models/applications";
+import { Lists } from "../utils/lists";
 
-export default class Applications {
+export default class Applications extends Lists {
     
     /**
      * get workspace applications list

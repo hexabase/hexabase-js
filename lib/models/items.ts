@@ -139,3 +139,9 @@ export interface NewItemActionReq {
     related_ds_items: any;
     return_item_result: boolean;
 }
+
+export interface NewItemActionResp {
+    error?: any;
+    historyID: string;
+    id: string;
+}

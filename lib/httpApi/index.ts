@@ -68,7 +68,7 @@ export default class HttpAPI {
 
     public static APIurlBuilder(params: APIURLBuilderParams): string
     public static APIurlBuilder(x: {apiUrl: string, method: string, printApiURL: boolean}): string {
-        if(x.printApiURL) console.log(`[info:${x.method}] -->> https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
+        if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
 
         return `https://az-api.hexabase.com/api/v0/${x.apiUrl}`;
     }
