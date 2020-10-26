@@ -19,11 +19,11 @@ describe('Applications', () =>
         it('it should get a list of applications, with datastores', async () =>
         {
             var workspaces = new Workspaces();
-            var workspaceLists = await workspaces.getWorkspacesAsync();
+            var workspaceLists = await workspaces.getWorkspacesAsync().Result();
             assert.isNotEmpty(workspaceLists.workspaces, 'workspace list is not empty');
 
             var applications = new Applications();
-            var applicationsList = await applications.getApplications({ workspace_id: workspaceLists.workspaces[0].workspace_id });
+            var applicationsList = await applications.getApplications({ workspace_id: workspaceLists.workspaces[0].workspace_id }).ResultAsync<any>();
             assert.isNotEmpty(applicationsList);
             assert.isArray(applicationsList);
         })

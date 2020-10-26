@@ -5,6 +5,7 @@ import { Lists } from "../utils/lists";
 export default class Actions extends Lists {
     
     /**
+     * get new action fields and other settings
      * @param  {ActionAndFieldsReq} request
      * @returns Promise
      */
@@ -12,7 +13,9 @@ export default class Actions extends Lists {
     {
         return HttpAPI.Get<any>(`datastores/${request.datastore_id}/actions/${request.action_id}/fields`).then(resp => resp);
     }
+
     /**
+     * get new-action by datastoreID
      * @param  {string} datastoreID
      * @returns Promise
      */
@@ -21,6 +24,12 @@ export default class Actions extends Lists {
         return HttpAPI.Get<ActionsNewResp>(`datastores/${datastoreID}/new-action`, null);
     }
 
+    /**
+     * map user input fields to actions fields, then output payload according to hexabase requirements
+     * @param  {any} actionAndFields
+     * @param  {any} userPayload
+     * @returns object
+     */
     public mapFieldsToIDs(actionAndFields: any, userPayload: any): object
     {
         var keyData: Array<any> = [];

@@ -2,6 +2,7 @@ export interface Workspace {
     archived: boolean;
     workspace_id: string;
     name: string;
+    workspace_name: string;
     created_at: Date;
     updated_at: Date;
 }

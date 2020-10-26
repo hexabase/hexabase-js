@@ -1,7 +1,15 @@
 import Actions from "../actions/actions";
+import Applications from "../applications/applications";
 import HttpAPI from "../httpApi";
 import { ActionsNewResp } from "../models/actions";
+import { ApplicationsRootObj, Datastore } from "../models/applications";
 import { ItemDetailsReq, ItemDetailsResp, ItemsReq, ItemsResp, ItemsSearchConditionsReq, ItemsSearchConditionsResp, NewItemActionReq, NewItemActionResp } from "../models/items";
+import Workspaces from "../workspaces/workspaces";
+
+export enum ItemSFActions {
+    New = 'new-action',
+    Update = ''
+}
 
 export default class Items 
 {
@@ -69,7 +77,7 @@ export default class Items
      * @param  {any} payload
      * @returns Promise
      */
-    public async createItemAsync(request: { 
+    public async executeActionAsync(request: { 
             datastore_id: string, 
             project_id: string, 
             use_display_id?: boolean, 
@@ -78,7 +86,13 @@ export default class Items
             related_ds_items?: {}, 
             return_item_result?: boolean 
         }, 
-        payload: any): Promise<NewItemActionResp> 
+        // payload: any): Promise<NewItemActionResp>
+        settings: {
+            workspace?: string,
+            project?: string,
+            datastore?: string,    
+        }, 
+        payload: any): Promise<any> 
     {
         // set default values
         let { 
@@ -87,17 +101,40 @@ export default class Items
                 return_item_result = true,
                 related_ds_items = {}
             } = request;
-        
-        var actions = new Actions();
-        var actionResp = await actions.getNewActionByDatastoreID(request.datastore_id);
-        let actionID = actionResp.actions[0].action_id;
-        var actionAndFields = await actions.getNewActionsAndFields({ datastore_id: request.datastore_id, action_id: actionID })
-        request.item =  actions.mapFieldsToIDs(actionAndFields, payload)
-        
-        var itemID = await this.getItemID(request.datastore_id);
 
-        return await HttpAPI.Post<NewItemActionResp>(
-            `items/${itemID.item_id}/new-actions/${actionID}`, 
-            request).then(resp => resp);
+        let ws = new Workspaces();
+        var currentWs = await ws.getWorkspacesAsync().setWorkspace(settings.workspace!);
+        let application = new Applications();
+        var targetDatastore = await application
+            .getApplications({ workspace_id: currentWs!.workspace_id })
+            .selecteProjectAndDt({ p_id: 'newproject', d_id: 'New Database', use_display_id: true })
+            .ResultAsync<Datastore>();
+
+        console.log(targetDatastore);
+        console.log('--------------------xx')
+
+        
+        // var actions = new Actions();
+        // console.log('1 ======================')
+        // var actionResp = await actions.getNewActionByDatastoreID(request.datastore_id);
+        // let actionID = actionResp.actions[0].action_id;
+        // var actionAndFields = await actions.getNewActionsAndFields({ datastore_id: request.datastore_id, action_id: actionID })
+        // console.log('2======================')
+        // request.item =  actions.mapFieldsToIDs(actionAndFields, payload)
+        
+        // var itemID = await this.getItemID(request.datastore_id);
+
+        // return await HttpAPI.Post<NewItemActionResp>(
+        //     `items/${itemID.item_id}/new-actions/${actionID}`, 
+        //     request).then(resp => resp);
+
+        // create_new_item
+        // applications/:project-id/datastores/:datastore-id/items/new
+        // return await HttpAPI.Post<NewItemActionResp>(
+        //     `applications/${request.project_id}/datastores/${request.datastore_id}/items/new`, 
+        //     request,
+        //     true).then(resp => resp);
+
+        return Promise.resolve();
     }
 }

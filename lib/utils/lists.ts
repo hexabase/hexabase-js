@@ -1,4 +1,7 @@
-export class Lists {
+export class Lists 
+{
+    public targetResultPromise: Promise<any | undefined> = new Promise<any | undefined>(() => {});
+    public targetNonAsync: any;
     
     public firstOrDefault(): object 
     {
@@ -7,5 +10,19 @@ export class Lists {
 
     public testFunc(): void {
         console.log('called from list!');
+    }
+    /**
+     * function to return targetResultPromise
+     * targetResultPromise values are for every chain stage
+     * @returns Promise
+     */
+    public async ResultAsync<T>(): Promise<T>
+    {
+        return await Promise.resolve<T>(this.targetResultPromise);
+    }
+
+    public async Result<T>(): Promise<T>
+    {
+        return new Promise(() => this.targetNonAsync);
     }
 }

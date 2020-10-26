@@ -19,14 +19,14 @@ describe('Workspace', () =>
         it('should get list of workspaces', async () =>
         {
             var workspaces = new Workspaces();
-            var workspaceLists = await workspaces.getWorkspacesAsync();
+            var workspaceLists = await workspaces.getWorkspacesAsync().Result();
             assert.isArray(workspaceLists.workspaces, "contains workspaces");
         });
 
         it('should have current_workspace_id as type string', async () =>
         {
             var workspaces = new Workspaces();
-            var workspaceLists = await workspaces.getWorkspacesAsync();
+            var workspaceLists = await workspaces.getWorkspacesAsync().Result();
 
             // disable assertion until linkerapi1 is fixed 
             // issue: https://github.com/b-eee/Hexabase/issues/130            
@@ -42,7 +42,7 @@ describe('Workspace', () =>
         it('should set current workspace by id', async () =>
         {
             var workspaces = new Workspaces();
-            var workspaceLists = await workspaces.getWorkspacesAsync();
+            var workspaceLists = await workspaces.getWorkspacesAsync().Result();
             assert.isNotEmpty(workspaceLists.workspaces, 'workspace list is not empty');
 
             var setWorkspaceResp = await workspaces.setCurrentWorkspace({ workspace_id: workspaceLists.workspaces[0].workspace_id });

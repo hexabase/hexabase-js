@@ -2,6 +2,7 @@ export interface Datastore {
     datastore_id: string;
     d_id: string;
     display_id: string;
+    application_id: string;
     name: string;
 }
 

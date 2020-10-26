@@ -62,30 +62,29 @@ describe('Items', () =>
         });
     });
 
-    describe('#createItemAsync()', () =>
+    describe('#executeActionAsync()', () =>
     {
         it('should be able to create new item from first datastore', async () =>
         {
             // TODO need more refactor
             // simplify ws, pj, and dt selectors..
-            let ws = new Workspaces();
-            var currentWs = await ws.getWorkspacesAsync();
+            // let ws = new Workspaces();
+            // var currentWs = await ws.getWorkspacesAsync();
 
-            let application = new Applications();
-            var applicationsList = await application.getApplications({ workspace_id: currentWs.workspaces[0].workspace_id });
-
-            if(applicationsList[0] && applicationsList[0].datastores[0])
-            {
-                var item = new Items();
+            var item = new Items();
                 
-                let datastoreID = applicationsList[0].datastores[0].datastore_id;
-                let newItemsResult = await item.createItemAsync({ 
-                    datastore_id: datastoreID, 
-                    project_id: 'newproject'
-                },
-                { Title: `testing ${Date.now()}` });
-                console.log(newItemsResult)
-            }
+            let newItemsResult = await item.executeActionAsync({ 
+                datastore_id: 'newdb1', 
+                project_id: 'newproject'
+            },
+            { 
+                workspace: 'My Workspace',
+                project: 'newproject',
+                datastore: 'newdb1'
+            },
+            { Title: `testing ${Date.now()}` });
+            console.log(newItemsResult)
+
         });
     });
 })
