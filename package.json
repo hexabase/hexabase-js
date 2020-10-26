@@ -1,6 +1,6 @@
 {
   "name": "hexabase-sdk",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "Hexabase SDK",
   "main": "dist/index.js",
   "files": [
@@ -22,12 +22,14 @@
   "author": "beee-devops <devops@b-eee.com>",
   "license": "MIT",
   "homepage": "https://github.com/b-eee/hexabase-sdk#readme",
+  "dependencies": {
+    "axios": "^0.20.0"
+  },
   "devDependencies": {
     "@babel/preset-react": "^7.10.4",
     "@types/chai": "^4.2.13",
     "@types/mocha": "^8.0.3",
     "@types/node": "^12.12.62",
-    "axios": "^0.20.0",
     "chai": "^4.2.0",
     "mocha": "^8.1.3",
     "mock-local-storage": "^1.1.15",
