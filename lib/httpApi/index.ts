@@ -2,7 +2,9 @@ import axios, { AxiosResponse } from 'axios';
 import { resolve } from 'dns';
 import { HxbSessionStorage } from '../storage/sessionStorage';
 
-axios.defaults.baseURL = 'http://localhost:3000';
+const baseURL = "/api";
+
+// axios.defaults.baseURL = '/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
@@ -68,8 +70,12 @@ export default class HttpAPI {
 
     public static APIurlBuilder(params: APIURLBuilderParams): string
     public static APIurlBuilder(x: {apiUrl: string, method: string, printApiURL: boolean}): string {
-        if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
+        // if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
 
-        return `https://az-api.hexabase.com/api/v0/${x.apiUrl}`;
+        // return `https://az-api.hexabase.com/api/v0/${x.apiUrl}`;
+        if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t ${baseURL}/${x.apiUrl}`);
+
+        return `${baseURL}/${x.apiUrl}`;
+
     }
 }

@@ -1,10 +1,12 @@
 import http from 'http';
 import https from 'https';
+import Applications from './applications/applications';
 
 import Auth from './auth/auth';
 import { HexabaseConfig, UsersLoginResp } from './models/users';
 import { HxbSessionStorage } from './storage/sessionStorage';
 import { Users } from './users/users';
+import Workspaces from './workspaces/workspaces';
 
 class BaseError extends Error {
   constructor(e?: string) {
@@ -66,4 +68,7 @@ export class Hexabase {
     {
         return new Users();
     }
+
+    public static workspaces = (): Workspaces => new Workspaces();
+    public static applications = (): Applications => new Applications();
 }
