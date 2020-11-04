@@ -35,9 +35,4 @@ export default class Workspaces extends Lists
         var resWorkspace = await this.targetWsResp;
         return resWorkspace.workspaces.find(w => w.workspace_name == workspaceName);
     }
-
-    public async Result(): Promise<any>
-    {
-        return this.targetWsResp;
-    }
 }
