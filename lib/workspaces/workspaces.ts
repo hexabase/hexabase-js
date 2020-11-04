@@ -1,7 +1,8 @@
 import HttpAPI from "../httpApi";
 import { SetWorkspaceReq, Workspace, WorkspaceResp } from "../models/workspaces";
+import { Lists } from "../utils/lists";
 
-export default class Workspaces 
+export default class Workspaces extends Lists
 {
     private targetWsResp: Promise<WorkspaceResp> = new Promise<WorkspaceResp>(() => {});
     /**
@@ -12,7 +13,7 @@ export default class Workspaces
     //     return HttpAPI.Get<WorkspaceResp>(`workspaces`, {}).then(resp => resp);
     // }
     public getWorkspacesAsync(): Workspaces {
-        this.targetWsResp = HttpAPI.Get<WorkspaceResp>(`workspaces`, {});
+        this.targetResultPromise = HttpAPI.Get<WorkspaceResp>(`workspaces`, {});
         return this;
     }
 

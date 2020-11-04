@@ -3,6 +3,7 @@ import https from 'https';
 import Applications from './applications/applications';
 
 import Auth from './auth/auth';
+import Items from './items/items';
 import { HexabaseConfig, UsersLoginResp } from './models/users';
 import { HxbSessionStorage } from './storage/sessionStorage';
 import { Users } from './users/users';
@@ -69,6 +70,8 @@ export class Hexabase {
         return new Users();
     }
 
+    // TODO refactor needed
     public static workspaces = (): Workspaces => new Workspaces();
     public static applications = (): Applications => new Applications();
+    public static items = (): Items => new Items();
 }

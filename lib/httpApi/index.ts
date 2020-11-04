@@ -32,7 +32,7 @@ export default class HttpAPI {
     /**
      * @param  {string} apiUrl
      * @param  {any=null} payload
-     * @param  {boolean=false} printApiURL
+     * @param  {boolean=true} printApiURL
      * @returns Promise
      */
     public static Post<T>(apiUrl: string, payload: any = null, printApiURL: boolean = false): Promise<T> 
@@ -52,10 +52,11 @@ export default class HttpAPI {
     /**
      * @param  {string} apiUrl
      * @param  {any=null} payload
-     * @param  {boolean=false} printApiURL
+     * @param  {boolean=true} printApiURL
      * @returns Promise
      */
-    public static Get<T>(apiUrl: string, payload: any = null, printApiURL: boolean = false): Promise<T> {
+    public static Get<T>(apiUrl: string, payload: any = null, printApiURL: boolean = true): Promise<T> 
+    {
         return new Promise((resolve, reject) =>
         {
             axios.get(this.APIurlBuilder({ apiUrl, method: 'GET', printApiURL }), 

@@ -11,14 +11,14 @@ export default class Applications extends Lists
      * @returns Promise
      */
     public getApplications(getApplications: GetApplicationsReq): Applications {
-        // this.targetResultPromise = HttpAPI.Get<Array<ApplicationsRootObj>>(`workspaces/${getApplications.workspace_id}/applications`, getApplications);
-        Promise.resolve(HttpAPI.Get<Array<ApplicationsRootObj>>(`workspaces/${getApplications.workspace_id}/applications`, getApplications)).then(res => 
-        {
-            this.targetNonAsync = res;
-            console.log(this.targetNonAsync)
-            console.log('tartgetnon async assigned!');
-            return this;
-        });
+        this.targetResultPromise = HttpAPI.Get<Array<ApplicationsRootObj>>(`workspaces/${getApplications.workspace_id}/applications`, getApplications);
+        // Promise.resolve(HttpAPI.Get<Array<ApplicationsRootObj>>(`workspaces/${getApplications.workspace_id}/applications`, getApplications)).then(res => 
+        // {
+        //     this.targetNonAsync = res;
+        //     console.log(this.targetNonAsync)
+        //     console.log('tartgetnon async assigned!');
+        //     return this;
+        // });
         return this;
     }
 

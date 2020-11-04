@@ -18,11 +18,12 @@ export class Lists
      */
     public async ResultAsync<T>(): Promise<T>
     {
-        return await Promise.resolve<T>(this.targetResultPromise);
+        return this.targetResultPromise;
     }
 
     public async Result<T>(): Promise<T>
     {
-        return new Promise(() => this.targetNonAsync);
+        // return new Promise(() => this.targetNonAsync);
+        return this.targetResultPromise;
     }
 }
