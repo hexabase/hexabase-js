@@ -32,7 +32,7 @@ export default class Workspaces extends Lists
 
     public async setWorkspace(workspaceName: string): Promise<Workspace | undefined>
     {
-        var resWorkspace = await this.targetWsResp;
+        var resWorkspace = await this.ResultAsync<WorkspaceResp>();
         return resWorkspace.workspaces.find(w => w.workspace_name == workspaceName);
     }
 }

@@ -66,11 +66,6 @@ describe('Items', () =>
     {
         it('should be able to create new item from first datastore', async () =>
         {
-            // TODO need more refactor
-            // simplify ws, pj, and dt selectors..
-            // let ws = new Workspaces();
-            // var currentWs = await ws.getWorkspacesAsync();
-
             var item = new Items();
                 
             let newItemsResult = await item.executeActionAsync({ 
@@ -82,9 +77,9 @@ describe('Items', () =>
                 project: 'newproject',
                 datastore: 'newdb1'
             },
-            { Title: `testing ${Date.now()}` });
+            { Title: `testing ${Date.now()} 123` });
             console.log(newItemsResult)
-
+            assert.isNull(newItemsResult.error);
         });
     });
 })

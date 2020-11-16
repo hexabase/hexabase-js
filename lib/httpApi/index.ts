@@ -55,7 +55,7 @@ export default class HttpAPI {
      * @param  {boolean=true} printApiURL
      * @returns Promise
      */
-    public static Get<T>(apiUrl: string, payload: any = null, printApiURL: boolean = true): Promise<T> 
+    public static Get<T>(apiUrl: string, payload: any = null, printApiURL: boolean = false): Promise<T> 
     {
         return new Promise((resolve, reject) =>
         {
@@ -74,6 +74,12 @@ export default class HttpAPI {
         // if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
 
         // return `https://az-api.hexabase.com/api/v0/${x.apiUrl}`;
+        if(process.env.ENV && process.env.ENV === 'test')
+        {
+            if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`);
+            return `https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`
+        }
+
         if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t ${baseURL}/${x.apiUrl}`);
 
         return `${baseURL}/${x.apiUrl}`;
