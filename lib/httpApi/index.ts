@@ -6,7 +6,6 @@ const baseURL = "/api";
 
 // axios.defaults.baseURL = '/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
-axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
 interface APIURLBuilderParams {
     apiUrl: string;
@@ -39,6 +38,7 @@ export default class HttpAPI {
     {
         return new Promise((resolve, reject) =>
         {
+            if(process.env.URL === 'true') printApiURL = true;
             axios.post(this.APIurlBuilder({ apiUrl, method: 'POST', printApiURL: printApiURL }), 
             payload,
             {
@@ -59,6 +59,7 @@ export default class HttpAPI {
     {
         return new Promise((resolve, reject) =>
         {
+            if(process.env.URL === 'true') printApiURL = true;
             axios.get(this.APIurlBuilder({ apiUrl, method: 'GET', printApiURL }), 
             { 
                 params: payload, 
@@ -69,20 +70,28 @@ export default class HttpAPI {
         });
     }
 
+    /**
+     * @param  {APIURLBuilderParams} params
+     * @returns string
+     */
     public static APIurlBuilder(params: APIURLBuilderParams): string
+    /**
+     * @param  {{apiUrl:string} x
+     * @param  {string} method
+     * @param  {boolean}} printApiURL
+     * @returns string
+     */
     public static APIurlBuilder(x: {apiUrl: string, method: string, printApiURL: boolean}): string {
-        // if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com/api/v0/${x.apiUrl}`);
+        let url = `https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`;
 
-        // return `https://az-api.hexabase.com/api/v0/${x.apiUrl}`;
-        if(process.env.ENV && process.env.ENV === 'test')
+        if(process.env.ENV && process.env.ENV === 'test' || process.env.NODE_ENV === 'development')
         {
-            if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`);
-            return `https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`
+            let nUrl = `${baseURL}/${x.apiUrl}`;
+            if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t ${nUrl}`);
+            return nUrl;
         }
 
-        if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t ${baseURL}/${x.apiUrl}`);
-
-        return `${baseURL}/${x.apiUrl}`;
-
+        console.log(`[info:${x.method}]\t -->>\t ${url}`);
+        return url
     }
 }

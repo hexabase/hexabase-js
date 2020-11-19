@@ -10,7 +10,8 @@ class Auth {
      * @param  {HexabaseConfig} payload
      * @returns Promise
      */
-    public async hexabaseLoginAsync(payload: HexabaseConfig): Promise<UsersLoginResp> {
+    public async hexabaseLoginAsync(payload: HexabaseConfig): Promise<UsersLoginResp> 
+    {
         return HttpAPI.Post<UsersLoginResp>(`login`, payload).then(
             resp => { return resp; }
         );
@@ -20,7 +21,8 @@ class Auth {
      * @param  {UsersLoginReq} payload
      * @returns Promise
      */
-    public async loginAsync(payload: UsersLoginReq): Promise<UsersLoginResp> {
+    public async loginAsync(payload: UsersLoginReq): Promise<UsersLoginResp> 
+    {
         return HttpAPI.Post<UsersLoginResp>(`login`, payload).then(
             resp => { return resp; }
         );
@@ -29,7 +31,8 @@ class Auth {
      * get temporary token
      * @returns Promise
      */
-    public async getTokenAsync(): Promise<UsersLoginResp> {
+    public async getTokenAsync(): Promise<UsersLoginResp> 
+    {
         return await HttpAPI.Post<UsersLoginResp>(`token`, null).then(resp => resp);
     }
 }

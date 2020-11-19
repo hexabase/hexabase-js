@@ -75,3 +75,5 @@ export class Hexabase {
     public static applications = (): Applications => new Applications();
     public static items = (): Items => new Items();
 }
+
+export { HxbSessionStorage }
