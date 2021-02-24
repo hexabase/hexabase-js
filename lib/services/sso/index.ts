@@ -20,17 +20,18 @@ export class ServerSent {
             url = `https://az.hexabase.com/sse?channel=user_${jwt.sub}_${respws.current_workspace_id}`
         }
 
-        console.log(url);
-        console.log('=============================x')
         this.es = new EventSource(url);
         return this.es!;
     }
 
     public addEventListener(eventName: string, callback: any) {
-        console.log(`adding event ${eventName} ${this.appEvents.hasOwnProperty(eventName)}`)
-        // if(this.appEvents.hasOwnProperty !== undefined)
-        // {
-            this.appEvents[eventName] = this.es!.addEventListener(eventName, callback);
-        // }
+        if(!this.appEvents.hasOwnProperty(eventName))
+        {
+            this.appEvents[eventName] = this.es!.addEventListener(eventName, (e: any) =>
+            {
+                var parsedData = JSON.parse(e.data);
+                callback(parsedData);
+            });
+        }
     }
 }
