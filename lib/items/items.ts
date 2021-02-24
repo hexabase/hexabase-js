@@ -3,6 +3,7 @@ import Applications from "../applications/applications";
 import HttpAPI from "../httpApi";
 import { ActionsNewResp } from "../models/actions";
 import { ApplicationsRootObj, Datastore } from "../models/applications";
+import { ItemHistories } from "../models/histories";
 import { ItemDetailsReq, ItemDetailsResp, ItemsReq, ItemsResp, ItemsSearchConditionsReq, ItemsSearchConditionsResp, NewItemActionReq, NewItemActionResp } from "../models/items";
 import { Lists } from "../utils/lists";
 import Workspaces from "../workspaces/workspaces";
@@ -58,11 +59,17 @@ export default class Items extends Lists
         ).then(resp => resp);
     }
 
-    public async getItemHistories(key: string): Promise<any> {
+    /**
+     * Gets item histories
+     * @param datastoreID 
+     * @param itemID 
+     * @returns Promise<ItemHistories> 
+     */
+    public async getItemHistories(datastoreID: string, itemID: string): Promise<ItemHistories> {
         //datastores/:datastore-id/items/:item-id/histories
-        return HttpAPI.Get<any>(
-            `datastores/:datastore-id/items/:item-id/histories`
-        )
+        return HttpAPI.Get<ItemHistories>(
+            `datastores/${datastoreID}/items/${itemID}/histories`
+        ).then(resp => resp);
     }
 
     /**
