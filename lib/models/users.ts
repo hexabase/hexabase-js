@@ -31,3 +31,10 @@ export interface UserInfoResp {
     is_ws_admin: boolean;
     user_roles: UserRole[];
 }
+
+export interface JWTToken {
+    exp: number;
+    iat: number;
+    sub: string;
+    un: string;
+}

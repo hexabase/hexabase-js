@@ -58,6 +58,13 @@ export default class Items extends Lists
         ).then(resp => resp);
     }
 
+    public async getItemHistories(key: string): Promise<any> {
+        //datastores/:datastore-id/items/:item-id/histories
+        return HttpAPI.Get<any>(
+            `datastores/:datastore-id/items/:item-id/histories`
+        )
+    }
+
     /**
      * @param  {string} datastoreID
      * @returns string

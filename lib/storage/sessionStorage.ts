@@ -1,3 +1,5 @@
+import jwt_decode from 'jwt-decode';
+import { JWTToken } from '../models/users';
 export class HxbSessionStorage 
 {
     /**
@@ -16,5 +18,12 @@ export class HxbSessionStorage
     public static Read(key: string): string | null
     {
         return localStorage.getItem(key);
+    }
+
+    public static ParseJWT(tokenKey: string = 'token'): JWTToken {
+        let token = jwt_decode(this.Read(tokenKey)!);
+        if(token) return token  as JWTToken;
+
+        return {} as JWTToken;
     }
 }

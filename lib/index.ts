@@ -5,6 +5,7 @@ import Applications from './applications/applications';
 import Auth from './auth/auth';
 import Items from './items/items';
 import { HexabaseConfig, UsersLoginResp } from './models/users';
+import { ServerSent } from './services/sso';
 import { HxbSessionStorage } from './storage/sessionStorage';
 import { Users } from './users/users';
 import Workspaces from './workspaces/workspaces';
@@ -74,6 +75,7 @@ export class Hexabase {
     public static workspaces = (): Workspaces => new Workspaces();
     public static applications = (): Applications => new Applications();
     public static items = (): Items => new Items();
+    public static serverSent = (): ServerSent => new ServerSent();
 }
 
 export { HxbSessionStorage }

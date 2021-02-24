@@ -36,6 +36,7 @@ export default class HttpAPI {
      */
     public static Post<T>(apiUrl: string, payload: any = null, printApiURL: boolean = false): Promise<T> 
     {
+        console.log(this.APIurlBuilder({ apiUrl, method: 'POST', printApiURL: printApiURL }))
         return new Promise((resolve, reject) =>
         {
             if(process.env.URL === 'true') printApiURL = true;
@@ -83,15 +84,13 @@ export default class HttpAPI {
      */
     public static APIurlBuilder(x: {apiUrl: string, method: string, printApiURL: boolean}): string {
         let url = `https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`;
+        // if(process.env.ENV && process.env.ENV === 'test' || process.env.NODE_ENV === 'development')
+        // {
+        //     let nUrl = `${baseURL}/${x.apiUrl}`;
+        //     if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t ${nUrl}`);
+        //     return nUrl;
+        // }
 
-        if(process.env.ENV && process.env.ENV === 'test' || process.env.NODE_ENV === 'development')
-        {
-            let nUrl = `${baseURL}/${x.apiUrl}`;
-            if(x.printApiURL) console.log(`[info:${x.method}]\t -->>\t ${nUrl}`);
-            return nUrl;
-        }
-
-        console.log(`[info:${x.method}]\t -->>\t ${url}`);
         return url
     }
 }
