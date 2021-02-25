@@ -1,5 +1,5 @@
 import HttpAPI from "../httpApi";
-import { UserInfoResp } from "../models/users";
+import { UserInfoResp } from "../models/index";
 
 export class Users {
     /**

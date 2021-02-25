@@ -1,5 +1,5 @@
 import jwt_decode from 'jwt-decode';
-import { JWTToken } from '../models/users';
+import { JWTToken } from '../models/index';
 export class HxbSessionStorage 
 {
     /**

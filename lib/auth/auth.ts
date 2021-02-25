@@ -1,7 +1,7 @@
 import Http from 'http';
 
 import HttpAPI from '../httpApi/index';
-import {HexabaseConfig, UsersLoginReq, UsersLoginResp} from '../models/users';
+import {HexabaseConfig, UsersLoginReq, UsersLoginResp} from '../models/index';
 
 class Auth {
     constructor() {

@@ -1,5 +1,5 @@
 import HttpAPI from "../httpApi";
-import { SetWorkspaceReq, Workspace, WorkspaceResp } from "../models/workspaces";
+import { SetWorkspaceReq, Workspace, WorkspaceResp } from "../models/index";
 import { Lists } from "../utils/lists";
 
 export default class Workspaces extends Lists

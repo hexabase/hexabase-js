@@ -1,5 +1,5 @@
 import { HxbSessionStorage } from "../..";
-import { WorkspaceResp } from "../../models/workspaces";
+import { WorkspaceResp } from "../../models/index";
 import Workspaces from "../../workspaces/workspaces";
 
 export class ServerSent {
@@ -24,6 +24,11 @@ export class ServerSent {
         return this.es!;
     }
 
+    /**
+     * Adds event listener
+     * @param eventName 
+     * @param callback 
+     */
     public addEventListener(eventName: string, callback: any) {
         if(!this.appEvents.hasOwnProperty(eventName))
         {
