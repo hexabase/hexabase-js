@@ -120,7 +120,6 @@ export default class Items extends Lists
         let ws = new Workspaces();
         var currentWs = await ws.getWorkspacesAsync().setWorkspace(settings.workspace!);
         let application = new Applications();
-
         var applicationsList = await application
             .getApplications({ workspace_id: currentWs!.workspace_id })
             .ResultAsync<Array<ApplicationsRootObj>>();
@@ -139,7 +138,7 @@ export default class Items extends Lists
         var actionAndFields = await actions.getNewActionsAndFields({ datastore_id: targetDatastore!.datastore_id, action_id: actionID })
         request.item =  actions.mapFieldsToIDs(actionAndFields, payload)
         
-        var itemID = await this.getItemID(targetDatastore!.datastore_id);
+        // var itemID = await this.getItemID(targetDatastore!.datastore_id);
 
         // create_new_item
         // applications/:project-id/datastores/:datastore-id/items/new

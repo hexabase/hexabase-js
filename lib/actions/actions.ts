@@ -43,7 +43,10 @@ export default class Actions extends Lists {
         Object.keys(userPayload).forEach(key =>
         {
             let targetKey = keyData.find(k => k.name == key);
-            payloadInIdKV[targetKey.id] = userPayload[key]
+            if(targetKey)
+            {
+                payloadInIdKV[targetKey.id] = userPayload[key]
+            }
         });
 
         return payloadInIdKV;
