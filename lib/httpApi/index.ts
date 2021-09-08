@@ -83,7 +83,8 @@ export default class HttpAPI {
      * @returns string
      */
     public static APIurlBuilder(x: {apiUrl: string, method: string, printApiURL: boolean}): string {
-        let url = `https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`;
+        let url = `/linker-api/${x.apiUrl}`;
+        // let url = `https://az-api.hexabase.com${baseURL}/v0/${x.apiUrl}`;
         // if(process.env.ENV && process.env.ENV === 'test' || process.env.NODE_ENV === 'development')
         // {
         //     let nUrl = `${baseURL}/${x.apiUrl}`;
