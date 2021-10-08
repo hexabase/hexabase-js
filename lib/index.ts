@@ -9,6 +9,20 @@ import { ServerSent } from './services/sso';
 import { HxbSessionStorage } from './storage/sessionStorage';
 import { Users } from './users/users';
 import Workspaces from './workspaces/workspaces';
+import {History, History2, ItemHistories} from './models/histories';
+import {Item} from './models/items';
+import {UserInfoResp} from './models/users';
+
+export {
+  Items,
+  Workspaces,
+  Users,
+  History,
+  History2,
+  ItemHistories,
+  Item,
+  UserInfoResp
+}
 
 class BaseError extends Error {
   constructor(e?: string) {
