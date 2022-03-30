@@ -31,8 +31,8 @@
 #### - Requirement:
   - credentials must obtain from hexabase: 
     ```bash
-      - hxbUrlGraphql
-      - hxbTokenGraphql
+      - url
+      - token
     ```
 
 ### - Using SDK
@@ -40,8 +40,5 @@
     ```bash
       import { Hexabase } from 'hexabase-sdk'
 
-      const hexabase = Hexabase.createClient(
-        hxbUrlGraphql,
-        hxbTokenGraphql
-      );
+      const hexabase = Hexabase.createClient({url, token});
     ```
