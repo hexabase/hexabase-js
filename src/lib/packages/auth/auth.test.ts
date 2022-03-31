@@ -1,5 +1,5 @@
 import Auth from '.';
-
+require('dotenv').config()
 /**
  * Test with class Auth
  * @cmdruntest yarn jest src/lib/packages/auth/auth.test.ts

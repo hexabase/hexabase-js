@@ -1,5 +1,5 @@
 import Application from '.';
-
+require('dotenv').config()
 /**
  * Test with class Application
  * @cmdruntest yarn jest src/lib/packages/application/application.test.ts

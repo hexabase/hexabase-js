@@ -1,5 +1,5 @@
 import Workspace from '.';
-
+require('dotenv').config()
 /**
  * Test with class Workspace
  * @cmdruntest yarn jest src/lib/packages/workspace/workspace.test.ts
