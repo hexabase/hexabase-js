@@ -1,5 +1,5 @@
 import User from '.';
-
+require('dotenv').config()
 /**
  * Test with class User
  * @cmdruntest yarn jest src/lib/packages/user/user.test.ts

@@ -7,6 +7,11 @@
     ```bash
       - yarn install
     ```
+  - create file ```.env``` from ```.env.test``` then Config file testing at ```.env```:
+    ```bash
+      - cp .env.test .env
+      - config enviroment in .env file
+    ```
   - Run test hexabase client:
     ```bash
       - yarn jest src/hexabase.test.ts
