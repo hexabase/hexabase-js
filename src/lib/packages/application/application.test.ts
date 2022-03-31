@@ -11,7 +11,7 @@ const workspaceId = process.env.WORKSPACEID || '';
 
 // get applications info by workspace id
 describe('Application', () => {
-  describe('#hexabaseGetApplicationAndDataStoreAsync()', () => {
+  describe('#getAppAndDsAsync()', () => {
     it('should get applications info by workspace id', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(
@@ -19,7 +19,7 @@ describe('Application', () => {
         token
       );
 
-      const respApplications = await application.hexabaseGetApplicationAndDataStoreAsync(workspaceId);
+      const respApplications = await application.getAppAndDsAsync(workspaceId);
       console.log('applications', respApplications);
 
       // expect response

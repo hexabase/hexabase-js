@@ -7,10 +7,10 @@ import {
 export default class Workspace extends HxbAbstract {
 
   /**
-   * function hexabaseWorspacesAsync: get workspaces and current workspace id
+   * function workspacesAsync: get workspaces and current workspace id
    * @returns WorkspacesRes
    */
-  async hexabaseWorspacesAsync(): Promise<WorkspacesRes> {
+  async workspacesAsync(): Promise<WorkspacesRes> {
     return await this.client.request(WORKSPACES);
   }
 }

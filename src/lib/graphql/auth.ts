@@ -1,3 +1,9 @@
-// import { gql } from 'graphql-request';
+import { gql } from 'graphql-request';
 
-// export const 
+export const LOGIN = gql`
+  mutation Login($loginInput: LoginInput!) {
+    login(loginInput: $loginInput) {
+      token
+      }
+  }
+`;

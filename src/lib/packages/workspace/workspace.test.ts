@@ -9,7 +9,7 @@ const url = process.env.URL || '';
 const token = process.env.TOKEN || '';
 // testing get all workspaces
 describe('Workspace', () => {
-  describe('#hexabaseWorspacesAsync()', () => {
+  describe('#workspacesAsync()', () => {
     it('should get all workspaces', async () => {
       jest.useFakeTimers('legacy');
       const workspace = new Workspace(
@@ -17,7 +17,7 @@ describe('Workspace', () => {
         token
       );
 
-      const workspaces = await workspace.hexabaseWorspacesAsync();
+      const workspaces = await workspace.workspacesAsync();
 
       // expect response
       expect(typeof workspaces.workspaces.current_workspace_id).toBe('string');

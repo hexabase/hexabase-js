@@ -8,6 +8,8 @@ jest.useRealTimers();
 
 const url = process.env.URL || ''
 const token = process.env.TOKEN || ''
+const email = process.env.EMAIL || ''
+const password = process.env.PASSWORD || ''
 const workspaceId = process.env.WORKSPACEID || ''
 
 // testing createClient
@@ -15,10 +17,11 @@ describe('Hexabase', () => {
   describe('#createClient()', () => {
     it('should get createClient and testing', async () => {
       jest.useFakeTimers('legacy');
-      const hexabase = createClient({ url, token });
+      const hexabase = await createClient({ url, email, password });
+      // const hexabase = await createClient({ url, token });
 
       console.log('Test: class auth');
-      const userInfo = await hexabase.auth.hexabaseUserInfoAsync();
+      const userInfo = await hexabase.auth.userInfoAsync();
       console.log('userInfo', userInfo);
       expect(typeof userInfo.userInfo.email).toBe('string');
       expect(typeof userInfo.userInfo.current_workspace_id).toBe('string');
@@ -27,12 +30,12 @@ describe('Hexabase', () => {
       expect(typeof userInfo.userInfo.u_id).toBe('string');
 
 
-      console.log('Test: class application');
-      const applications = await hexabase.application.hexabaseGetApplicationAndDataStoreAsync(workspaceId);
-      console.log('applications', applications);
-      expect(typeof applications.getApplicationAndDataStore[0].application_id).toBe('string');
-      expect(typeof applications.getApplicationAndDataStore[0].name).toBe('string');
-      expect(typeof applications.getApplicationAndDataStore[0].display_id).toBe('string');
+      // console.log('Test: class application');
+      // const applications = await hexabase.application.hexabaseGetApplicationAndDataStoreAsync(workspaceId);
+      // console.log('applications', applications);
+      // expect(typeof applications.getApplicationAndDataStore[0].application_id).toBe('string');
+      // expect(typeof applications.getApplicationAndDataStore[0].name).toBe('string');
+      // expect(typeof applications.getApplicationAndDataStore[0].display_id).toBe('string');
     });
   });
 });

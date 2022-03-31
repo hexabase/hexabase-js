@@ -10,7 +10,7 @@ const token = process.env.TOKEN || '';
 
 // get userinfo by token without error
 describe('Auth', () => {
-  describe('#hexabaseUserInfoAsync()', () => {
+  describe('#userInfoAsync()', () => {
     it('should get userinfo by token without error', async () => {
       jest.useFakeTimers('legacy');
       const auth = new Auth(
@@ -18,7 +18,7 @@ describe('Auth', () => {
         token
       );
 
-      const respUserInfo = await auth.hexabaseUserInfoAsync();
+      const respUserInfo = await auth.userInfoAsync();
       console.log('respUserInfo', respUserInfo);
 
       // expect response

@@ -12,7 +12,7 @@ const confirmationId = process.env.CONFIRMATIONID || '';
 
 // testing get user register info by confirmId
 describe('User', () => {
-  describe('#hexabaseUserRegisterResAsync()', () => {
+  describe('#userRegisterAsync()', () => {
     it('should get user register info by confirm id without error', async () => {
       jest.useFakeTimers('legacy');
       const user = new User(
@@ -20,7 +20,7 @@ describe('User', () => {
         token
       );
 
-      const respUserRegister = await user.hexabaseUserRegisterResAsync(confirmationId);
+      const respUserRegister = await user.userRegisterAsync(confirmationId);
 
       // expect response
       expect(typeof respUserRegister.userRegister.user.id).toBe('string');

@@ -25,13 +25,20 @@ export interface UserInfoRegister {
   confirmed: boolean;
   confirmation_id: string;
 }
+
 export interface UserRegister {
   user: UserInfoRegister;
 }
 
+
+/**
+* export response
+*/
+
 export interface UserInfoRes {
   userInfo: UserInfo;
 }
+
 export interface UserRegisterRes {
   userRegister: UserRegister;
 }

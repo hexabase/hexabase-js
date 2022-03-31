@@ -5,10 +5,10 @@ import { HxbAbstract } from '../../../HxbAbstract';
 export default class Auth extends HxbAbstract {
 
   /**
-   * function hexabaseUserInfoAsync: get user info by token
+   * function userInfoAsync: get user info by token
    * @returns UserInfoRes
    */
-  async hexabaseUserInfoAsync(): Promise<UserInfoRes> {
+  async userInfoAsync(): Promise<UserInfoRes> {
     return await this.client.request(USER_INFO);
   }
 

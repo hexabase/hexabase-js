@@ -9,11 +9,11 @@ import {
 export default class Application extends HxbAbstract {
 
   /**
-   * function hexabaseGetApplicationAndDataStoreAsync: get list application and datastore in a workspace
+   * function getAppAndDsAsync: get list application and datastore in a workspace
    * @params workspaceId
    * @returns ApplicationAndDataStoreRes
    */
-  async hexabaseGetApplicationAndDataStoreAsync(workspaceId: string): Promise<ApplicationAndDataStoreRes> {
+  async getAppAndDsAsync(workspaceId: string): Promise<ApplicationAndDataStoreRes> {
     return await this.client.request(GET_APPLICATION_AND_DATASTORE, {
       workspaceId,
     });
