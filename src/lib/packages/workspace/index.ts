@@ -59,8 +59,8 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
-   * function wsUsageAsync: get workspace usage
-   * @returns WsUsageRes
+   * function wsGetGroupChildrenAsync: get workspace childrent in group
+   * @returns WsGetGroupChildrenRes
    */
   async wsGetGroupChildrenAsync(workingspaceId: string): Promise<WsGetGroupChildrenRes> {
     return await this.client.request(WORKSPACE_GROUP_CHILDREN,{workingspaceId});

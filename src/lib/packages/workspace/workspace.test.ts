@@ -80,7 +80,7 @@ describe('Workspace', () => {
   });
 
   describe('#wsGetGroupChildrenAsync()', () => {
-    it('should get workspace usage', async () => {
+    it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
 
       const respWsGrChil = await workspace.wsGetGroupChildrenAsync(workspaceId);
