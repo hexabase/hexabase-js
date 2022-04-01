@@ -53,7 +53,7 @@ export interface ConfirmationsFullInfo {
   tmp_email?: string;
   email_confirmed?: boolean;
   id?: string;
-  isElapsed?: boolean,
+  isElapsed?: boolean;
   username?: string;
   workspace?: WorkSpaceField;
 }
@@ -62,10 +62,7 @@ export interface UserConfirmations {
   user: ConfirmationsFullInfo;
 }
 
-
-/**
-* export response
-*/
+/** export response */
 export interface UserInfoRes {
   userInfo: UserInfo;
 }

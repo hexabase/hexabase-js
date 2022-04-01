@@ -1,1 +1,1 @@
-import * from './response';
+export * from './response';

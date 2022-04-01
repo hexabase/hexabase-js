@@ -22,16 +22,13 @@ export default class AuthMw {
    * @returns TokenModel
    */
   async loginAsync(loginInput: LoginInputPayload): Promise<LoginRes> {
-    console.log('loginInput', loginInput)
     return await this.client.request(LOGIN, { loginInput });
 
   }
   async userInfoAsync(token: string): Promise<UserInfoRes> {
-    this.client.setHeader('authorization', `Bearer ${token}`)
+    this.client.setHeader('authorization', `Bearer ${token}`);
     const data = await this.client.request(USER_INFO);
-    console.log(data)
 
     return data;
-
   }
 }

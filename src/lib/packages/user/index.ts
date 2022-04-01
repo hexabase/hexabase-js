@@ -27,7 +27,7 @@ export default class User extends HxbAbstract {
    * @returns UserPasswordExpiryRes
    */
   async userPasswordExAsync(): Promise<UserPasswordExpiryRes> {
-    return await this.client.request(USER_PASSWORD_EXPIRY)
+    return await this.client.request(USER_PASSWORD_EXPIRY);
   }
 
   /**
@@ -36,8 +36,8 @@ export default class User extends HxbAbstract {
    * @returns UserConfirmationsRes
    */
   async userConfirmAsync(confirmationId: string): Promise<UserConfirmationsRes> {
-    return await this.client.request(USER_CONFIRMATIONS,{
+    return await this.client.request(USER_CONFIRMATIONS, {
       confirmationId,
-    })
+    });
   }
 }

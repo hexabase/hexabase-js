@@ -20,9 +20,9 @@ const createClient = async ({ url, token, email, password }: HexabaseConfig): Pr
   }
   else if (!email && !password && token) {
     tokenHx = token;
-  }  
-  else{
-    throw Error("Need token or email and password to initialize sdk");
+  }
+  else {
+    throw Error('Need token or email and password to initialize sdk');
   }
     return new HexabaseClient(url, tokenHx);
 };

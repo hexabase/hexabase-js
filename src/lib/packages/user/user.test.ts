@@ -1,5 +1,5 @@
 import User from '.';
-require('dotenv').config()
+require('dotenv').config();
 /**
  * Test with class User
  * @cmdruntest yarn jest src/lib/packages/user/user.test.ts
@@ -22,7 +22,7 @@ describe('User', () => {
 
       /** check user register */
       const respUserRegister = await user.userRegisterAsync(confirmationId);
-      console.log('respUserRegister', respUserRegister)
+      console.log('respUserRegister', respUserRegister);
       // expect response respUserRegister
       expect(typeof respUserRegister.userRegister.user.id).toBe('string');
       expect(typeof respUserRegister.userRegister.user.email).toBe('string');
@@ -39,6 +39,7 @@ describe('User', () => {
 
       /** check user password expiry */
       const respUserPasswordEx = await user.userPasswordExAsync();
+      console.log('respUserPasswordEx', respUserPasswordEx);
 
       // expect response respUserPasswordEx
       expect(typeof respUserPasswordEx.userPasswordExpiry.is_expired).toBe('boolean');
@@ -55,7 +56,7 @@ describe('User', () => {
 
       /** check user password expiry */
       const respUserConfirmAsync = await user.userConfirmAsync(confirmationId);
-      console.log('respUserConfirmAsync', respUserConfirmAsync)
+      console.log('respUserConfirmAsync', respUserConfirmAsync);
 
       // expect response userConfirmAsync
       expect(typeof respUserConfirmAsync.userConfirmations.user.email).toBe('string');

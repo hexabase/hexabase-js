@@ -39,15 +39,15 @@ export default class Workspace extends HxbAbstract {
    * @returns WsPasswordPolicyRes
    */
   async wsPasswordPolicyAsync(workingspaceId: string): Promise<WsPasswordPolicyRes> {
-    return await this.client.request(WORKSPACE_PASSWORD_POLICY,{workingspaceId});
+    return await this.client.request(WORKSPACE_PASSWORD_POLICY, {workingspaceId});
   }
-  
+
   /**
    * function wsFunctionalityAsync: get workspace functionlity
    * @returns WsFunctionalityRes
    */
   async wsFunctionalityAsync(workingspaceId: string): Promise<WsFunctionalityRes> {
-    return await this.client.request(WORKSPACE_FUNCTIONALITY,{workingspaceId});
+    return await this.client.request(WORKSPACE_FUNCTIONALITY, {workingspaceId});
   }
 
   /**
@@ -55,7 +55,7 @@ export default class Workspace extends HxbAbstract {
    * @returns WsUsageRes
    */
   async wsUsageAsync(workingspaceId: string): Promise<WsUsageRes> {
-    return await this.client.request(WORKSPACE_USAGE,{workingspaceId});
+    return await this.client.request(WORKSPACE_USAGE, {workingspaceId});
   }
 
   /**
@@ -63,6 +63,6 @@ export default class Workspace extends HxbAbstract {
    * @returns WsGetGroupChildrenRes
    */
   async wsGetGroupChildrenAsync(workingspaceId: string): Promise<WsGetGroupChildrenRes> {
-    return await this.client.request(WORKSPACE_GROUP_CHILDREN,{workingspaceId});
+    return await this.client.request(WORKSPACE_GROUP_CHILDREN, {workingspaceId});
   }
 }
