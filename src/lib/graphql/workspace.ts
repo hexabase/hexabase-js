@@ -97,3 +97,28 @@ export const WORKSPACE_GROUP_CHILDREN = gql`
     }
   }
 `;
+
+export const TASK_QUEUE_LIST = gql`
+  query TaskGetQueueList($workspaceId: String, $queryTaskList: QueryTaskList) {
+    taskGetQueueList(workspaceId: $workspaceId, queryTaskList: $queryTaskList)
+  }
+`;
+
+export const TASK_QUEUE_STATUS = gql`
+  query TaskGetQueueTaskStatus($taskId: String!, $workspaceId: String!) {
+    taskGetQueueTaskStatus(taskId: $taskId, workspaceId: $workspaceId) {
+      qt_id
+      category
+      status {
+        id
+        name
+      }
+      created_at
+      started_at
+      finished_at
+      metadata {
+        w_id
+      }
+    }
+  }
+`;

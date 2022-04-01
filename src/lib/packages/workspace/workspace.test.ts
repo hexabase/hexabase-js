@@ -8,6 +8,7 @@ require('dotenv').config();
 const url = process.env.URL || '';
 const token = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
+const taskId = process.env.TASKID || '';
 
 const workspace = new Workspace(
   url,
@@ -90,6 +91,32 @@ describe('Workspace', () => {
       // expect response
       expect(typeof respWsGrChil.workspaceGetGroupChildren.error).toBe('string');
       expect(typeof respWsGrChil.workspaceGetGroupChildren.count).toBe('number');
+    });
+  });
+
+  describe('#taskQueueListAsync()', () => {
+    it('should get queue list', async () => {
+      jest.useFakeTimers('legacy');
+
+      const resptaskQueueLs = await workspace.taskQueueListAsync();
+      console.log('resptaskQueueLs', resptaskQueueLs);
+
+      // expect response
+      expect(typeof resptaskQueueLs.taskGetQueueList).toBe('object');
+    });
+  });
+
+  describe('#taskQueueStatusAsync()', () => {
+    it('should get task queue status', async () => {
+      jest.useFakeTimers('legacy');
+
+      const resptaskQueueStatus = await workspace.taskQueueStatusAsync(taskId, workspaceId);
+      console.log('resptaskQueueStatus', resptaskQueueStatus);
+
+      // expect response
+      expect(typeof resptaskQueueStatus.taskGetQueueTaskStatus.qt_id).toBe('string');
+      expect(typeof resptaskQueueStatus.taskGetQueueTaskStatus.category).toBe('string');
+      expect(typeof resptaskQueueStatus.taskGetQueueTaskStatus.created_at).toBe('string');
     });
   });
 });

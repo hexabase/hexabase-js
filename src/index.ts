@@ -7,6 +7,7 @@ interface HexabaseConfig {
   email?: string;
   password?: string;
 }
+
 /**
  * create client for hexabase-sdk
  */

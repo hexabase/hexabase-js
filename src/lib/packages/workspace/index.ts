@@ -5,15 +5,20 @@ import {
   WORKSPACE_PASSWORD_POLICY,
   WORKSPACE_FUNCTIONALITY,
   WORKSPACE_USAGE,
-  WORKSPACE_GROUP_CHILDREN
+  WORKSPACE_GROUP_CHILDREN,
+  TASK_QUEUE_LIST,
+  TASK_QUEUE_STATUS
 } from '../../graphql/workspace';
 import {
+  QueryTaskList,
   WorkspacesRes,
   WorkspaceCurrentRes,
   WsPasswordPolicyRes,
   WsFunctionalityRes,
   WsUsageRes,
-  WsGetGroupChildrenRes
+  WsGetGroupChildrenRes,
+  TaskGetQueueListRes,
+  TaskQueueStatusRes
 } from '../../types/workspace';
 
 export default class Workspace extends HxbAbstract {
@@ -64,5 +69,23 @@ export default class Workspace extends HxbAbstract {
    */
   async wsGetGroupChildrenAsync(workingspaceId: string): Promise<WsGetGroupChildrenRes> {
     return await this.client.request(WORKSPACE_GROUP_CHILDREN, {workingspaceId});
+  }
+
+  /**
+   * function taskQueueListAsync: get queue list
+   * @param: option: workspaceId or none, queryTaskList or none
+   * @returns TaskGetQueueListRes
+   */
+  async taskQueueListAsync(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskGetQueueListRes> {
+    return await this.client.request(TASK_QUEUE_LIST, {workspaceId, queryTaskList});
+  }
+
+  /**
+   * function taskQueueStatusAsync: get task queue status
+   * @param: option: taskId and workspaceId are required
+   * @returns TaskQueueStatusRes
+   */
+  async taskQueueStatusAsync(taskId: string, workspaceId: string): Promise<TaskQueueStatusRes> {
+    return await this.client.request(TASK_QUEUE_STATUS,{taskId, workspaceId});
   }
 }

@@ -75,6 +75,25 @@ export interface WsGetGroupChildren {
   count?: number;
 }
 
+export interface FieldStatusQueue {
+  name: string;
+  id: number;
+}
+
+export interface FieldMetadata {
+  w_id: string;
+}
+
+export interface TaskQueueStatus {
+  qt_id: string;
+  category: string;
+  status: FieldStatusQueue;
+  created_at: string;
+  started_at: string;
+  finished_at: string;
+  metadata: FieldMetadata;
+}
+
 /** Response */
 export interface WorkspacesRes {
   workspaces: Workspaces;
@@ -98,4 +117,12 @@ export interface WsUsageRes {
 
 export interface WsGetGroupChildrenRes {
   workspaceGetGroupChildren: WsGetGroupChildren;
+}
+
+export interface TaskGetQueueListRes {
+  taskGetQueueList: any;
+}
+
+export interface TaskQueueStatusRes {
+  taskGetQueueTaskStatus: TaskQueueStatus;
 }
