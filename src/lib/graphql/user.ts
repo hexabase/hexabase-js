@@ -37,3 +37,40 @@ export const USER_REGISTER = gql`
     }
   }
 `;
+
+export const USER_PASSWORD_EXPIRY = gql`
+  query UserPasswordExpiry {
+    userPasswordExpiry {
+      is_expired
+    }
+  }
+`;
+
+export const USER_CONFIRMATIONS = gql`
+  query UserConfirmations($confirmationId: String!) {
+    userConfirmations(confirmationId: $confirmationId) {
+      user {
+        confirmation_id
+        confirmed
+        current_workspace_id
+        email
+        tmp_email
+        email_confirmed
+        id
+        isElapsed
+        username
+        workspace {
+          is_root
+          name
+          index
+          id
+          g_id
+          display_id
+          disable_ui_access
+          created_at
+          access_key
+        }
+      }
+    }
+  }
+`;

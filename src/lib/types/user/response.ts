@@ -30,11 +30,42 @@ export interface UserRegister {
   user: UserInfoRegister;
 }
 
+export interface UserPasswordExpiry {
+  is_expired: boolean;
+}
+
+export interface WorkSpaceField {
+  access_key?: string;
+  created_at?: string;
+  disable_ui_access?: boolean;
+  display_id?: string;
+  g_id?: boolean;
+  id?: string;
+  index?: number;
+  is_root?: boolean;
+  name?: string;
+}
+export interface ConfirmationsFullInfo {
+  confirmation_id?: string;
+  confirmed?: boolean;
+  current_workspace_id?: string;
+  email?: string;
+  tmp_email?: string;
+  email_confirmed?: boolean;
+  id?: string;
+  isElapsed?: boolean,
+  username?: string;
+  workspace?: WorkSpaceField;
+}
+
+export interface UserConfirmations {
+  user: ConfirmationsFullInfo;
+}
+
 
 /**
 * export response
 */
-
 export interface UserInfoRes {
   userInfo: UserInfo;
 }
@@ -42,3 +73,12 @@ export interface UserInfoRes {
 export interface UserRegisterRes {
   userRegister: UserRegister;
 }
+
+export interface UserPasswordExpiryRes {
+  userPasswordExpiry: UserPasswordExpiry;
+}
+
+export interface UserConfirmationsRes {
+  userConfirmations: UserConfirmations;
+}
+

@@ -12,6 +12,7 @@ export class HxbAbstract {
     this.urlGr = urlGraphql;
     this.token = tokenHxb;
     this.client = new GraphQLClient(this.urlGr, {
+      timeout: 50000,
       headers: {
         authorization: `Bearer ${this.token}`,
       },
