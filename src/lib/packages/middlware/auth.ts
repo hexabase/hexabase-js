@@ -33,7 +33,7 @@ export default class AuthMw {
       data.token = res.login.token
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -52,7 +52,7 @@ export default class AuthMw {
       data.userInfo = res.userInfo
     } catch (error: any) {
       
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;

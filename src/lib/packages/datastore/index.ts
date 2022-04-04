@@ -30,7 +30,7 @@ export default class Datastore extends HxbAbstract {
       data.dsFieldSettings = res.datastoreGetFieldSettings
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -54,7 +54,7 @@ export default class Datastore extends HxbAbstract {
       data.dsActions = res.datastoreGetActions
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;

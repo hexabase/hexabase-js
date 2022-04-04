@@ -21,13 +21,16 @@ describe('Hexabase', () => {
       // const hexabase = await createClient({ url, token });
 
       console.log('Test: class auth');
-      const userInfo = await hexabase.auth.userInfoAsync();
-      console.log('userInfo', userInfo);
-      expect(typeof userInfo.userInfo.email).toBe('string');
-      expect(typeof userInfo.userInfo.current_workspace_id).toBe('string');
-      expect(typeof userInfo.userInfo.profile_pic).toBe('string');
-      expect(typeof userInfo.userInfo.is_ws_admin).toBe('string');
-      expect(typeof userInfo.userInfo.u_id).toBe('string');
+      const {userInfo, error} = await hexabase.auth.userInfoAsync();
+      if(userInfo) {
+
+        console.log('userInfo', userInfo);
+        expect(typeof userInfo.email).toBe('string');
+        expect(typeof userInfo.current_workspace_id).toBe('string');
+        expect(typeof userInfo.profile_pic).toBe('string');
+        expect(typeof userInfo.is_ws_admin).toBe('string');
+        expect(typeof userInfo.u_id).toBe('string');
+      }
 
 
       // console.log('Test: class application');

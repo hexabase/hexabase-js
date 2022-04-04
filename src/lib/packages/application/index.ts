@@ -29,7 +29,7 @@ export default class Application extends HxbAbstract {
       data.appAndDs = res.getApplicationAndDataStore;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;

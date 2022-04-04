@@ -21,7 +21,7 @@ export default class Auth extends HxbAbstract {
       data.userInfo = res.userInfo
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;

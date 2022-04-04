@@ -46,8 +46,9 @@ export default class Workspace extends HxbAbstract {
       const res: DtWorkspaces= await this.client.request(WORKSPACES);
       data.workspaces = res.workspaces
     } catch(error: any) {
+      console.log('error', error)
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -69,7 +70,7 @@ export default class Workspace extends HxbAbstract {
       data.wsCurrent = res.workspaceCurrent
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -91,7 +92,7 @@ export default class Workspace extends HxbAbstract {
       data.wsPasswordPolicy = res.workspacePasswordPolicy
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -114,7 +115,7 @@ export default class Workspace extends HxbAbstract {
       data.wsFunctionality = res.workspaceFunctionality
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -137,7 +138,7 @@ export default class Workspace extends HxbAbstract {
       data.wsUsage = res.workspaceUsage
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -160,7 +161,7 @@ export default class Workspace extends HxbAbstract {
       data.wsGroupChildren = res.workspaceGetGroupChildren
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -184,7 +185,7 @@ export default class Workspace extends HxbAbstract {
       data.taskQueueList = res.taskGetQueueList
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -208,7 +209,7 @@ export default class Workspace extends HxbAbstract {
       data.taskQueueStatus = res.taskGetQueueTaskStatus
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;

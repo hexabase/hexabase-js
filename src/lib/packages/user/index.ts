@@ -32,7 +32,7 @@ export default class User extends HxbAbstract {
       data.userRegister = res.userRegister
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -55,7 +55,7 @@ export default class User extends HxbAbstract {
       data.userPassEx = res.userPasswordExpiry
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
@@ -79,7 +79,7 @@ export default class User extends HxbAbstract {
       data.userConfirm = res.userConfirmations
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.error)
+      data.error = JSON.stringify(error.response.errors)
     }
 
     return data;
