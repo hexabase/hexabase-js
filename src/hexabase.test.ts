@@ -15,7 +15,7 @@ const workspaceId = process.env.WORKSPACEID || ''
 // testing createClient
 describe('Hexabase', () => {
   describe('#createClient()', () => {
-    it('should get createClient and testing', async () => {
+    it('auth: get createClient and testing', async () => {
       jest.useFakeTimers('legacy');
       const hexabase = await createClient({ url, email, password });
       // const hexabase = await createClient({ url, token });
@@ -31,14 +31,22 @@ describe('Hexabase', () => {
         expect(typeof userInfo.is_ws_admin).toBe('string');
         expect(typeof userInfo.u_id).toBe('string');
       }
+    });
 
+    it('application: get createClient and testing', async () => {
+      jest.useFakeTimers('legacy');
+      const hexabase = await createClient({ url, email, password });
+      // const hexabase = await createClient({ url, token });
 
-      // console.log('Test: class application');
-      // const applications = await hexabase.application.hexabaseGetApplicationAndDataStoreAsync(workspaceId);
-      // console.log('applications', applications);
-      // expect(typeof applications.getApplicationAndDataStore[0].application_id).toBe('string');
-      // expect(typeof applications.getApplicationAndDataStore[0].name).toBe('string');
-      // expect(typeof applications.getApplicationAndDataStore[0].display_id).toBe('string');
+      console.log('Test: class application');
+      const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(workspaceId);
+      if(appAndDs) {
+
+        console.log('appAndDs', appAndDs);
+        expect(typeof appAndDs[0].name).toBe('string');
+        expect(typeof appAndDs[0].application_id).toBe('string');
+        expect(typeof appAndDs[0].display_id).toBe('string');
+      }
     });
   });
 });
