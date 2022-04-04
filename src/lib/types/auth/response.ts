@@ -1,6 +1,12 @@
 import { TokenModel } from '../../util/type/response';
 
-
-export interface LoginRes {
+/** Data response from request graphql */
+export interface DtLogin{
   login: TokenModel;
+}
+
+/**export response */
+export interface LoginRes {
+  token?: string;
+  error?: string;
 }

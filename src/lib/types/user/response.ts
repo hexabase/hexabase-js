@@ -62,20 +62,41 @@ export interface UserConfirmations {
   user: ConfirmationsFullInfo;
 }
 
-/** export response */
-export interface UserInfoRes {
+/** Data response from request graphql */
+export interface DtUserInfo {
   userInfo: UserInfo;
 }
 
-export interface UserRegisterRes {
+export interface DtUserRegister {
   userRegister: UserRegister;
 }
 
-export interface UserPasswordExpiryRes {
+export interface DtUserPassEx {
   userPasswordExpiry: UserPasswordExpiry;
 }
 
-export interface UserConfirmationsRes {
+export interface DtUserConfirm {
   userConfirmations: UserConfirmations;
+}
+
+/** export response */
+export interface UserInfoRes {
+  userInfo?: UserInfo;
+  error?: string;
+}
+
+export interface UserRegisterRes {
+  userRegister?: UserRegister;
+  error?: string;
+}
+
+export interface UserPassExRes {
+  userPassEx?: UserPasswordExpiry;
+  error?: string;
+}
+
+export interface UserConfirmRes {
+  userConfirm?: UserConfirmations;
+  error?: string;
 }
 

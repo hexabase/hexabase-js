@@ -68,7 +68,7 @@ export interface FieldGroup {
   index?: number;
 }
 
-export interface WsGetGroupChildren {
+export interface WsGroupChildren {
   error?: string;
   group?: FieldGroup;
   children?: FieldGroup[];
@@ -94,35 +94,76 @@ export interface TaskQueueStatus {
   metadata: FieldMetadata;
 }
 
-/** Response */
-export interface WorkspacesRes {
+/** Data response from request graphql */
+export interface DtWorkspaces {
   workspaces: Workspaces;
 }
 
-export interface WorkspaceCurrentRes {
+export interface DtWorkspaceCurrent {
   workspaceCurrent: WorkspaceCurrent;
 }
 
-export interface WsPasswordPolicyRes {
+export interface DtWsPasswordPolicy {
   workspacePasswordPolicy: WsPasswordPolicy;
 }
 
-export interface WsFunctionalityRes {
+export interface DtWsFunctionality {
   workspaceFunctionality: WsFunctionality;
 }
 
-export interface WsUsageRes {
+export interface DtWsUsage {
   workspaceUsage: WsUsage;
 }
 
-export interface WsGetGroupChildrenRes {
-  workspaceGetGroupChildren: WsGetGroupChildren;
+export interface DtWsGroupChildren {
+  workspaceGetGroupChildren: WsGroupChildren;
 }
 
-export interface TaskGetQueueListRes {
+export interface DtTaskQueueList {
   taskGetQueueList: any;
 }
 
-export interface TaskQueueStatusRes {
+export interface DtTaskQueueStatus {
   taskGetQueueTaskStatus: TaskQueueStatus;
+}
+
+/** Response */
+export interface WorkspacesRes {
+  workspaces?: Workspaces;
+  error?: string;
+}
+
+export interface WorkspaceCurrentRes {
+  wsCurrent?: WorkspaceCurrent;
+  error?: string;
+}
+
+export interface WsPasswordPolicyRes {
+  wsPasswordPolicy?: WsPasswordPolicy;
+  error?: string;
+}
+
+export interface WsFunctionalityRes {
+  wsFunctionality?: WsFunctionality;
+  error?: string;
+}
+
+export interface WsUsageRes {
+  wsUsage?: WsUsage;
+  error?: string;
+}
+
+export interface WsGroupChildrenRes {
+  wsGroupChildren?: WsGroupChildren;
+  error?: string;
+}
+
+export interface TaskQueueListRes {
+  taskQueueList?: any;
+  error?: string;
+}
+
+export interface TaskQueueStatusRes {
+  taskQueueStatus?: TaskQueueStatus;
+  error?: string;
 }

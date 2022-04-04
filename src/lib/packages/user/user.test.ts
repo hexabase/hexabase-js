@@ -21,11 +21,19 @@ describe('User', () => {
       );
 
       /** check user register */
-      const respUserRegister = await user.userRegisterAsync(confirmationId);
-      console.log('respUserRegister', respUserRegister);
+      const {userRegister, error} = await user.userRegisterAsync(confirmationId);
+
       // expect response respUserRegister
-      expect(typeof respUserRegister.userRegister.user.id).toBe('string');
-      expect(typeof respUserRegister.userRegister.user.email).toBe('string');
+      if(userRegister) {
+        console.log('userRegister: ', userRegister);
+        
+        expect(typeof userRegister.user.id).toBe('string');
+        expect(typeof userRegister.user.email).toBe('string');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -38,11 +46,18 @@ describe('User', () => {
       );
 
       /** check user password expiry */
-      const respUserPasswordEx = await user.userPasswordExAsync();
-      console.log('respUserPasswordEx', respUserPasswordEx);
+      const {userPassEx, error} = await user.userPasswordExAsync();
 
       // expect response respUserPasswordEx
-      expect(typeof respUserPasswordEx.userPasswordExpiry.is_expired).toBe('boolean');
+      if(userPassEx) {
+        console.log('userPassEx: ', userPassEx);
+        
+        expect(typeof userPassEx.is_expired).toBe('boolean');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -55,12 +70,19 @@ describe('User', () => {
       );
 
       /** check user password expiry */
-      const respUserConfirmAsync = await user.userConfirmAsync(confirmationId);
-      console.log('respUserConfirmAsync', respUserConfirmAsync);
+      const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
 
       // expect response userConfirmAsync
-      expect(typeof respUserConfirmAsync.userConfirmations.user.email).toBe('string');
-      expect(typeof respUserConfirmAsync.userConfirmations.user.id).toBe('string');
+      if(userConfirm) {
+        console.log('userConfirm: ', userConfirm);
+        
+        expect(typeof userConfirm.user.email).toBe('string');
+        expect(typeof userConfirm.user.id).toBe('string');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 });

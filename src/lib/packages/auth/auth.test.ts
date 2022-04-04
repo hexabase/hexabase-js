@@ -18,16 +18,24 @@ describe('Auth', () => {
         token
       );
 
-      const respUserInfo = await auth.userInfoAsync();
-      console.log('respUserInfo', respUserInfo);
+      const {userInfo, error} = await auth.userInfoAsync();
 
       // expect response
-      expect(typeof respUserInfo.userInfo.username).toBe('string');
-      expect(typeof respUserInfo.userInfo.email).toBe('string');
-      expect(typeof respUserInfo.userInfo.profile_pic).toBe('string');
-      expect(typeof respUserInfo.userInfo.u_id).toBe('string');
-      expect(typeof respUserInfo.userInfo.current_workspace_id).toBe('string');
-      expect(typeof respUserInfo.userInfo.is_ws_admin).toBe('string');
+      if(userInfo) {
+        console.log('user: ', userInfo);
+
+        expect(typeof userInfo.username).toBe('string');
+        expect(typeof userInfo.email).toBe('string');
+        expect(typeof userInfo.profile_pic).toBe('string');
+        expect(typeof userInfo.u_id).toBe('string');
+        expect(typeof userInfo.current_workspace_id).toBe('string');
+        expect(typeof userInfo.is_ws_admin).toBe('string');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
+     
     });
   });
 });

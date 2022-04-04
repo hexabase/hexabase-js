@@ -16,9 +16,17 @@ import {
   WsPasswordPolicyRes,
   WsFunctionalityRes,
   WsUsageRes,
-  WsGetGroupChildrenRes,
-  TaskGetQueueListRes,
-  TaskQueueStatusRes
+  WsGroupChildrenRes,
+  TaskQueueListRes,
+  TaskQueueStatusRes,
+  DtWorkspaces,
+  DtWorkspaceCurrent,
+  DtWsPasswordPolicy,
+  DtWsFunctionality,
+  DtWsUsage,
+  DtWsGroupChildren,
+  DtTaskQueueList,
+  DtTaskQueueStatus
 } from '../../types/workspace';
 
 export default class Workspace extends HxbAbstract {
@@ -28,7 +36,21 @@ export default class Workspace extends HxbAbstract {
    * @returns WorkspacesRes
    */
   async workspacesAsync(): Promise<WorkspacesRes> {
-    return await this.client.request(WORKSPACES);
+    let data: WorkspacesRes = {
+      workspaces: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWorkspaces= await this.client.request(WORKSPACES);
+      data.workspaces = res.workspaces
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -36,7 +58,21 @@ export default class Workspace extends HxbAbstract {
    * @returns WorkspaceCurrentRes
    */
   async wsCurrentAsync(): Promise<WorkspaceCurrentRes> {
-    return await this.client.request(WORKSPACE_CURRENT);
+    let data: WorkspaceCurrentRes = {
+      wsCurrent: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWorkspaceCurrent = await this.client.request(WORKSPACE_CURRENT);
+      data.wsCurrent = res.workspaceCurrent
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -44,7 +80,21 @@ export default class Workspace extends HxbAbstract {
    * @returns WsPasswordPolicyRes
    */
   async wsPasswordPolicyAsync(workingspaceId: string): Promise<WsPasswordPolicyRes> {
-    return await this.client.request(WORKSPACE_PASSWORD_POLICY, {workingspaceId});
+    let data: WsPasswordPolicyRes = {
+      wsPasswordPolicy: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWsPasswordPolicy = await this.client.request(WORKSPACE_PASSWORD_POLICY, {workingspaceId});
+      data.wsPasswordPolicy = res.workspacePasswordPolicy
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -52,7 +102,22 @@ export default class Workspace extends HxbAbstract {
    * @returns WsFunctionalityRes
    */
   async wsFunctionalityAsync(workingspaceId: string): Promise<WsFunctionalityRes> {
-    return await this.client.request(WORKSPACE_FUNCTIONALITY, {workingspaceId});
+    let data: WsFunctionalityRes = {
+      wsFunctionality: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWsFunctionality = await this.client.request(WORKSPACE_FUNCTIONALITY, {workingspaceId});
+      
+      data.wsFunctionality = res.workspaceFunctionality
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -60,15 +125,45 @@ export default class Workspace extends HxbAbstract {
    * @returns WsUsageRes
    */
   async wsUsageAsync(workingspaceId: string): Promise<WsUsageRes> {
-    return await this.client.request(WORKSPACE_USAGE, {workingspaceId});
+    let data: WsUsageRes = {
+      wsUsage: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWsUsage = await this.client.request(WORKSPACE_USAGE, {workingspaceId});
+      
+      data.wsUsage = res.workspaceUsage
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
-   * function wsGetGroupChildrenAsync: get workspace childrent in group
-   * @returns WsGetGroupChildrenRes
+   * function wsGroupChildrenAsync: get workspace childrent in group
+   * @returns WsGroupChildrenRes
    */
-  async wsGetGroupChildrenAsync(workingspaceId: string): Promise<WsGetGroupChildrenRes> {
-    return await this.client.request(WORKSPACE_GROUP_CHILDREN, {workingspaceId});
+  async wsGroupChildrenAsync(workingspaceId: string): Promise<WsGroupChildrenRes> {
+    let data: WsGroupChildrenRes = {
+      wsGroupChildren: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWsGroupChildren = await this.client.request(WORKSPACE_GROUP_CHILDREN, {workingspaceId});
+      
+      data.wsGroupChildren = res.workspaceGetGroupChildren
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -76,8 +171,23 @@ export default class Workspace extends HxbAbstract {
    * @param: option: workspaceId or none, queryTaskList or none
    * @returns TaskGetQueueListRes
    */
-  async taskQueueListAsync(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskGetQueueListRes> {
-    return await this.client.request(TASK_QUEUE_LIST, {workspaceId, queryTaskList});
+  async taskQueueListAsync(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskQueueListRes> {
+    let data: TaskQueueListRes = {
+      taskQueueList: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtTaskQueueList = await this.client.request(TASK_QUEUE_LIST, {workspaceId, queryTaskList});
+      
+      data.taskQueueList = res.taskGetQueueList
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -86,6 +196,21 @@ export default class Workspace extends HxbAbstract {
    * @returns TaskQueueStatusRes
    */
   async taskQueueStatusAsync(taskId: string, workspaceId: string): Promise<TaskQueueStatusRes> {
-    return await this.client.request(TASK_QUEUE_STATUS,{taskId, workspaceId});
+    let data: TaskQueueStatusRes = {
+      taskQueueStatus: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtTaskQueueStatus = await this.client.request(TASK_QUEUE_STATUS,{taskId, workspaceId});
+      
+      data.taskQueueStatus = res.taskGetQueueTaskStatus
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 }

@@ -19,13 +19,19 @@ describe('Application', () => {
         token
       );
 
-      const respApplications = await application.getAppAndDsAsync(workspaceId);
-      console.log('applications', respApplications);
+      const {appAndDs, error} = await application.getAppAndDsAsync(workspaceId);
+      if(appAndDs) {
+        console.log('appAndDs: ', appAndDs)
 
-      // expect response
-      expect(typeof respApplications.getApplicationAndDataStore[0].application_id).toBe('string');
-      expect(typeof respApplications.getApplicationAndDataStore[0].name).toBe('string');
-      expect(typeof respApplications.getApplicationAndDataStore[0].display_id).toBe('string');
+        expect(typeof appAndDs[0].application_id).toBe('string');
+        expect(typeof appAndDs[0].name).toBe('string');
+        expect(typeof appAndDs[0].display_id).toBe('string');
+      }
+      else {
+        console.log('error: ', error)
+
+        expect(typeof error).toBe('string');
+      }
     });
   });
 });

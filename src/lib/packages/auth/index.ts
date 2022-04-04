@@ -1,5 +1,5 @@
 import { USER_INFO } from '../../graphql/user';
-import { UserInfoRes } from '../../types/user';
+import { DtUserInfo, UserInfoRes } from '../../types/user';
 import { HxbAbstract } from '../../../HxbAbstract';
 
 export default class Auth extends HxbAbstract {
@@ -9,7 +9,22 @@ export default class Auth extends HxbAbstract {
    * @returns UserInfoRes
    */
   async userInfoAsync(): Promise<UserInfoRes> {
-    return await this.client.request(USER_INFO);
+    let data: UserInfoRes = {
+      userInfo: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtUserInfo= await this.client.request(USER_INFO);
+
+      data.userInfo = res.userInfo
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
 }

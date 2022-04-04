@@ -4,8 +4,11 @@ import {
   USER_REGISTER
 } from '../../graphql/user';
 import {
-  UserConfirmationsRes,
-  UserPasswordExpiryRes,
+  DtUserConfirm,
+  DtUserPassEx,
+  DtUserRegister,
+  UserConfirmRes,
+  UserPassExRes,
   UserRegisterRes
 } from '../../types/user';
 import { HxbAbstract } from '../../../HxbAbstract';
@@ -17,17 +20,45 @@ export default class User extends HxbAbstract {
    * @returns UserRegisterRes
    */
   async userRegisterAsync(confirmationId: string): Promise<UserRegisterRes> {
-    return await this.client.request(USER_REGISTER, {
-      confirmationId,
-    });
+    let data: UserRegisterRes = {
+      userRegister: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtUserRegister = await this.client.request(USER_REGISTER, { confirmationId });
+
+      data.userRegister = res.userRegister
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
    * function userPasswordExAsync: check user password is expiry
    * @returns UserPasswordExpiryRes
    */
-  async userPasswordExAsync(): Promise<UserPasswordExpiryRes> {
-    return await this.client.request(USER_PASSWORD_EXPIRY);
+  async userPasswordExAsync(): Promise<UserPassExRes> {
+    let data: UserPassExRes = {
+      userPassEx: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtUserPassEx = await this.client.request(USER_PASSWORD_EXPIRY);
+
+      data.userPassEx = res.userPasswordExpiry
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 
   /**
@@ -35,9 +66,22 @@ export default class User extends HxbAbstract {
    * @param confirmationId
    * @returns UserConfirmationsRes
    */
-  async userConfirmAsync(confirmationId: string): Promise<UserConfirmationsRes> {
-    return await this.client.request(USER_CONFIRMATIONS, {
-      confirmationId,
-    });
+  async userConfirmAsync(confirmationId: string): Promise<UserConfirmRes> {
+    let data: UserConfirmRes = {
+      userConfirm: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtUserConfirm = await this.client.request(USER_CONFIRMATIONS, { confirmationId });
+
+      data.userConfirm = res.userConfirmations
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.error)
+    }
+
+    return data;
   }
 }

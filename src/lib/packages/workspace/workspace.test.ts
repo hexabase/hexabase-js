@@ -21,13 +21,20 @@ describe('Workspace', () => {
     it('should get all workspaces', async () => {
       jest.useFakeTimers('legacy');
 
-      const respWorkspaces = await workspace.workspacesAsync();
-      console.log('workspaces', respWorkspaces);
+      const {workspaces, error} = await workspace.workspacesAsync();
 
       // expect response
-      expect(typeof respWorkspaces.workspaces.current_workspace_id).toBe('string');
-      expect(typeof respWorkspaces.workspaces.workspaces[0].workspace_name).toBe('string');
-      expect(typeof respWorkspaces.workspaces.workspaces[0].workspace_id).toBe('string');
+      if(workspaces) {
+        console.log('workspaces', workspaces);
+
+        expect(typeof workspaces.current_workspace_id).toBe('string');
+        expect(typeof workspaces.workspaces[0].workspace_name).toBe('string');
+        expect(typeof workspaces.workspaces[0].workspace_id).toBe('string');
+      }else{
+        console.log('error: ', error)
+
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -35,11 +42,18 @@ describe('Workspace', () => {
     it('should get workspaces id current', async () => {
       jest.useFakeTimers('legacy');
 
-      const respWsCurrent = await workspace.wsCurrentAsync();
-      console.log('respWsCurrent', respWsCurrent);
-
+      const {wsCurrent, error} = await workspace.wsCurrentAsync();
+      
       // expect response
-      expect(typeof respWsCurrent.workspaceCurrent.workspace_id).toBe('string');
+      if(wsCurrent) {
+        console.log('wsCurrent', wsCurrent);
+
+        expect(typeof wsCurrent.workspace_id).toBe('string');
+      }else{
+        console.log('error: ', error)
+
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -47,12 +61,19 @@ describe('Workspace', () => {
     it('should get workspace password policy', async () => {
       jest.useFakeTimers('legacy');
 
-      const respWsPsPolicy = await workspace.wsPasswordPolicyAsync(workspaceId);
-      console.log('respWsPsPolicy', respWsPsPolicy);
+      const {wsPasswordPolicy, error} = await workspace.wsPasswordPolicyAsync(workspaceId);
 
       // expect response
-      expect(typeof respWsPsPolicy.workspacePasswordPolicy.expired_day).toBe('number');
-      expect(typeof respWsPsPolicy.workspacePasswordPolicy.use_expired_day).toBe('boolean');
+      if(wsPasswordPolicy) {
+        console.log('wsPasswordPolicy', wsPasswordPolicy);
+        
+        expect(typeof wsPasswordPolicy.expired_day).toBe('number');
+        expect(typeof wsPasswordPolicy.use_expired_day).toBe('boolean');
+      }else{
+        console.log('error: ', error)
+
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -60,11 +81,18 @@ describe('Workspace', () => {
     it('should get workspace functionlity', async () => {
       jest.useFakeTimers('legacy');
 
-      const respWsFc = await workspace.wsFunctionalityAsync(workspaceId);
-      console.log('respWsFc', respWsFc);
+      const {wsFunctionality, error} = await workspace.wsFunctionalityAsync(workspaceId);
 
       // expect response
-      expect(typeof respWsFc.workspaceFunctionality.w_id).toBe('string');
+      if(wsFunctionality) {
+        console.log('wsFunctionality: ', wsFunctionality);
+        
+        expect(typeof wsFunctionality.w_id).toBe('string');
+      }else{
+        console.log('error: ', error)
+
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -72,25 +100,39 @@ describe('Workspace', () => {
     it('should get workspace usage', async () => {
       jest.useFakeTimers('legacy');
 
-      const respWsUsage = await workspace.wsUsageAsync(workspaceId);
-      console.log('respWsUsage', respWsUsage);
+      const {wsUsage, error} = await workspace.wsUsageAsync(workspaceId);
 
       // expect response
-      expect(typeof respWsUsage.workspaceUsage.w_id).toBe('string');
-      expect(typeof respWsUsage.workspaceUsage.usage?.datastores).toBe('number');
+      if(wsUsage) {
+        console.log('wsUsage: ', wsUsage);
+        
+        expect(typeof wsUsage.w_id).toBe('string');
+        expect(typeof wsUsage.usage?.datastores).toBe('number');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
-  describe('#wsGetGroupChildrenAsync()', () => {
+  describe('#wsGroupChildrenAsync()', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
 
-      const respWsGrChil = await workspace.wsGetGroupChildrenAsync(workspaceId);
-      console.log('respWsGrChil', respWsGrChil);
+      const {wsGroupChildren, error} = await workspace.wsGroupChildrenAsync(workspaceId);
 
       // expect response
-      expect(typeof respWsGrChil.workspaceGetGroupChildren.error).toBe('string');
-      expect(typeof respWsGrChil.workspaceGetGroupChildren.count).toBe('number');
+      if(wsGroupChildren) {
+        console.log('wsGroupChildren: ', wsGroupChildren);
+
+        expect(typeof wsGroupChildren.error).toBe('string');
+        expect(typeof wsGroupChildren.count).toBe('number');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -98,11 +140,18 @@ describe('Workspace', () => {
     it('should get queue list', async () => {
       jest.useFakeTimers('legacy');
 
-      const resptaskQueueLs = await workspace.taskQueueListAsync();
-      console.log('resptaskQueueLs', resptaskQueueLs);
+      const {taskQueueList, error} = await workspace.taskQueueListAsync();
 
       // expect response
-      expect(typeof resptaskQueueLs.taskGetQueueList).toBe('object');
+      if(taskQueueList) {
+        console.log('taskQueueList: ', taskQueueList);
+        expect(typeof taskQueueList).toBe('object');
+        
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 
@@ -110,13 +159,20 @@ describe('Workspace', () => {
     it('should get task queue status', async () => {
       jest.useFakeTimers('legacy');
 
-      const resptaskQueueStatus = await workspace.taskQueueStatusAsync(taskId, workspaceId);
-      console.log('resptaskQueueStatus', resptaskQueueStatus);
+      const {taskQueueStatus, error} = await workspace.taskQueueStatusAsync(taskId, workspaceId);
 
       // expect response
-      expect(typeof resptaskQueueStatus.taskGetQueueTaskStatus.qt_id).toBe('string');
-      expect(typeof resptaskQueueStatus.taskGetQueueTaskStatus.category).toBe('string');
-      expect(typeof resptaskQueueStatus.taskGetQueueTaskStatus.created_at).toBe('string');
+      if(taskQueueStatus) {
+        console.log('taskQueueStatus: ', taskQueueStatus);
+
+        expect(typeof taskQueueStatus.qt_id).toBe('string');
+        expect(typeof taskQueueStatus.category).toBe('string');
+        expect(typeof taskQueueStatus.created_at).toBe('string');
+      }else{
+        console.log('error: ', error)
+      
+        expect(typeof error).toBe('string');
+      }
     });
   });
 });
