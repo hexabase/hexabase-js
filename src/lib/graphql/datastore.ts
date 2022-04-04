@@ -52,3 +52,32 @@ export const DS_ACTIONS = gql`
   }
 `;
 
+
+export const DS_ACTION_SETTING = gql`
+  query DatastoreGetActionSetting($actionId: String!, $datastoreId: String!) {
+    datastoreGetActionSetting(actionId: $actionId, datastoreId: $datastoreId) {
+      workspace_id
+      project_id
+      datastore_id
+      action_id
+      is_status_action
+      display_id
+      operation
+      set_status
+      name {
+        ja
+        en
+      }
+      roles {
+        can_execute
+        can_use
+        project_id
+        type
+        name
+        display_id
+        role_id
+      }
+    }
+  }
+`;
+

@@ -31,9 +31,7 @@ describe('Auth', () => {
         expect(typeof userInfo.current_workspace_id).toBe('string');
         expect(typeof userInfo.is_ws_admin).toBe('string');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
      
     });

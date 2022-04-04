@@ -30,9 +30,7 @@ describe('User', () => {
         expect(typeof userRegister.user.id).toBe('string');
         expect(typeof userRegister.user.email).toBe('string');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -54,9 +52,7 @@ describe('User', () => {
         
         expect(typeof userPassEx.is_expired).toBe('boolean');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -79,9 +75,7 @@ describe('User', () => {
         expect(typeof userConfirm.user.email).toBe('string');
         expect(typeof userConfirm.user.id).toBe('string');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });

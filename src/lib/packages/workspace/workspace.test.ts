@@ -31,9 +31,7 @@ describe('Workspace', () => {
         expect(typeof workspaces.workspaces[0].workspace_name).toBe('string');
         expect(typeof workspaces.workspaces[0].workspace_id).toBe('string');
       }else{
-        console.log('error: ', error)
-
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -50,9 +48,7 @@ describe('Workspace', () => {
 
         expect(typeof wsCurrent.workspace_id).toBe('string');
       }else{
-        console.log('error: ', error)
-
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -70,9 +66,7 @@ describe('Workspace', () => {
         expect(typeof wsPasswordPolicy.expired_day).toBe('number');
         expect(typeof wsPasswordPolicy.use_expired_day).toBe('boolean');
       }else{
-        console.log('error: ', error)
-
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -88,10 +82,8 @@ describe('Workspace', () => {
         console.log('wsFunctionality: ', wsFunctionality);
         
         expect(typeof wsFunctionality.w_id).toBe('string');
-      }else{
-        console.log('error: ', error)
-
-        expect(typeof error).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -109,9 +101,7 @@ describe('Workspace', () => {
         expect(typeof wsUsage.w_id).toBe('string');
         expect(typeof wsUsage.usage?.datastores).toBe('number');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -128,10 +118,8 @@ describe('Workspace', () => {
 
         expect(typeof wsGroupChildren.error).toBe('string');
         expect(typeof wsGroupChildren.count).toBe('number');
-      }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -147,10 +135,8 @@ describe('Workspace', () => {
         console.log('taskQueueList: ', taskQueueList);
         expect(typeof taskQueueList).toBe('object');
         
-      }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -169,9 +155,7 @@ describe('Workspace', () => {
         expect(typeof taskQueueStatus.category).toBe('string');
         expect(typeof taskQueueStatus.created_at).toBe('string');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });

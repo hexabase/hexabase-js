@@ -25,7 +25,6 @@ export interface DsFieldSettings {
   roles?: FieldRoles[];
 }
 
-
 export interface DsAction {
   workspace_id?: string;
   project_id?: string;
@@ -38,12 +37,28 @@ export interface DsAction {
   name?: string;
 }
 
+export interface DsActionSetting {
+  workspace_id: string;
+  project_id: string;
+  datastore_id: string;
+  action_id: string;
+  is_status_action: boolean;
+  display_id: string;
+  operation: string;
+  set_status: string;
+  name: FieldNameENJP;
+  roles: FieldRoles[];
+}
+
 /** Data response from request graphql */
 export interface DtDsFieldSettings {
   datastoreGetFieldSettings: DsFieldSettings;
 }
 export interface DtDsActions {
   datastoreGetActions: DsAction
+}
+export interface DtDsActionSetting {
+  datastoreGetActionSetting: DsActionSetting
 }
 
 /**export response */
@@ -53,5 +68,9 @@ export interface DsFieldSettingsRes {
 }
 export interface DsActionRes {
   dsActions?: DsAction;
+  error?: string;
+}
+export interface DsActionSettingRes {
+  dsActionSettings?: DsActionSetting;
   error?: string;
 }

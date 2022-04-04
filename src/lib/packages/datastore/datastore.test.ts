@@ -32,9 +32,7 @@ describe('Datastore', () => {
         expect(typeof dsFieldSettings.field_id).toBe('string');
         expect(typeof dsFieldSettings.display_id).toBe('string');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -47,7 +45,7 @@ describe('Datastore', () => {
         token
       );
 
-      const {dsActions, error} = await datastore.dsActions(datastoreId);
+      const {dsActions, error} = await datastore.dsActionsAsync(datastoreId);
 
       // expect response
       if(dsActions) {
@@ -56,9 +54,7 @@ describe('Datastore', () => {
         expect(typeof dsActions.name).toBe('string');
         expect(typeof dsActions.workspace_id).toBe('string');
       }else{
-        console.log('error: ', error)
-      
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });

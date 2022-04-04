@@ -28,9 +28,7 @@ describe('Application', () => {
         expect(typeof appAndDs[0].display_id).toBe('string');
       }
       else {
-        console.log('error: ', error)
-
-        expect(typeof error).toBe('string');
+        throw new Error(`Error: ${error}`);
       }
     });
   });
