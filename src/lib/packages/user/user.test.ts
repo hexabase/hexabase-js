@@ -1,4 +1,5 @@
 import User from '.';
+import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
  * Test with class User
@@ -6,19 +7,29 @@ require('dotenv').config();
  */
 
 const url = process.env.URL || '';
-const token = process.env.TOKEN || '';
-
+let tokenUs = process.env.TOKEN || '';
 const confirmationId = process.env.CONFIRMATIONID || '';
+const email = process.env.EMAIL || ''
+const password = process.env.PASSWORD || ''
 
+beforeAll( async () => {
+  if(email && password) {
+    console.log('[email, password]: ', email, password);
+    const authMw = new AuthMw(url);
+    const {token, error} = await authMw.loginAsync({email, password});
+    if(token){
+      return tokenUs = token;
+    } else {
+      throw Error(`Need login faild to initialize sdk: ${error}`);
+    }
+  }
+});
 // testing get user register info by confirmId
 describe('User', () => {
   describe('#userRegisterAsync()', () => {
     it('should get user register info by confirm id without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(
-        url,
-        token
-      );
+      const user = new User(url, tokenUs);
 
       /** check user register */
       const {userRegister, error} = await user.userRegisterAsync(confirmationId);
@@ -38,10 +49,7 @@ describe('User', () => {
   describe('#respUserPasswordEx()', () => {
     it('should get user password expiry without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(
-        url,
-        token
-      );
+      const user = new User(url, tokenUs);
 
       /** check user password expiry */
       const {userPassEx, error} = await user.userPasswordExAsync();
@@ -60,10 +68,7 @@ describe('User', () => {
   describe('#userConfirmAsync()', () => {
     it('should get user password expiry without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(
-        url,
-        token
-      );
+      const user = new User(url, tokenUs);
 
       /** check user password expiry */
       const {userConfirm, error} = await user.userConfirmAsync(confirmationId);

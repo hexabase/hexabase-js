@@ -1,4 +1,5 @@
 import Application from '.';
+import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
  * Test with class Application
@@ -6,18 +7,30 @@ require('dotenv').config();
  */
 
 const url = process.env.URL || '';
-const token = process.env.TOKEN || '';
+let tokenApp = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
+const email = process.env.EMAIL || ''
+const password = process.env.PASSWORD || ''
+
+beforeAll( async () => {
+  if(email && password) {
+    console.log('[email, password]: ', email, password);
+    const authMw = new AuthMw(url);
+    const {token, error} = await authMw.loginAsync({email, password});
+    if(token){
+      return tokenApp = token;
+    } else {
+      throw Error(`Need login faild to initialize sdk: ${error}`);
+    }
+  }
+});
 
 // get applications info by workspace id
 describe('Application', () => {
   describe('#getAppAndDsAsync()', () => {
     it('should get applications info by workspace id', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(
-        url,
-        token
-      );
+      const application = new Application(url, tokenApp);
 
       const {appAndDs, error} = await application.getAppAndDsAsync(workspaceId);
       if(appAndDs) {

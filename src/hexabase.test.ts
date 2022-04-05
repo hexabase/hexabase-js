@@ -1,4 +1,5 @@
 import { createClient } from './index';
+import AuthMw from './lib/packages/middlware/auth';
 require('dotenv').config()
 jest.useRealTimers();
 /**
@@ -7,18 +8,31 @@ jest.useRealTimers();
  */
 
 const url = process.env.URL || ''
-const token = process.env.TOKEN || ''
+let tokenClient = process.env.TOKEN || ''
 const email = process.env.EMAIL || ''
 const password = process.env.PASSWORD || ''
 const workspaceId = process.env.WORKSPACEID || ''
 
+
+beforeAll( async () => {
+  if(email && password) {
+    console.log('email, password', email, password);
+    const authMw = new AuthMw(url);
+    const {token, error} = await authMw.loginAsync({email, password});
+    if(token){
+      return tokenClient = token;
+    } else {
+      throw Error(`Need login faild to initialize sdk: ${error}`);
+    }
+  }
+});
 // testing createClient
 describe('Hexabase', () => {
   describe('#createClient()', () => {
     it('auth: get createClient and testing', async () => {
       jest.useFakeTimers('legacy');
       const hexabase = await createClient({ url, email, password });
-      // const hexabase = await createClient({ url, token });
+      // const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class auth');
       const {userInfo, error} = await hexabase.auth.userInfoAsync();
@@ -36,7 +50,7 @@ describe('Hexabase', () => {
     it('application: get createClient and testing', async () => {
       jest.useFakeTimers('legacy');
       // const hexabase = await createClient({ url, email, password });
-      const hexabase = await createClient({ url, token });
+      const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class application');
       const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(workspaceId);

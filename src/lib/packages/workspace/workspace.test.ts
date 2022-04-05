@@ -1,4 +1,5 @@
 import Workspace from '.';
+import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
  * Test with class Workspace
@@ -6,21 +7,33 @@ require('dotenv').config();
  */
 
 const url = process.env.URL || '';
-const token = process.env.TOKEN || '';
+let tokenWs = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const taskId = process.env.TASKID || '';
+const email = process.env.EMAIL || ''
+const password = process.env.PASSWORD || ''
 
-const workspace = new Workspace(
-  url,
-  token
-);
+beforeAll( async () => {
+  if(email && password) {
+    console.log('[email, password]: ', email, password);
+    const authMw = new AuthMw(url);
+    const {token, error} = await authMw.loginAsync({email, password});
+    if(token){
+      return tokenWs = token;
+    } else {
+      throw Error(`Need login faild to initialize sdk: ${error}`);
+    }
+  }
+});
 
-// testing get all workspaces
 describe('Workspace', () => {
+  
+  // testing get all workspaces
   describe('#workspacesAsync()', () => {
     it('should get all workspaces', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {workspaces, error} = await workspace.workspacesAsync();
 
       // expect response
@@ -40,6 +53,7 @@ describe('Workspace', () => {
     it('should get workspaces id current', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {wsCurrent, error} = await workspace.wsCurrentAsync();
       
       // expect response
@@ -57,6 +71,7 @@ describe('Workspace', () => {
     it('should get workspace password policy', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {wsPasswordPolicy, error} = await workspace.wsPasswordPolicyAsync(workspaceId);
 
       // expect response
@@ -75,6 +90,7 @@ describe('Workspace', () => {
     it('should get workspace functionlity', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {wsFunctionality, error} = await workspace.wsFunctionalityAsync(workspaceId);
 
       // expect response
@@ -92,6 +108,7 @@ describe('Workspace', () => {
     it('should get workspace usage', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {wsUsage, error} = await workspace.wsUsageAsync(workspaceId);
 
       // expect response
@@ -110,6 +127,7 @@ describe('Workspace', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {wsGroupChildren, error} = await workspace.wsGroupChildrenAsync(workspaceId);
 
       // expect response
@@ -128,6 +146,7 @@ describe('Workspace', () => {
     it('should get queue list', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {taskQueueList, error} = await workspace.taskQueueListAsync();
 
       // expect response
@@ -145,6 +164,7 @@ describe('Workspace', () => {
     it('should get task queue status', async () => {
       jest.useFakeTimers('legacy');
 
+      const workspace = new Workspace(url, tokenWs);
       const {taskQueueStatus, error} = await workspace.taskQueueStatusAsync(taskId, workspaceId);
 
       // expect response
