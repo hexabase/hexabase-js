@@ -51,7 +51,22 @@ export const DS_ACTIONS = gql`
     }
   }
 `;
-
+export const DS_STATUS = gql`
+  query DatastoreGetStatuses($datastoreId: String!) {
+    datastoreGetStatuses(datastoreId: $datastoreId) {
+      display_id
+      name {
+        ja
+        en
+      }
+      displayed_name
+      status_id
+      sort_id
+      x
+      y
+    }
+  }
+`;
 
 export const DS_ACTION_SETTING = gql`
   query DatastoreGetActionSetting($actionId: String!, $datastoreId: String!) {

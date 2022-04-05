@@ -37,6 +37,15 @@ export interface DsAction {
   set_status?: string;
   name?: string;
 }
+export interface DsStatus {
+  display_id: string;
+  name: FieldNameENJP;
+  displayed_name: string;
+  status_id: string;
+  sort_id: number;
+  x: string;
+  y: string;
+}
 
 export interface DsActionSetting {
   workspace_id: string;
@@ -51,27 +60,44 @@ export interface DsActionSetting {
   roles: FieldRoles[];
 }
 
+
 /** Data response from request graphql */
 export interface DtDsFieldSettings {
   datastoreGetFieldSettings: DsFieldSettings;
 }
+
 export interface DtDsActions {
-  datastoreGetActions: DsAction
+  datastoreGetActions: [DsAction]
 }
+
 export interface DtDsActionSetting {
   datastoreGetActionSetting: DsActionSetting
 }
+
+export interface DtDsStatus {
+  datastoreGetStatuses: [DsStatus]
+}
+
 
 /**export response */
 export interface DsFieldSettingsRes {
   dsFieldSettings?: DsFieldSettings;
   error?: string;
 }
+
 export interface DsActionRes {
-  dsActions?: DsAction;
+  dsActions?: [DsAction];
   error?: string;
 }
+
+export interface DsStatusRes {
+  dsStatuses?: [DsStatus];
+  error?: string;
+}
+
 export interface DsActionSettingRes {
   dsActionSettings?: DsActionSetting;
   error?: string;
 }
+
+
