@@ -3,3 +3,9 @@ export interface QueryTaskList {
   category?: string;
   stream_id?: string
 }
+export interface CreateWsInput {
+  name: string;
+}
+export interface SetWsInput {
+  workspace_id: string;
+}

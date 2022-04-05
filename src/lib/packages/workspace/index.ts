@@ -1,3 +1,4 @@
+import { ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   WORKSPACES,
@@ -7,7 +8,9 @@ import {
   WORKSPACE_USAGE,
   WORKSPACE_GROUP_CHILDREN,
   TASK_QUEUE_LIST,
-  TASK_QUEUE_STATUS
+  TASK_QUEUE_STATUS,
+  CREATE_WORKSPACE,
+  SET_CURRENT_WORKSPACE
 } from '../../graphql/workspace';
 import {
   QueryTaskList,
@@ -26,7 +29,12 @@ import {
   DtWsUsage,
   DtWsGroupChildren,
   DtTaskQueueList,
-  DtTaskQueueStatus
+  DtTaskQueueStatus,
+  CreateWsInput,
+  WorkspaceIDRes,
+  DtWorkspaceID,
+  DtCurrentWs,
+  SetWsInput
 } from '../../types/workspace';
 
 export default class Workspace extends HxbAbstract {
@@ -207,6 +215,54 @@ export default class Workspace extends HxbAbstract {
       const res: DtTaskQueueStatus = await this.client.request(TASK_QUEUE_STATUS,{taskId, workspaceId});
       
       data.taskQueueStatus = res.taskGetQueueTaskStatus
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.errors)
+    }
+
+    return data;
+  }
+
+  /**
+   * function createWorkspaceAsync: created workspace 
+   * @param: createWorkSpaceInput: {name}
+   * @returns WorkspaceIDRes
+   */
+  async createWorkspaceAsync(createWorkSpaceInput: CreateWsInput): Promise<WorkspaceIDRes> {
+    let data: WorkspaceIDRes = {
+      w_id: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtWorkspaceID = await this.client.request(CREATE_WORKSPACE,{createWorkSpaceInput});
+      
+      data.w_id = res.createWorkspace?.w_id
+    } catch(error: any) {
+
+      data.error = JSON.stringify(error.response.errors)
+    }
+
+    return data;
+  }
+
+  /**
+   * function setCurrentWsAsync: set workspace current with id
+   * @param: option: setCurrentWorkSpaceInput: {workspace_id} are required
+   * @returns ModelRes
+   */
+  async setCurrentWsAsync(setCurrentWorkSpaceInput: SetWsInput): Promise<ModelRes> {
+    let data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    }
+
+    // handle call graphql
+    try {
+      const res: DtCurrentWs = await this.client.request(SET_CURRENT_WORKSPACE,{setCurrentWorkSpaceInput});
+      
+      data.data = res.setCurrentWorkSpace
     } catch(error: any) {
 
       data.error = JSON.stringify(error.response.errors)

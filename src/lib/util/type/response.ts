@@ -11,8 +11,17 @@ export interface FieldRoles {
   can_execute: boolean;
 }
 
-
 export interface FieldNameENJP {
   en: string;
   ja: string;
+}
+
+export interface ResponseOkModel {
+  success: boolean;
+  data: string
+}
+
+export interface ModelRes {
+  data?: ResponseOkModel;
+  error?: string;
 }

@@ -122,3 +122,20 @@ export const TASK_QUEUE_STATUS = gql`
     }
   }
 `;
+
+export const CREATE_WORKSPACE = gql`
+  mutation CreateWorkspace($createWorkSpaceInput: CreateWorkSpaceInput!) {
+    createWorkspace(createWorkSpaceInput: $createWorkSpaceInput) {
+      w_id
+    }
+  }
+`;
+
+export const SET_CURRENT_WORKSPACE = gql`
+  mutation SetCurrentWorkSpace($setCurrentWorkSpaceInput: SetCurrentWorkSpaceInput!) {
+    setCurrentWorkSpace(setCurrentWorkSpaceInput: $setCurrentWorkSpaceInput) {
+      success
+      data
+    }
+  }
+`;

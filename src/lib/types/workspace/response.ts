@@ -1,3 +1,4 @@
+import {ResponseOkModel} from '../../util/type'
 export interface WorkSpacesInfo {
   workspace_name?: string;
   workspace_id?: string;
@@ -94,6 +95,10 @@ export interface TaskQueueStatus {
   metadata: FieldMetadata;
 }
 
+export interface WorkspaceID {
+  w_id: string;
+}
+
 /** Data response from request graphql */
 export interface DtWorkspaces {
   workspaces: Workspaces;
@@ -125,6 +130,14 @@ export interface DtTaskQueueList {
 
 export interface DtTaskQueueStatus {
   taskGetQueueTaskStatus: TaskQueueStatus;
+}
+
+export interface DtWorkspaceID {
+  createWorkspace?: WorkspaceID;
+}
+
+export interface DtCurrentWs {
+  setCurrentWorkSpace?: ResponseOkModel;
 }
 
 /** Response */
@@ -165,5 +178,10 @@ export interface TaskQueueListRes {
 
 export interface TaskQueueStatusRes {
   taskQueueStatus?: TaskQueueStatus;
+  error?: string;
+}
+
+export interface WorkspaceIDRes {
+  w_id?: string;
   error?: string;
 }
