@@ -13,3 +13,12 @@ export const GET_APPLICATION_AND_DATASTORE = gql`
     }
   }
 `;
+
+export const APPLICATION_CREATE_PROJECT = gql`
+  mutation ApplicationCreateProject($createProjectParams: CreateProjectParams) {
+    applicationCreateProject(createProjectParams: $createProjectParams) {
+      project_id
+    }
+  }
+`;
+

@@ -12,12 +12,21 @@ const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || ''
 const password = process.env.PASSWORD || ''
 
-beforeAll( async () => {
-  if(email && password) {
+// local variable in file for testing
+const createProjectParams = {
+  tp_id: '798798798',
+  name: {
+    en: 'EN Project',
+    ja: 'JA Project',
+  }
+}
+
+beforeAll(async () => {
+  if (email && password) {
     console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
-    const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    const { token, error } = await authMw.loginAsync({ email, password });
+    if (token) {
       return tokenApp = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -32,13 +41,31 @@ describe('Application', () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
 
-      const {appAndDs, error} = await application.getAppAndDsAsync(workspaceId);
-      if(appAndDs) {
+      const { appAndDs, error } = await application.getAppAndDsAsync(workspaceId);
+      if (appAndDs) {
         console.log('appAndDs: ', appAndDs)
 
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
         expect(typeof appAndDs[0].display_id).toBe('string');
+      }
+      else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+
+  describe('#createAppAsync()', () => {
+    it('should create application', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+
+      const { app, error } = await application.createAppAsync(createProjectParams);
+      if (app) {
+        console.log('application after created: ', app)
+
+        expect(typeof app.project_id).toBe('string');
       }
       else {
         throw new Error(`Error: ${error}`);

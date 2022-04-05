@@ -1,4 +1,5 @@
-import { FieldRoles, FieldNameENJP } from '../../util/type'
+import { FieldRoles, FieldNameENJP } from '../../util/type';
+
 export interface Datastore {
   name?: string;
   datastore_id?: string;

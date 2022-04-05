@@ -1,4 +1,5 @@
-import {ResponseOkModel} from '../../util/type'
+import { ResponseOkModel } from '../../util/type';
+
 export interface WorkSpacesInfo {
   workspace_name?: string;
   workspace_id?: string;
