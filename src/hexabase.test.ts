@@ -35,8 +35,8 @@ describe('Hexabase', () => {
 
     it('application: get createClient and testing', async () => {
       jest.useFakeTimers('legacy');
-      const hexabase = await createClient({ url, email, password });
-      // const hexabase = await createClient({ url, token });
+      // const hexabase = await createClient({ url, email, password });
+      const hexabase = await createClient({ url, token });
 
       console.log('Test: class application');
       const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(workspaceId);
