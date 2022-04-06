@@ -22,18 +22,16 @@ export default class Application extends HxbAbstract {
     let data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
-      const res: DtAppAndDs = await this.client.request(GET_APPLICATION_AND_DATASTORE, {
-        workspaceId,
-      });
+      const res: DtAppAndDs = await this.client.request(GET_APPLICATION_AND_DATASTORE, {workspaceId});
 
       data.appAndDs = res.getApplicationAndDataStore;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -48,7 +46,7 @@ export default class Application extends HxbAbstract {
     let data: CreateAppRes = {
       app: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
@@ -57,7 +55,7 @@ export default class Application extends HxbAbstract {
       data.app = res.applicationCreateProject;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;

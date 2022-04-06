@@ -11,15 +11,15 @@ let tokenDs = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const fieldId = process.env.FIELDID || '';
 const datastoreId = process.env.DATASTOREID || '';
-const email = process.env.EMAIL || ''
-const password = process.env.PASSWORD || ''
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
 
 beforeAll( async () => {
-  if(email && password) {
+  if (email && password) {
     console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    if (token) {
       return tokenDs = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -58,12 +58,12 @@ describe('Datastore', () => {
       const {dsActions, error} = await datastore.dsActionsAsync(datastoreId);
 
       // expect response
-      if(dsActions) {
+      if (dsActions) {
         console.log('dsActions: ', dsActions);
 
         expect(typeof dsActions[0].name).toBe('string');
         expect(typeof dsActions[0].workspace_id).toBe('string');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });
@@ -76,12 +76,12 @@ describe('Datastore', () => {
       const {dsStatuses, error} = await datastore.dsStatusAsync(datastoreId);
 
       // expect response
-      if(dsStatuses) {
+      if (dsStatuses) {
         console.log('dsStatus: ', dsStatuses);
 
         expect(typeof dsStatuses[0].display_id).toBe('string');
         expect(typeof dsStatuses[0].sort_id).toBe('number');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });

@@ -25,15 +25,15 @@ export default class AuthMw {
     let data: LoginRes = {
       token: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
-      const res: DtLogin = await this.client.request(LOGIN, { loginInput })
-      data.token = res.login.token
+      const res: DtLogin = await this.client.request(LOGIN, { loginInput });
+      data.token = res.login.token;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -43,16 +43,16 @@ export default class AuthMw {
     let data: UserInfoRes = {
       userInfo: undefined,
       error: undefined,
-    }
+    };
 
     this.client.setHeader('authorization', `Bearer ${token}`);
     try {
       const res: DtUserInfo = await this.client.request(USER_INFO);
 
-      data.userInfo = res.userInfo
+      data.userInfo = res.userInfo;
     } catch (error: any) {
       
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;

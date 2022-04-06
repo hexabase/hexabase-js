@@ -1,25 +1,25 @@
 import { createClient } from './index';
 import AuthMw from './lib/packages/middlware/auth';
-require('dotenv').config()
+require('dotenv').config();
 jest.useRealTimers();
 /**
  * Test with class Hexabase
  * @cmdruntest yarn jest src/hexabase.test.ts
  */
 
-const url = process.env.URL || ''
-let tokenClient = process.env.TOKEN || ''
-const email = process.env.EMAIL || ''
-const password = process.env.PASSWORD || ''
-const workspaceId = process.env.WORKSPACEID || ''
+const url = process.env.URL || '';
+let tokenClient = process.env.TOKEN || '';
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
+const workspaceId = process.env.WORKSPACEID || '';
 
 
 beforeAll( async () => {
-  if(email && password) {
+  if (email && password) {
     console.log('email, password', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    if (token) {
       return tokenClient = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -36,7 +36,7 @@ describe('Hexabase', () => {
 
       console.log('Test: class auth');
       const {userInfo, error} = await hexabase.auth.userInfoAsync();
-      if(userInfo) {
+      if (userInfo) {
 
         console.log('userInfo', userInfo);
         expect(typeof userInfo.email).toBe('string');
@@ -54,7 +54,7 @@ describe('Hexabase', () => {
 
       console.log('Test: class application');
       const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(workspaceId);
-      if(appAndDs) {
+      if (appAndDs) {
 
         console.log('appAndDs', appAndDs);
         expect(typeof appAndDs[0].name).toBe('string');

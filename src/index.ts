@@ -17,7 +17,7 @@ const createClient = async ({ url, token, email, password }: HexabaseConfig): Pr
 
   if (email && password && !token) {
     const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    if (token) {
       tokenHx = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);

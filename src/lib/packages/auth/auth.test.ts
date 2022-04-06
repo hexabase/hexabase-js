@@ -8,14 +8,14 @@ require('dotenv').config();
 
 const url = process.env.URL || '';
 let tokenAu = process.env.TOKEN || '';
-const email = process.env.EMAIL || ''
-const password = process.env.PASSWORD || ''
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
 beforeAll( async () => {
-  if(email && password) {
+  if (email && password) {
     console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    if (token) {
       return tokenAu = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -32,7 +32,7 @@ describe('Auth', () => {
       const {userInfo, error} = await auth.userInfoAsync();
 
       // expect response
-      if(userInfo) {
+      if (userInfo) {
         console.log('user: ', userInfo);
 
         expect(typeof userInfo.username).toBe('string');
@@ -41,10 +41,9 @@ describe('Auth', () => {
         expect(typeof userInfo.u_id).toBe('string');
         expect(typeof userInfo.current_workspace_id).toBe('string');
         expect(typeof userInfo.is_ws_admin).toBe('string');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
-     
     });
   });
 });

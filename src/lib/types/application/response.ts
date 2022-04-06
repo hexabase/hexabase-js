@@ -24,8 +24,8 @@ export interface DtCreateApp {
 
 /** Response */
 export interface AppAndDsRes {
-  appAndDs?: [ApplicationAndDataStore]
-  error?: string
+  appAndDs?: [ApplicationAndDataStore];
+  error?: string;
 }
 
 export interface CreateAppRes {

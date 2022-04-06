@@ -47,16 +47,16 @@ export default class Workspace extends HxbAbstract {
     let data: WorkspacesRes = {
       workspaces: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtWorkspaces= await this.client.request(WORKSPACES);
-      data.workspaces = res.workspaces
+      data.workspaces = res.workspaces;
     } catch(error: any) {
       console.log('error', error)
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -70,15 +70,15 @@ export default class Workspace extends HxbAbstract {
     let data: WorkspaceCurrentRes = {
       wsCurrent: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtWorkspaceCurrent = await this.client.request(WORKSPACE_CURRENT);
-      data.wsCurrent = res.workspaceCurrent
+      data.wsCurrent = res.workspaceCurrent;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -92,15 +92,15 @@ export default class Workspace extends HxbAbstract {
     let data: WsPasswordPolicyRes = {
       wsPasswordPolicy: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtWsPasswordPolicy = await this.client.request(WORKSPACE_PASSWORD_POLICY, {workingspaceId});
-      data.wsPasswordPolicy = res.workspacePasswordPolicy
+      data.wsPasswordPolicy = res.workspacePasswordPolicy;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -114,16 +114,16 @@ export default class Workspace extends HxbAbstract {
     let data: WsFunctionalityRes = {
       wsFunctionality: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtWsFunctionality = await this.client.request(WORKSPACE_FUNCTIONALITY, {workingspaceId});
       
-      data.wsFunctionality = res.workspaceFunctionality
+      data.wsFunctionality = res.workspaceFunctionality;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -137,16 +137,16 @@ export default class Workspace extends HxbAbstract {
     let data: WsUsageRes = {
       wsUsage: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtWsUsage = await this.client.request(WORKSPACE_USAGE, {workingspaceId});
       
-      data.wsUsage = res.workspaceUsage
+      data.wsUsage = res.workspaceUsage;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -166,10 +166,10 @@ export default class Workspace extends HxbAbstract {
     try {
       const res: DtWsGroupChildren = await this.client.request(WORKSPACE_GROUP_CHILDREN, {workingspaceId});
       
-      data.wsGroupChildren = res.workspaceGetGroupChildren
+      data.wsGroupChildren = res.workspaceGetGroupChildren;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -184,16 +184,16 @@ export default class Workspace extends HxbAbstract {
     let data: TaskQueueListRes = {
       taskQueueList: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtTaskQueueList = await this.client.request(TASK_QUEUE_LIST, {workspaceId, queryTaskList});
       
-      data.taskQueueList = res.taskGetQueueList
+      data.taskQueueList = res.taskGetQueueList;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -208,16 +208,16 @@ export default class Workspace extends HxbAbstract {
     let data: TaskQueueStatusRes = {
       taskQueueStatus: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtTaskQueueStatus = await this.client.request(TASK_QUEUE_STATUS,{taskId, workspaceId});
       
-      data.taskQueueStatus = res.taskGetQueueTaskStatus
+      data.taskQueueStatus = res.taskGetQueueTaskStatus;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -232,16 +232,16 @@ export default class Workspace extends HxbAbstract {
     let data: WorkspaceIDRes = {
       w_id: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtWorkspaceID = await this.client.request(CREATE_WORKSPACE,{createWorkSpaceInput});
       
-      data.w_id = res.createWorkspace?.w_id
+      data.w_id = res.createWorkspace?.w_id;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -256,16 +256,16 @@ export default class Workspace extends HxbAbstract {
     let data: ModelRes = {
       data: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtCurrentWs = await this.client.request(SET_CURRENT_WORKSPACE,{setCurrentWorkSpaceInput});
       
-      data.data = res.setCurrentWorkSpace
+      data.data = res.setCurrentWorkSpace;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;

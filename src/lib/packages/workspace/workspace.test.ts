@@ -10,25 +10,25 @@ const url = process.env.URL || '';
 let tokenWs = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const taskId = process.env.TASKID || '';
-const email = process.env.EMAIL || ''
-const password = process.env.PASSWORD || ''
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
 
 // local variable in file for testing
 const createWorkSpaceInput = {
   name: 'new Workspace'
-}
+};
 const setCurrentWorkSpaceInput = {
   workspace_id: '624bc3cfa72c942744ee6635'
-}
+};
 
 
 /** run first testing  */
 beforeAll( async () => {
-  if(email && password) {
+  if (email && password) {
     console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    if (token) {
       return tokenWs = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -37,43 +37,41 @@ beforeAll( async () => {
 });
 
 describe('Workspace', () => {
-  
+
   // testing get all workspaces
   describe('#createWorkspaceAsync()', () => {
     it('should create workspace', async () => {
       jest.useFakeTimers('legacy');
 
       const workspace = new Workspace(url, tokenWs);
-      
       const {w_id, error} = await workspace.createWorkspaceAsync(createWorkSpaceInput);
 
       // expect response
-      if(w_id) {
+      if (w_id) {
         console.log('workspaces created', w_id);
 
         expect(typeof w_id).toBe('string');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });
   });
-  
+
   // testing get all workspaces
   describe('#setCurrentWsAsync()', () => {
     it('should set current workspace', async () => {
       jest.useFakeTimers('legacy');
 
       const workspace = new Workspace(url, tokenWs);
-      
       const {data, error} = await workspace.setCurrentWsAsync(setCurrentWorkSpaceInput);
 
       // expect response
-      if(data) {
+      if (data) {
         console.log('set workspace current: ', data);
 
         expect(typeof data.success).toBe('boolean');
         expect(typeof data.data).toBe('object');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });
@@ -88,13 +86,13 @@ describe('Workspace', () => {
       const {workspaces, error} = await workspace.workspacesAsync();
 
       // expect response
-      if(workspaces) {
+      if (workspaces) {
         console.log('workspaces', workspaces);
 
         expect(typeof workspaces.current_workspace_id).toBe('string');
         expect(typeof workspaces.workspaces[0].workspace_name).toBe('string');
         expect(typeof workspaces.workspaces[0].workspace_id).toBe('string');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });
@@ -106,13 +104,13 @@ describe('Workspace', () => {
 
   //     const workspace = new Workspace(url, tokenWs);
   //     const {wsCurrent, error} = await workspace.wsCurrentAsync();
-      
+
   //     // expect response
-  //     if(wsCurrent) {
+  //     if (wsCurrent) {
   //       console.log('wsCurrent', wsCurrent);
 
   //       expect(typeof wsCurrent.workspace_id).toBe('string');
-  //     }else{
+  //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
   //   });
@@ -126,12 +124,12 @@ describe('Workspace', () => {
   //     const {wsPasswordPolicy, error} = await workspace.wsPasswordPolicyAsync(workspaceId);
 
   //     // expect response
-  //     if(wsPasswordPolicy) {
+  //     if (wsPasswordPolicy) {
   //       console.log('wsPasswordPolicy', wsPasswordPolicy);
-        
+
   //       expect(typeof wsPasswordPolicy.expired_day).toBe('number');
   //       expect(typeof wsPasswordPolicy.use_expired_day).toBe('boolean');
-  //     }else{
+  //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
   //   });
@@ -145,9 +143,9 @@ describe('Workspace', () => {
   //     const {wsFunctionality, error} = await workspace.wsFunctionalityAsync(workspaceId);
 
   //     // expect response
-  //     if(wsFunctionality) {
+  //     if (wsFunctionality) {
   //       console.log('wsFunctionality: ', wsFunctionality);
-        
+
   //       expect(typeof wsFunctionality.w_id).toBe('string');
   //     } else {
   //       throw new Error(`Error: ${error}`);
@@ -163,12 +161,12 @@ describe('Workspace', () => {
   //     const {wsUsage, error} = await workspace.wsUsageAsync(workspaceId);
 
   //     // expect response
-  //     if(wsUsage) {
+  //     if (wsUsage) {
   //       console.log('wsUsage: ', wsUsage);
-        
+
   //       expect(typeof wsUsage.w_id).toBe('string');
   //       expect(typeof wsUsage.usage?.datastores).toBe('number');
-  //     }else{
+  //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
   //   });
@@ -182,7 +180,7 @@ describe('Workspace', () => {
   //     const {wsGroupChildren, error} = await workspace.wsGroupChildrenAsync(workspaceId);
 
   //     // expect response
-  //     if(wsGroupChildren) {
+  //     if (wsGroupChildren) {
   //       console.log('wsGroupChildren: ', wsGroupChildren);
 
   //       expect(typeof wsGroupChildren.error).toBe('string');
@@ -201,10 +199,10 @@ describe('Workspace', () => {
   //     const {taskQueueList, error} = await workspace.taskQueueListAsync();
 
   //     // expect response
-  //     if(taskQueueList) {
+  //     if (taskQueueList) {
   //       console.log('taskQueueList: ', taskQueueList);
   //       expect(typeof taskQueueList).toBe('object');
-        
+
   //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
@@ -219,13 +217,13 @@ describe('Workspace', () => {
   //     const {taskQueueStatus, error} = await workspace.taskQueueStatusAsync(taskId, workspaceId);
 
   //     // expect response
-  //     if(taskQueueStatus) {
+  //     if (taskQueueStatus) {
   //       console.log('taskQueueStatus: ', taskQueueStatus);
 
   //       expect(typeof taskQueueStatus.qt_id).toBe('string');
   //       expect(typeof taskQueueStatus.category).toBe('string');
   //       expect(typeof taskQueueStatus.created_at).toBe('string');
-  //     }else{
+  //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
   //   });

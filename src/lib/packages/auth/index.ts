@@ -12,19 +12,18 @@ export default class Auth extends HxbAbstract {
     let data: UserInfoRes = {
       userInfo: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
-      const res: DtUserInfo= await this.client.request(USER_INFO);
+      const res: DtUserInfo = await this.client.request(USER_INFO);
 
-      data.userInfo = res.userInfo
-    } catch(error: any) {
+      data.userInfo = res.userInfo;
+    } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
   }
-
 }

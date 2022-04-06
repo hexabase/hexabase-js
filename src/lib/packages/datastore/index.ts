@@ -51,16 +51,16 @@ export default class Datastore extends HxbAbstract {
     let data: DsActionRes = {
       dsActions: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtDsActions = await this.client.request(DS_ACTIONS, { datastoreId });
 
-      data.dsActions = res.datastoreGetActions
+      data.dsActions = res.datastoreGetActions;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -75,16 +75,16 @@ export default class Datastore extends HxbAbstract {
     let data: DsStatusRes = {
       dsStatuses: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtDsStatus = await this.client.request(DS_STATUS, { datastoreId });
 
-      data.dsStatuses = res.datastoreGetStatuses
+      data.dsStatuses = res.datastoreGetStatuses;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -99,16 +99,16 @@ export default class Datastore extends HxbAbstract {
     let data: DsActionSettingRes = {
       dsActionSettings: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtDsActionSetting = await this.client.request(DS_ACTION_SETTING, { actionId, datastoreId });
 
-      data.dsActionSettings = res.datastoreGetActionSetting
+      data.dsActionSettings = res.datastoreGetActionSetting;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;

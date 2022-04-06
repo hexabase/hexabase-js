@@ -1,7 +1,7 @@
 export interface QueryTaskList {
   all?: string;
   category?: string;
-  stream_id?: string
+  stream_id?: string;
 }
 export interface CreateWsInput {
   name: string;

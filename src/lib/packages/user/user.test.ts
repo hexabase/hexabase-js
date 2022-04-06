@@ -9,15 +9,15 @@ require('dotenv').config();
 const url = process.env.URL || '';
 let tokenUs = process.env.TOKEN || '';
 const confirmationId = process.env.CONFIRMATIONID || '';
-const email = process.env.EMAIL || ''
-const password = process.env.PASSWORD || ''
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
 
 beforeAll( async () => {
   if(email && password) {
     console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
-    if(token){
+    if (token) {
       return tokenUs = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -55,11 +55,11 @@ describe('User', () => {
       const {userPassEx, error} = await user.userPasswordExAsync();
 
       // expect response respUserPasswordEx
-      if(userPassEx) {
+      if (userPassEx) {
         console.log('userPassEx: ', userPassEx);
         
         expect(typeof userPassEx.is_expired).toBe('boolean');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });

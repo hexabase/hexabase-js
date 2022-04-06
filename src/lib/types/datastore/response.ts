@@ -67,19 +67,19 @@ export interface DtDsFieldSettings {
 }
 
 export interface DtDsActions {
-  datastoreGetActions: [DsAction]
+  datastoreGetActions: [DsAction];
 }
 
 export interface DtDsActionSetting {
-  datastoreGetActionSetting: DsActionSetting
+  datastoreGetActionSetting: DsActionSetting;
 }
 
 export interface DtDsStatus {
-  datastoreGetStatuses: [DsStatus]
+  datastoreGetStatuses: [DsStatus];
 }
 
 
-/**export response */
+/** export response */
 export interface DsFieldSettingsRes {
   dsFieldSettings?: DsFieldSettings;
   error?: string;

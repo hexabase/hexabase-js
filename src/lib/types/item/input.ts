@@ -38,6 +38,33 @@ export interface GetItemsPl {
   debug_query?: boolean;
 }
 
-// export interface GetItemsPl {
-//   getItemsParameters: GetItemsPrs;
-// }
+export interface GetHistoryPl {
+  from_index?: number;
+  to_index?: number;
+  from_datetime?: Date;
+  to_datetime?: Date;
+  exclude_action_history?: boolean;
+  exclude_comment_history?: boolean;
+}
+
+export interface FieldAccessKeyUpdates {
+  overwrite?: boolean;
+  ignore_action_settings?: boolean;
+  apply_related_ds?: boolean;
+  Groups_to_publish?: any;
+  roles_to_publish?: any;
+  users_to_publish?: any;
+}
+
+export interface CreateNewItemPl {
+  action_id?: string;
+  item: any;
+  use_display_id?: boolean;
+  is_notify_to_sender?: boolean;
+  return_item_result?: boolean;
+  ensure_transaction?: boolean;
+  exec_children_post_procs?: boolean;
+  as_params?: any;
+  related_ds_items?: any;
+  access_key_updates?: FieldAccessKeyUpdates;
+}

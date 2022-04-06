@@ -23,16 +23,16 @@ export default class User extends HxbAbstract {
     let data: UserRegisterRes = {
       userRegister: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtUserRegister = await this.client.request(USER_REGISTER, { confirmationId });
 
-      data.userRegister = res.userRegister
+      data.userRegister = res.userRegister;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -46,16 +46,16 @@ export default class User extends HxbAbstract {
     let data: UserPassExRes = {
       userPassEx: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtUserPassEx = await this.client.request(USER_PASSWORD_EXPIRY);
 
-      data.userPassEx = res.userPasswordExpiry
+      data.userPassEx = res.userPasswordExpiry;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -70,16 +70,16 @@ export default class User extends HxbAbstract {
     let data: UserConfirmRes = {
       userConfirm: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtUserConfirm = await this.client.request(USER_CONFIRMATIONS, { confirmationId });
 
-      data.userConfirm = res.userConfirmations
+      data.userConfirm = res.userConfirmations;
     } catch(error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;

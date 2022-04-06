@@ -18,7 +18,7 @@ export interface FieldNameENJP {
 
 export interface ResponseOkModel {
   success: boolean;
-  data: string
+  data: string;
 }
 
 export interface ModelRes {

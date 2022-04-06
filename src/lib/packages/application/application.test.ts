@@ -9,8 +9,8 @@ require('dotenv').config();
 const url = process.env.URL || '';
 let tokenApp = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
-const email = process.env.EMAIL || ''
-const password = process.env.PASSWORD || ''
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
 
 // local variable in file for testing
 const createProjectParams = {
@@ -19,7 +19,7 @@ const createProjectParams = {
     en: 'EN Project',
     ja: 'JA Project',
   }
-}
+};
 
 beforeAll(async () => {
   if (email && password) {
@@ -43,7 +43,7 @@ describe('Application', () => {
 
       const { appAndDs, error } = await application.getAppAndDsAsync(workspaceId);
       if (appAndDs) {
-        console.log('appAndDs: ', appAndDs)
+        console.log('appAndDs: ', appAndDs);
 
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
@@ -63,7 +63,7 @@ describe('Application', () => {
 
       const { app, error } = await application.createAppAsync(createProjectParams);
       if (app) {
-        console.log('application after created: ', app)
+        console.log('application after created: ', app);
 
         expect(typeof app.project_id).toBe('string');
       }
