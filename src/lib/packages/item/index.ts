@@ -2,7 +2,7 @@ import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
   CREATE_NEW_ITEM,
-  DS_ITEMS, ITEM_HISTORIES
+  DS_ITEMS, ITEM_HISTORIES, ITEM_LINKED
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -11,10 +11,12 @@ import {
   DtDsItems,
   DtItemHistories,
   DtItemIdCreated,
+  DtItemLinked,
   DtNewItem,
   GetHistoryPl,
   GetItemsPl,
   ItemHistoriesRes,
+  ItemLinkedRes,
   NewItemRes
 } from '../../types/item';
 
@@ -115,5 +117,30 @@ export default class Item extends HxbAbstract {
 
     return data;
   }
+
+  /**
+   * function getItemRelated: get item related in datastore
+   * @params datastoreId, itemId and linkedDatastoreId is requirement
+   * @returns ItemLinkedRes
+   */
+   async getItemRelated( datastoreId: string, itemId:string, linkedDatastoreId: string): Promise<ItemLinkedRes> {
+    let data: ItemLinkedRes = {
+      itemLinked: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtItemLinked = await this.client.request(ITEM_LINKED, {datastoreId, itemId, linkedDatastoreId});
+
+      data.itemLinked = res.datastoreGetLinkedItems
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
 }
 

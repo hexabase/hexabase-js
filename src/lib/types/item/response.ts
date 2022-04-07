@@ -1,3 +1,4 @@
+import {FieldNameENJP} from '../../util/type'
 export interface DsItems {
   items: any;
   totalItems: number;
@@ -51,6 +52,69 @@ export interface ItemNew {
   item: any;
   item_id: string;
 }
+export interface ActionScript {
+  lang: string;
+  enabled: boolean;
+  script: string;
+}
+
+export interface ActionField {
+  ID?: string;
+  a_id?: string;
+  display_id?: string;
+  w_id?: string;
+  p_id?: string;
+  d_id?: string;
+  name?: string;
+  status_id?: string;
+  is_status_action?: boolean;
+  display_order?: number;
+  description?: string;
+  show_in_home?: boolean;
+  pin_by_default?: boolean;
+  search_keys?: string;
+  operation?: string;
+  set_status?: string;
+  send_mail?: boolean;
+  isOwnedBySystem?: boolean;
+  AccessKeys?: any;
+  action_script?: ActionScript;
+  CreatedAt?: string;
+  UpdatedAt?: string;
+}
+
+export interface FieldSettings {
+  id?: string;
+  f_id?: string;
+  w_id?: string;
+  p_id?: string;
+  d_id?: string;
+  field_csv_name?: string;
+  display_name?: string;
+  name?: FieldNameENJP;
+  display_id?: string;
+  dataType?: string;
+  search?: boolean;
+  show_list?: boolean;
+  as_title?: boolean;
+  status?: boolean;
+  fieldIndex?: number;
+  title_order?: number;
+  full_text?: boolean;
+  unique?: boolean;
+  min_value?: string;
+  max_value?: string;
+  hideOnInput?: boolean;
+  hide_from_api?: boolean;
+  has_index?: boolean;
+}
+export interface ItemLinked {
+  items?: any;
+  datastore_id: string;
+  stateflowActions?: ActionField;
+  fields?: FieldSettings;
+  column_settings: any;
+}
 
 /** Data response from request graphql */
 export interface DtDsItems {
@@ -64,6 +128,9 @@ export interface DtItemIdCreated {
 }
 export interface DtNewItem {
   datastoreCreateNewItem: ItemNew;
+}
+export interface DtItemLinked {
+  datastoreGetLinkedItems: ItemLinked;
 }
 
 /** export response */
@@ -81,5 +148,10 @@ export interface CreatedItemIdRes {
 }
 export interface NewItemRes {
   itemNew?: ItemNew;
+  error?: string;
+}
+
+export interface ItemLinkedRes {
+  itemLinked?: ItemLinked;
   error?: string;
 }
