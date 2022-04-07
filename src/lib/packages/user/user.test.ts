@@ -56,7 +56,7 @@ describe('User', () => {
 
       // expect response respUserPasswordEx
       if (userPassEx) {
-        console.log('userPassEx: ', userPassEx);
+        // console.log('userPassEx: ', userPassEx);
         
         expect(typeof userPassEx.is_expired).toBe('boolean');
       } else {

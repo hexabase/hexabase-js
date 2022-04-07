@@ -48,7 +48,7 @@ describe('Workspace', () => {
 
       // expect response
       if (w_id) {
-        console.log('workspaces created', w_id);
+        // console.log('workspaces created', w_id);
 
         expect(typeof w_id).toBe('string');
       } else {
@@ -67,7 +67,7 @@ describe('Workspace', () => {
 
       // expect response
       if (data) {
-        console.log('set workspace current: ', data);
+        // console.log('set workspace current: ', data);
 
         expect(typeof data.success).toBe('boolean');
         expect(typeof data.data).toBe('object');
@@ -87,7 +87,7 @@ describe('Workspace', () => {
 
       // expect response
       if (workspaces) {
-        console.log('workspaces', workspaces);
+        // console.log('workspaces', workspaces);
 
         expect(typeof workspaces.current_workspace_id).toBe('string');
         expect(typeof workspaces.workspaces[0].workspace_name).toBe('string');
@@ -107,7 +107,7 @@ describe('Workspace', () => {
 
   //     // expect response
   //     if (wsCurrent) {
-  //       console.log('wsCurrent', wsCurrent);
+  //       // console.log('wsCurrent', wsCurrent);
 
   //       expect(typeof wsCurrent.workspace_id).toBe('string');
   //     } else {
@@ -125,7 +125,7 @@ describe('Workspace', () => {
 
   //     // expect response
   //     if (wsPasswordPolicy) {
-  //       console.log('wsPasswordPolicy', wsPasswordPolicy);
+  //       // console.log('wsPasswordPolicy', wsPasswordPolicy);
 
   //       expect(typeof wsPasswordPolicy.expired_day).toBe('number');
   //       expect(typeof wsPasswordPolicy.use_expired_day).toBe('boolean');
@@ -144,7 +144,7 @@ describe('Workspace', () => {
 
   //     // expect response
   //     if (wsFunctionality) {
-  //       console.log('wsFunctionality: ', wsFunctionality);
+  //       // console.log('wsFunctionality: ', wsFunctionality);
 
   //       expect(typeof wsFunctionality.w_id).toBe('string');
   //     } else {
@@ -162,7 +162,7 @@ describe('Workspace', () => {
 
   //     // expect response
   //     if (wsUsage) {
-  //       console.log('wsUsage: ', wsUsage);
+  //       // console.log('wsUsage: ', wsUsage);
 
   //       expect(typeof wsUsage.w_id).toBe('string');
   //       expect(typeof wsUsage.usage?.datastores).toBe('number');
@@ -181,7 +181,7 @@ describe('Workspace', () => {
 
   //     // expect response
   //     if (wsGroupChildren) {
-  //       console.log('wsGroupChildren: ', wsGroupChildren);
+  //       // console.log('wsGroupChildren: ', wsGroupChildren);
 
   //       expect(typeof wsGroupChildren.error).toBe('string');
   //       expect(typeof wsGroupChildren.count).toBe('number');
@@ -200,7 +200,7 @@ describe('Workspace', () => {
 
   //     // expect response
   //     if (taskQueueList) {
-  //       console.log('taskQueueList: ', taskQueueList);
+  //       // console.log('taskQueueList: ', taskQueueList);
   //       expect(typeof taskQueueList).toBe('object');
 
   //     } else {

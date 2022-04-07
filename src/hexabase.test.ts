@@ -38,7 +38,7 @@ describe('Hexabase', () => {
       const {userInfo, error} = await hexabase.auth.userInfoAsync();
       if (userInfo) {
 
-        console.log('userInfo', userInfo);
+        // console.log('userInfo', userInfo);
         expect(typeof userInfo.email).toBe('string');
         expect(typeof userInfo.current_workspace_id).toBe('string');
         expect(typeof userInfo.profile_pic).toBe('string');
@@ -56,7 +56,7 @@ describe('Hexabase', () => {
       const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(workspaceId);
       if (appAndDs) {
 
-        console.log('appAndDs', appAndDs);
+        // console.log('appAndDs', appAndDs);
         expect(typeof appAndDs[0].name).toBe('string');
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].display_id).toBe('string');
