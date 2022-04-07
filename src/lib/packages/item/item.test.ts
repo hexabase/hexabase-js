@@ -59,76 +59,76 @@ beforeAll( async () => {
 });
 
 describe('Item', () => {
-  // describe('#getItemsAsync()', () => {
-  //   it('should get items in Ds', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenDs);
+  describe('#getItemsAsync()', () => {
+    it('should get items in Ds', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
 
-  //     const {dsItems, error} = await item.getItemsAsync(getItemsParameters, datastoreId, applicationId);
+      const {dsItems, error} = await item.getItemsAsync(getItemsParameters, datastoreId, applicationId);
 
-  //     // expect response
-  //     if (dsItems) {
-  //       console.log('Items in Datastore: ', dsItems);
+      // expect response
+      if (dsItems) {
+        console.log('Items in Datastore: ', dsItems);
 
-  //       expect(typeof dsItems.totalItems).toBe('number');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof dsItems.totalItems).toBe('number');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#getItemsHistories()', () => {
-  //   it('should get items histories', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenDs);
+  describe('#getItemsHistories()', () => {
+    it('should get items histories', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
 
-  //     const {itemHistories, error} = await item.getItemsHistories(applicationId, datastoreId, itemId, historyParams);
+      const {itemHistories, error} = await item.getItemsHistories(applicationId, datastoreId, itemId, historyParams);
 
-  //     // expect response
-  //     if (itemHistories) {
-  //       console.log('Histories in Datastore: ', itemHistories);
+      // expect response
+      if (itemHistories) {
+        console.log('Histories in Datastore: ', itemHistories);
 
-  //       expect(typeof itemHistories.unread).toBe('number');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof itemHistories.unread).toBe('number');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#createItemId()', () => {
-  //   it('should create new item id', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenDs);
-  //     const {item_id, error} = await item.createItemId(datastoreId);
+  describe('#createItemId()', () => {
+    it('should create new item id', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const {item_id, error} = await item.createItemId(datastoreId);
 
-  //     // expect response
-  //     if (item_id) {
-  //       console.log('Item_id created in Datastore: ', item_id);
+      // expect response
+      if (item_id) {
+        console.log('Item_id created in Datastore: ', item_id);
 
-  //       expect(typeof item_id).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof item_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#createItemId()', () => {
-  //   it('should create new items', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenDs);
-  //     const {itemNew, error} = await item.createNewItem(applicationId, datastoreId, newItemActionParameters);
+  describe('#createItemId()', () => {
+    it('should create new items', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const {itemNew, error} = await item.createNewItem(applicationId, datastoreId, newItemActionParameters);
 
-  //     // expect response
-  //     if (itemNew) {
-  //       console.log('new Item created: ', itemNew);
+      // expect response
+      if (itemNew) {
+        console.log('new Item created: ', itemNew);
 
-  //       expect(typeof itemNew.history_id).toBe('string');
-  //       expect(typeof itemNew.item_id).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof itemNew.history_id).toBe('string');
+        expect(typeof itemNew.item_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
   describe('#getItemRelated()', () => {
     it('should get item related in datastore', async () => {
@@ -137,7 +137,7 @@ describe('Item', () => {
       const {itemLinked, error} = await item.getItemRelated(datastoreId, itemId, datastoreId);
 
       // expect response
-      if (itemLinked) {
+      if (itemLinked) { 
         console.log('Item related: ', itemLinked);
 
         expect(typeof itemLinked.datastore_id).toBe('string');
