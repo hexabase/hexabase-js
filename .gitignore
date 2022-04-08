@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 dist
 node_modules/
 .env
+=======
+/node_modules
+dist/auth/
+dist/
+>>>>>>> 884ee0ffa2356236b263a6e299683c5b9761755c
