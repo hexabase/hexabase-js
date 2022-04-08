@@ -40,10 +40,10 @@ import {
 export default class Workspace extends HxbAbstract {
 
   /**
-   * function workspacesAsync: get workspaces and current workspace id
+   * function getWorkspacesAsync: get workspaces and current workspace id
    * @returns WorkspacesRes
    */
-  async workspacesAsync(): Promise<WorkspacesRes> {
+  async getWorkspacesAsync(): Promise<WorkspacesRes> {
     let data: WorkspacesRes = {
       workspaces: undefined,
       error: undefined,
@@ -63,10 +63,10 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
-   * function wsCurrentAsync: get workspaces id current
+   * function getCurrentWorkspaceAsync: get workspaces id current
    * @returns WorkspaceCurrentRes
    */
-  async wsCurrentAsync(): Promise<WorkspaceCurrentRes> {
+  async getCurrentWorkspaceAsync(): Promise<WorkspaceCurrentRes> {
     let data: WorkspaceCurrentRes = {
       wsCurrent: undefined,
       error: undefined,
@@ -85,10 +85,10 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
-   * function wsPasswordPolicyAsync: get workspace password policy
+   * function getPasswordPolicyAsync: get workspace password policy
    * @returns WsPasswordPolicyRes
    */
-  async wsPasswordPolicyAsync(workingspaceId: string): Promise<WsPasswordPolicyRes> {
+  async getPasswordPolicyAsync(workingspaceId: string): Promise<WsPasswordPolicyRes> {
     let data: WsPasswordPolicyRes = {
       wsPasswordPolicy: undefined,
       error: undefined,
@@ -107,10 +107,10 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
-   * function wsFunctionalityAsync: get workspace functionlity
+   * function getFunctionalityAsync: get workspace functionlity
    * @returns WsFunctionalityRes
    */
-  async wsFunctionalityAsync(workingspaceId: string): Promise<WsFunctionalityRes> {
+  async getFunctionalityAsync(workingspaceId: string): Promise<WsFunctionalityRes> {
     let data: WsFunctionalityRes = {
       wsFunctionality: undefined,
       error: undefined,
@@ -130,10 +130,10 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
-   * function wsUsageAsync: get workspace usage
+   * function getUsageAsync: get workspace usage
    * @returns WsUsageRes
    */
-  async wsUsageAsync(workingspaceId: string): Promise<WsUsageRes> {
+  async getUsageAsync(workingspaceId: string): Promise<WsUsageRes> {
     let data: WsUsageRes = {
       wsUsage: undefined,
       error: undefined,
@@ -153,10 +153,10 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
-   * function wsGroupChildrenAsync: get workspace childrent in group
+   * function getGroupChildrenAsync: get workspace childrent in group
    * @returns WsGroupChildrenRes
    */
-  async wsGroupChildrenAsync(workingspaceId: string): Promise<WsGroupChildrenRes> {
+  async getGroupChildrenAsync(workingspaceId: string): Promise<WsGroupChildrenRes> {
     let data: WsGroupChildrenRes = {
       wsGroupChildren: undefined,
       error: undefined,
@@ -180,7 +180,7 @@ export default class Workspace extends HxbAbstract {
    * @param: option: workspaceId or none, queryTaskList or none
    * @returns TaskGetQueueListRes
    */
-  async taskQueueListAsync(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskQueueListRes> {
+  async getTaskQueueListAsync(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskQueueListRes> {
     let data: TaskQueueListRes = {
       taskQueueList: undefined,
       error: undefined,
@@ -204,7 +204,7 @@ export default class Workspace extends HxbAbstract {
    * @param: option: taskId and workspaceId are required
    * @returns TaskQueueStatusRes
    */
-  async taskQueueStatusAsync(taskId: string, workspaceId: string): Promise<TaskQueueStatusRes> {
+  async getTaskQueueStatusAsync(taskId: string, workspaceId: string): Promise<TaskQueueStatusRes> {
     let data: TaskQueueStatusRes = {
       taskQueueStatus: undefined,
       error: undefined,

@@ -28,12 +28,12 @@ beforeAll( async () => {
 });
 
 describe('Datastore', () => {
-  describe('#dsFieldSettingsAsync()', () => {
+  describe('#getFieldSettingsAsync()', () => {
     it('should get field setting in Ds', async () => {
       jest.useFakeTimers('legacy');
       const datastore = new Datastore(url, tokenDs);
 
-      const {dsFieldSettings, error} = await datastore.dsFieldSettingsAsync('', datastoreId);
+      const {dsFieldSettings, error} = await datastore.getFieldSettingsAsync('', datastoreId);
 
       // expect response
       if(dsFieldSettings && dsFieldSettings.workspace_id) {
@@ -50,12 +50,12 @@ describe('Datastore', () => {
     });
   });
 
-  describe('#dsActions()', () => {
+  describe('#getActionsAsync()', () => {
     it('should get actions in Ds', async () => {
       jest.useFakeTimers('legacy');
       const datastore = new Datastore(url, tokenDs);
 
-      const {dsActions, error} = await datastore.dsActionsAsync(datastoreId);
+      const {dsActions, error} = await datastore.getActionsAsync(datastoreId);
 
       // expect response
       if (dsActions) {
@@ -68,12 +68,13 @@ describe('Datastore', () => {
       }
     });
   });
-  describe('#dsStatusAsync()', () => {
+
+  describe('#getStatusesAsync()', () => {
     it('should get status in Ds', async () => {
       jest.useFakeTimers('legacy');
       const datastore = new Datastore(url, tokenDs);
 
-      const {dsStatuses, error} = await datastore.dsStatusAsync(datastoreId);
+      const {dsStatuses, error} = await datastore.getStatusesAsync(datastoreId);
 
       // expect response
       if (dsStatuses) {

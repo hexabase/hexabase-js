@@ -78,12 +78,12 @@ describe('Workspace', () => {
   });
 
   // testing get all workspaces
-  describe('#workspacesAsync()', () => {
+  describe('#getWorkspacesAsync()', () => {
     it('should get all workspaces', async () => {
       jest.useFakeTimers('legacy');
 
       const workspace = new Workspace(url, tokenWs);
-      const {workspaces, error} = await workspace.workspacesAsync();
+      const {workspaces, error} = await workspace.getWorkspacesAsync();
 
       // expect response
       if (workspaces) {
@@ -98,12 +98,12 @@ describe('Workspace', () => {
     });
   });
 
-  // describe('#workspacesCurrentAsync()', () => {
+  // describe('#getCurrentWorkspaceAsync()', () => {
   //   it('should get workspaces id current', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {wsCurrent, error} = await workspace.wsCurrentAsync();
+  //     const {wsCurrent, error} = await workspace.getCurrentWorkspaceAsync();
 
   //     // expect response
   //     if (wsCurrent) {
@@ -116,12 +116,12 @@ describe('Workspace', () => {
   //   });
   // });
 
-  // describe('#wsPasswordPolicyAsync()', () => {
+  // describe('#getPasswordPolicyAsync()', () => {
   //   it('should get workspace password policy', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {wsPasswordPolicy, error} = await workspace.wsPasswordPolicyAsync(workspaceId);
+  //     const {wsPasswordPolicy, error} = await workspace.getPasswordPolicyAsync(workspaceId);
 
   //     // expect response
   //     if (wsPasswordPolicy) {
@@ -135,12 +135,12 @@ describe('Workspace', () => {
   //   });
   // });
 
-  // describe('#wsFunctionalityAsync()', () => {
+  // describe('#getFunctionalityAsync()', () => {
   //   it('should get workspace functionlity', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {wsFunctionality, error} = await workspace.wsFunctionalityAsync(workspaceId);
+  //     const {wsFunctionality, error} = await workspace.getFunctionalityAsync(workspaceId);
 
   //     // expect response
   //     if (wsFunctionality) {
@@ -153,12 +153,12 @@ describe('Workspace', () => {
   //   });
   // });
 
-  // describe('#wsUsageAsync()', () => {
+  // describe('#getUsageAsync()', () => {
   //   it('should get workspace usage', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {wsUsage, error} = await workspace.wsUsageAsync(workspaceId);
+  //     const {wsUsage, error} = await workspace.getUsageAsync(workspaceId);
 
   //     // expect response
   //     if (wsUsage) {
@@ -172,12 +172,12 @@ describe('Workspace', () => {
   //   });
   // });
 
-  // describe('#wsGroupChildrenAsync()', () => {
+  // describe('#getGroupChildrenAsync()', () => {
   //   it('should get workspace childrent in group', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {wsGroupChildren, error} = await workspace.wsGroupChildrenAsync(workspaceId);
+  //     const {wsGroupChildren, error} = await workspace.getGroupChildrenAsync(workspaceId);
 
   //     // expect response
   //     if (wsGroupChildren) {
@@ -191,12 +191,12 @@ describe('Workspace', () => {
   //   });
   // });
 
-  // describe('#taskQueueListAsync()', () => {
+  // describe('#getTaskQueueListAsync()', () => {
   //   it('should get queue list', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {taskQueueList, error} = await workspace.taskQueueListAsync();
+  //     const {taskQueueList, error} = await workspace.getTaskQueueListAsync();
 
   //     // expect response
   //     if (taskQueueList) {
@@ -209,12 +209,12 @@ describe('Workspace', () => {
   //   });
   // });
 
-  // describe('#taskQueueStatusAsync()', () => {
+  // describe('#getTaskQueueStatusAsync()', () => {
   //   it('should get task queue status', async () => {
   //     jest.useFakeTimers('legacy');
 
   //     const workspace = new Workspace(url, tokenWs);
-  //     const {taskQueueStatus, error} = await workspace.taskQueueStatusAsync(taskId, workspaceId);
+  //     const {taskQueueStatus, error} = await workspace.getTaskQueueStatusAsync(taskId, workspaceId);
 
   //     // expect response
   //     if (taskQueueStatus) {

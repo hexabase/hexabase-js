@@ -23,7 +23,7 @@ export default class Datastore extends HxbAbstract {
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */
-  async dsFieldSettingsAsync(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
+  async getFieldSettingsAsync(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
     let data: DsFieldSettingsRes = {
       dsFieldSettings: undefined,
       error: undefined,
@@ -47,7 +47,7 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId are requirement
    * @returns DsActionRes
    */
-  async dsActionsAsync(datastoreId: string): Promise<DsActionRes> {
+  async getActionsAsync(datastoreId: string): Promise<DsActionRes> {
     let data: DsActionRes = {
       dsActions: undefined,
       error: undefined,
@@ -71,7 +71,7 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId are requirement
    * @returns DsStatusRes
    */
-  async dsStatusAsync(datastoreId: string): Promise<DsStatusRes> {
+  async getStatusesAsync(datastoreId: string): Promise<DsStatusRes> {
     let data: DsStatusRes = {
       dsStatuses: undefined,
       error: undefined,
@@ -95,7 +95,7 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId and actionIdare requirement
    * @returns DsActionSettingRes
    */
-  async dsActionSettingAsync(datastoreId: string, actionId: string): Promise<DsActionSettingRes> {
+  async getActionSettingAsync(datastoreId: string, actionId: string): Promise<DsActionSettingRes> {
     let data: DsActionSettingRes = {
       dsActionSettings: undefined,
       error: undefined,

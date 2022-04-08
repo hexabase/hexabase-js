@@ -103,7 +103,4 @@
     - userRegisterAsync: get user register info by confirmationId
     - userPasswordExAsync: check user password is expiry
     - userConfirmAsync: get info user confirm by confirmationId
-
-
-
 ```
