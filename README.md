@@ -66,7 +66,22 @@
 
 #### functions created:
 ```bash
-  loginAsync: login with email password
+  auth
+    - userInfoAsync: get user info by token
+    - loginAsync: login with email password
+  
+  workspace
+    - setCurrentWsAsync: set workspace current with id
+    - createWorkspaceAsync: created workspace 
+    - workspacesAsync: get workspaces and current workspace id
+    - wsCurrentAsync: get workspaces id current
+    - wsPasswordPolicyAsync: get workspace password policy
+    - wsFunctionalityAsync: get workspace functionlity
+    - wsUsageAsync: get workspace usage
+    - wsGroupChildrenAsync: get workspace childrent in group
+    - taskQueueListAsync: get queue list
+    - taskQueueStatusAsync: get task queue status
+
   application
     - getAppAndDsAsync: get app and ds
     - createAppAsync: create app
@@ -89,18 +104,6 @@
     - userPasswordExAsync: check user password is expiry
     - userConfirmAsync: get info user confirm by confirmationId
 
-  workspace
-    - setCurrentWsAsync: set workspace current with id
-    - createWorkspaceAsync: created workspace 
-    - workspacesAsync: get workspaces and current workspace id
-    - wsCurrentAsync: get workspaces id current
-    - wsPasswordPolicyAsync: get workspace password policy
-    - wsFunctionalityAsync: get workspace functionlity
-    - wsUsageAsync: get workspace usage
-    - wsGroupChildrenAsync: get workspace childrent in group
-    - taskQueueListAsync: get queue list
-    - taskQueueStatusAsync: get task queue status
 
-  auth
-  userInfoAsync: get user info by token
+
 ```
