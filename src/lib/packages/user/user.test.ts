@@ -26,25 +26,24 @@ beforeAll( async () => {
 });
 // testing get user register info by confirmId
 describe('User', () => {
-  // describe('#userRegisterAsync()', () => {
-  //   it('should get user register info by confirm id without error', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const user = new User(url, tokenUs);
+  describe('#userRegisterAsync()', () => {
+    it('should get user register info by confirm id without error', async () => {
+      jest.useFakeTimers('legacy');
+      const user = new User(url, tokenUs);
 
-  //     /** check user register */
-  //     const {userRegister, error} = await user.userRegisterAsync(confirmationId);
+      /** check user register */
+      const {userRegister, error} = await user.userRegisterAsync(confirmationId);
 
-  //     // expect response respUserRegister
-  //     if(userRegister) {
-  //       console.log('userRegister: ', userRegister);
+      // expect response respUserRegister
+      if(userRegister) {
         
-  //       expect(typeof userRegister.user.id).toBe('string');
-  //       expect(typeof userRegister.user.email).toBe('string');
-  //     }else{
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof userRegister.user.id).toBe('string');
+        expect(typeof userRegister.user.email).toBe('string');
+      }else{
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
   describe('#respUserPasswordEx()', () => {
     it('should get user password expiry without error', async () => {
@@ -56,7 +55,6 @@ describe('User', () => {
 
       // expect response respUserPasswordEx
       if (userPassEx) {
-        // console.log('userPassEx: ', userPassEx);
         
         expect(typeof userPassEx.is_expired).toBe('boolean');
       } else {
@@ -65,23 +63,22 @@ describe('User', () => {
     });
   });
 
-  // describe('#userConfirmAsync()', () => {
-  //   it('should get user password expiry without error', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const user = new User(url, tokenUs);
+  describe('#userConfirmAsync()', () => {
+    it('should get user password expiry without error', async () => {
+      jest.useFakeTimers('legacy');
+      const user = new User(url, tokenUs);
 
-  //     /** check user password expiry */
-  //     const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
+      /** check user password expiry */
+      const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
 
-  //     // expect response userConfirmAsync
-  //     if(userConfirm) {
-  //       console.log('userConfirm: ', userConfirm);
+      // expect response userConfirmAsync
+      if(userConfirm) {
         
-  //       expect(typeof userConfirm.user.email).toBe('string');
-  //       expect(typeof userConfirm.user.id).toBe('string');
-  //     }else{
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof userConfirm.user.email).toBe('string');
+        expect(typeof userConfirm.user.id).toBe('string');
+      }else{
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 });

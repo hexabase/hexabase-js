@@ -33,7 +33,6 @@ describe('Auth', () => {
 
       // expect response
       if (userInfo) {
-        // console.log('user: ', userInfo);
 
         expect(typeof userInfo.username).toBe('string');
         expect(typeof userInfo.email).toBe('string');
