@@ -1,43 +1,43 @@
 {
-  "name": "hexabase-sdk",
-  "version": "0.0.22",
-  "description": "Hexabase SDK",
-  "main": "dist/index.js",
-  "files": [
-    "dist"
-  ],
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "clean": "rimraf dist/*",
-    "compile": "npx tsc -b -v",
-    "build": "npm-run-all clean compile",
-    "prepublishOnly": "npm run build",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --require mock-local-storage -r ts-node/register 'unit.tests/**/*.ts'",
-    "_gtest": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --require mock-local-storage -r ts-node/register 'unit.tests/**/*.ts' --grep"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/b-eee/hexabase-sdk.git"
-  },
-  "author": "beee-devops <devops@b-eee.com>",
+  "name": "hxb-sdk",
+  "version": "1.0.0",
+  "main": "index.js",
   "license": "MIT",
-  "homepage": "https://github.com/b-eee/hexabase-sdk#readme",
+  "scripts": {
+    "start": "yarn run serve",
+    "build": "yarn run build-ts && yarn run tslint",
+    "serve": "node dist/index.js",
+    "watch-node": "sleep 1 && nodemon dist/index.js",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "test": "yarn run test:client && yarn run test:auth && yarn run test:user && yarn run test:workspace && yarn run test:application && yarn run test:datastore",
+    "test:client": "yarn jest src/hexabase.test.ts",
+    "test:auth": "yarn jest src/lib/packages/auth/auth.test.ts",
+    "test:user": "yarn jest src/lib/packages/user/user.test.ts",
+    "test:workspace": "yarn jest src/lib/packages/workspace/workspace.test.ts",
+    "test:application": "yarn jest src/lib/packages/application/application.test.ts",
+    "test:datastore": "yarn jest src/lib/packages/datastore/datastore.test.ts",
+    "test:item": "yarn jest src/lib/packages/item/item.test.ts"
+  },
   "dependencies": {
-    "axios": "^0.20.0",
-    "jwt-decode": "^3.1.2"
+    "dotenv": "^16.0.0",
+    "graphql-request": "^4.2.0",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.6.3"
   },
   "devDependencies": {
-    "@babel/preset-react": "^7.10.4",
-    "@types/chai": "^4.2.13",
-    "@types/mocha": "^8.0.3",
-    "@types/node": "^12.12.62",
-    "chai": "^4.2.0",
-    "mocha": "^8.1.3",
-    "mock-local-storage": "^1.1.15",
-    "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
-    "ts-essentials": "^7.0.0",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.3"
+    "@types/node": "^17.0.23",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@types/jest": "^27.4.1",
+    "graphql": "^16.3.0",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "tslint": "^6.1.3",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
   }
 }
