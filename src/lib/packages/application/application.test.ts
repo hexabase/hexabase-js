@@ -43,7 +43,6 @@ describe('Application', () => {
 
       const { appAndDs, error } = await application.getAppAndDsAsync(workspaceId);
       if (appAndDs) {
-        // console.log('appAndDs: ', appAndDs);
 
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
@@ -63,7 +62,6 @@ describe('Application', () => {
 
       const { app, error } = await application.createAppAsync(createProjectParams);
       if (app) {
-        // console.log('application after created: ', app);
 
         expect(typeof app.project_id).toBe('string');
       }

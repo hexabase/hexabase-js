@@ -37,7 +37,6 @@ describe('Datastore', () => {
 
       // expect response
       if(dsFieldSettings && dsFieldSettings.workspace_id) {
-        console.log('dsFieldSettings: ', dsFieldSettings);
 
         expect(typeof dsFieldSettings.workspace_id).toBe('string');
         expect(typeof dsFieldSettings.project_id).toBe('string');
@@ -59,7 +58,6 @@ describe('Datastore', () => {
 
       // expect response
       if (dsActions) {
-        // console.log('dsActions: ', dsActions);
 
         expect(typeof dsActions[0].name).toBe('string');
         expect(typeof dsActions[0].workspace_id).toBe('string');
@@ -78,7 +76,6 @@ describe('Datastore', () => {
 
       // expect response
       if (dsStatuses) {
-        // console.log('dsStatus: ', dsStatuses);
 
         expect(typeof dsStatuses[0].display_id).toBe('string');
         expect(typeof dsStatuses[0].sort_id).toBe('number');

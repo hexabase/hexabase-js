@@ -47,7 +47,6 @@ const newItemActionParameters = {
 
 beforeAll( async () => {
   if (email && password) {
-    console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
     if (token) {
@@ -68,7 +67,6 @@ describe('Item', () => {
 
       // expect response
       if (dsItems) {
-        // console.log('Items in Datastore: ', dsItems);
 
         expect(typeof dsItems.totalItems).toBe('number');
       } else {
@@ -86,7 +84,6 @@ describe('Item', () => {
 
       // expect response
       if (itemHistories) {
-        // console.log('Histories in Datastore: ', itemHistories);
 
         expect(typeof itemHistories.unread).toBe('number');
       } else {
@@ -103,7 +100,6 @@ describe('Item', () => {
 
       // expect response
       if (item_id) {
-        // console.log('Item_id created in Datastore: ', item_id);
 
         expect(typeof item_id).toBe('string');
       } else {
@@ -120,7 +116,6 @@ describe('Item', () => {
 
       // expect response
       if (itemNew) {
-        // console.log('new Item created: ', itemNew);
 
         expect(typeof itemNew.history_id).toBe('string');
         expect(typeof itemNew.item_id).toBe('string');
@@ -138,7 +133,6 @@ describe('Item', () => {
 
       // expect response
       if (itemLinked) { 
-        // console.log('Item related: ', itemLinked);
 
         expect(typeof itemLinked.datastore_id).toBe('string');
       } else {
