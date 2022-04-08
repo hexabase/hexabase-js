@@ -70,7 +70,6 @@ export class Hexabase {
         if(respToken.token)
         {
             HxbSessionStorage.Write('token', respToken.token);
-            // console.log(`users token: ${HxbSessionStorage.Read('token')} from sessionStorage`);
         } else
         {
             console.error(`users auth could not be retrieve`)
