@@ -63,3 +63,44 @@
 
       const hexabase = Hexabase.createClient({url, token});
     ```
+
+#### functions created:
+```bash
+  loginAsync: login with email password
+  application
+    - getAppAndDsAsync: get app and ds
+    - createAppAsync: create app
+
+  datastore
+    - dsFieldSettingsAsync: get field setting in Ds
+    - dsActionsAsync: get actions in Ds
+    - dsStatusAsync: get statuses in Ds
+    - dsActionSettingAsync: get field action setting in Ds
+
+  item
+    - getItemsAsync: get items in datastore
+    - getItemsHistories: get items histories
+    - createItemId: create Itemid
+    - createNewItem: create new item
+    - getItemRelated: get item related in datastore
+
+  user
+    - userRegisterAsync: get user register info by confirmationId
+    - userPasswordExAsync: check user password is expiry
+    - userConfirmAsync: get info user confirm by confirmationId
+
+  workspace
+    - setCurrentWsAsync: set workspace current with id
+    - createWorkspaceAsync: created workspace 
+    - workspacesAsync: get workspaces and current workspace id
+    - wsCurrentAsync: get workspaces id current
+    - wsPasswordPolicyAsync: get workspace password policy
+    - wsFunctionalityAsync: get workspace functionlity
+    - wsUsageAsync: get workspace usage
+    - wsGroupChildrenAsync: get workspace childrent in group
+    - taskQueueListAsync: get queue list
+    - taskQueueStatusAsync: get task queue status
+
+  auth
+  userInfoAsync: get user info by token
+```

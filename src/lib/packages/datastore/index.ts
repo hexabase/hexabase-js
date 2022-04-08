@@ -23,24 +23,24 @@ export default class Datastore extends HxbAbstract {
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */
-  // async dsFieldSettingsAsync(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
-  //   let data: DsFieldSettingsRes = {
-  //     dsFieldSettings: undefined,
-  //     error: undefined,
-  //   }
+  async dsFieldSettingsAsync(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
+    let data: DsFieldSettingsRes = {
+      dsFieldSettings: undefined,
+      error: undefined,
+    }
 
-  //   // handle call graphql
-  //   try {
-  //     const res: DtDsFieldSettings = await this.client.request(DS_FIELD_SETTING, { fieldId, datastoreId });
+    // handle call graphql
+    try {
+      const res: DtDsFieldSettings = await this.client.request(DS_FIELD_SETTING, { fieldId, datastoreId });
 
-  //     data.dsFieldSettings = res.datastoreGetFieldSettings
-  //   } catch (error: any) {
+      data.dsFieldSettings = res.datastoreGetFieldSettings
+    } catch (error: any) {
 
-  //     data.error = JSON.stringify(error.response.errors)
-  //   }
+      data.error = JSON.stringify(error.response.errors)
+    }
 
-  //   return data;
-  // }
+    return data;
+  }
 
   /**
    * function dsActionsAsync: get actions in Ds

@@ -28,27 +28,27 @@ beforeAll( async () => {
 });
 
 describe('Datastore', () => {
-  // describe('#dsFieldSettingsAsync()', () => {
-  //   it('should get field setting in Ds', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const datastore = new Datastore(url, tokenDs);
+  describe('#dsFieldSettingsAsync()', () => {
+    it('should get field setting in Ds', async () => {
+      jest.useFakeTimers('legacy');
+      const datastore = new Datastore(url, tokenDs);
 
-  //     const {dsFieldSettings, error} = await datastore.dsFieldSettingsAsync('', datastoreId);
+      const {dsFieldSettings, error} = await datastore.dsFieldSettingsAsync('', datastoreId);
 
-  //     // expect response
-  //     if(dsFieldSettings && dsFieldSettings.workspace_id) {
-  //       console.log('dsFieldSettings: ', dsFieldSettings);
+      // expect response
+      if(dsFieldSettings && dsFieldSettings.workspace_id) {
+        console.log('dsFieldSettings: ', dsFieldSettings);
 
-  //       expect(typeof dsFieldSettings.workspace_id).toBe('string');
-  //       expect(typeof dsFieldSettings.project_id).toBe('string');
-  //       expect(typeof dsFieldSettings.datastore_id).toBe('string');
-  //       expect(typeof dsFieldSettings.field_id).toBe('string');
-  //       expect(typeof dsFieldSettings.display_id).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof dsFieldSettings.workspace_id).toBe('string');
+        expect(typeof dsFieldSettings.project_id).toBe('string');
+        expect(typeof dsFieldSettings.datastore_id).toBe('string');
+        expect(typeof dsFieldSettings.field_id).toBe('string');
+        expect(typeof dsFieldSettings.display_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
   describe('#dsActions()', () => {
     it('should get actions in Ds', async () => {
