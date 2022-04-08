@@ -73,24 +73,24 @@
   workspace
     - setCurrentWsAsync: set workspace current with id
     - createWorkspaceAsync: created workspace 
-    - workspacesAsync: get workspaces and current workspace id
-    - wsCurrentAsync: get workspaces id current
-    - wsPasswordPolicyAsync: get workspace password policy
-    - wsFunctionalityAsync: get workspace functionlity
-    - wsUsageAsync: get workspace usage
-    - wsGroupChildrenAsync: get workspace childrent in group
-    - taskQueueListAsync: get queue list
-    - taskQueueStatusAsync: get task queue status
+    - getWorkspacesAsync: get workspaces and current workspace id
+    - getCurrentWorkspaceAsync: get workspaces id current
+    - getPasswordPolicyAsync: get workspace password policy
+    - getFunctionalityAsync: get workspace functionlity
+    - getUsageAsync: get workspace usage
+    - getGroupChildrenAsync: get workspace childrent in group
+    - getTaskQueueListAsync: get queue list
+    - getTaskQueueStatusAsync: get task queue status
 
   application
     - getAppAndDsAsync: get app and ds
     - createAppAsync: create app
 
   datastore
-    - dsFieldSettingsAsync: get field setting in Ds
-    - dsActionsAsync: get actions in Ds
-    - dsStatusAsync: get statuses in Ds
-    - dsActionSettingAsync: get field action setting in Ds
+    - getFieldSettingsAsync: get field setting in Ds
+    - getActionsAsync: get actions in Ds
+    - getStatusesAsync: get statuses in Ds
+    - getActionSettingAsync: get field action setting in Ds
 
   item
     - getItemsAsync: get items in datastore
