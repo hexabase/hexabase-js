@@ -1,3 +1,5 @@
+import jwt_decode from 'jwt-decode';
+import { JWTToken } from '../models/index';
 export class HxbSessionStorage 
 {
     /**
@@ -6,15 +8,22 @@ export class HxbSessionStorage
      */
     public static Write(key: string, value: string) 
     {
-        sessionStorage.setItem(key, value);
+        localStorage.setItem(key, value);
     }
-    
+
     /**
      * @param  {string} key
      * @returns string
      */
     public static Read(key: string): string | null
     {
-        return sessionStorage.getItem(key);
+        return localStorage.getItem(key);
+    }
+
+    public static ParseJWT(tokenKey: string = 'token'): JWTToken {
+        let token = jwt_decode(this.Read(tokenKey)!);
+        if(token) return token  as JWTToken;
+
+        return {} as JWTToken;
     }
 }
