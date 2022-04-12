@@ -5,7 +5,10 @@
     ```bash
       - yarn install
     ```
-
+  - Building:
+    ```bash
+      - yarn run build
+    ```
   - create file ```.env``` from ```.env.test``` then Config file testing at ```.env```:
     ```bash
       - cp .env.test .env
