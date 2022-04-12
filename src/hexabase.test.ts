@@ -1,4 +1,5 @@
 import { createClient } from './index';
+import Auth from './lib/packages/auth';
 import AuthMw from './lib/packages/middlware/auth';
 require('dotenv').config();
 jest.useRealTimers();
@@ -17,8 +18,8 @@ const workspaceId = process.env.WORKSPACEID || '';
 beforeAll( async () => {
   if (email && password) {
     console.log('email, password', email, password);
-    const authMw = new AuthMw(url);
-    const {token, error} = await authMw.loginAsync({email, password});
+    const auth = new Auth(url);
+    const {token, error} = await auth.loginAsync({email, password});
     if (token) {
       return tokenClient = token;
     } else {
@@ -26,6 +27,7 @@ beforeAll( async () => {
     }
   }
 });
+
 // testing createClient
 describe('Hexabase', () => {
   describe('#createClient()', () => {
@@ -35,7 +37,7 @@ describe('Hexabase', () => {
       // const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class auth');
-      const {userInfo, error} = await hexabase.auth.userInfoAsync();
+      const {userInfo, error} = await hexabase.user.userInfoAsync();
       if (userInfo) {
 
         // console.log('userInfo', userInfo);

@@ -29,7 +29,7 @@ export default class HexabaseClient  {
    * @returns new Auth
    */
   public _initAuth() {
-    return new Auth(this.urlHxb, this.tokenHxb);
+    return new Auth(this.urlHxb);
   }
 
   /**

@@ -1,13 +1,16 @@
 import {
   USER_CONFIRMATIONS,
+  USER_INFO,
   USER_PASSWORD_EXPIRY,
   USER_REGISTER
 } from '../../graphql/user';
 import {
   DtUserConfirm,
+  DtUserInfo,
   DtUserPassEx,
   DtUserRegister,
   UserConfirmRes,
+  UserInfoRes,
   UserPassExRes,
   UserRegisterRes
 } from '../../types/user';
@@ -84,4 +87,27 @@ export default class User extends HxbAbstract {
 
     return data;
   }
+
+  /**
+   * function userInfoAsync: get user info by token
+   * @returns UserInfoRes
+   */
+  async userInfoAsync(): Promise<UserInfoRes> {
+  const data: UserInfoRes = {
+    userInfo: undefined,
+    error: undefined,
+  };
+
+  // handle call graphql
+  try {
+    const res: DtUserInfo = await this.client.request(USER_INFO);
+
+    data.userInfo = res.userInfo;
+  } catch (error: any) {
+
+    data.error = JSON.stringify(error.response.errors);
+  }
+
+  return data;
+}
 }
