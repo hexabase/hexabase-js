@@ -1,6 +1,6 @@
 {
   "name": "hxb-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
@@ -22,8 +22,6 @@
     "test:item": "yarn jest src/lib/packages/item/item.test.ts"
   },
   "dependencies": {
-    "axios": "^0.25.0",
-    "jwt-decode": "^3.1.2",
     "dotenv": "^16.0.0",
     "graphql-request": "^4.2.0",
     "nodemon": "^2.0.15",
