@@ -13,7 +13,7 @@ const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
 beforeAll( async () => {
-  if(email && password) {
+  if (email && password) {
     console.log('[email, password]: ', email, password);
     const authMw = new AuthMw(url);
     const {token, error} = await authMw.loginAsync({email, password});
@@ -35,11 +35,11 @@ describe('User', () => {
       const {userRegister, error} = await user.userRegisterAsync(confirmationId);
 
       // expect response respUserRegister
-      if(userRegister) {
-        
+      if (userRegister) {
+
         expect(typeof userRegister.user.id).toBe('string');
         expect(typeof userRegister.user.email).toBe('string');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });
@@ -55,7 +55,7 @@ describe('User', () => {
 
       // expect response respUserPasswordEx
       if (userPassEx) {
-        
+
         expect(typeof userPassEx.is_expired).toBe('boolean');
       } else {
         throw new Error(`Error: ${error}`);
@@ -72,11 +72,11 @@ describe('User', () => {
       const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
 
       // expect response userConfirmAsync
-      if(userConfirm) {
-        
+      if (userConfirm) {
+
         expect(typeof userConfirm.user.email).toBe('string');
         expect(typeof userConfirm.user.id).toBe('string');
-      }else{
+      } else {
         throw new Error(`Error: ${error}`);
       }
     });

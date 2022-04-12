@@ -24,19 +24,19 @@ export default class Datastore extends HxbAbstract {
    * @returns DsFieldSettingsRes
    */
   async getFieldSettingsAsync(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
-    let data: DsFieldSettingsRes = {
+    const data: DsFieldSettingsRes = {
       dsFieldSettings: undefined,
       error: undefined,
-    }
+    };
 
     // handle call graphql
     try {
       const res: DtDsFieldSettings = await this.client.request(DS_FIELD_SETTING, { fieldId, datastoreId });
 
-      data.dsFieldSettings = res.datastoreGetFieldSettings
+      data.dsFieldSettings = res.datastoreGetFieldSettings;
     } catch (error: any) {
 
-      data.error = JSON.stringify(error.response.errors)
+      data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
@@ -48,7 +48,7 @@ export default class Datastore extends HxbAbstract {
    * @returns DsActionRes
    */
   async getActionsAsync(datastoreId: string): Promise<DsActionRes> {
-    let data: DsActionRes = {
+    const data: DsActionRes = {
       dsActions: undefined,
       error: undefined,
     };
@@ -72,7 +72,7 @@ export default class Datastore extends HxbAbstract {
    * @returns DsStatusRes
    */
   async getStatusesAsync(datastoreId: string): Promise<DsStatusRes> {
-    let data: DsStatusRes = {
+    const data: DsStatusRes = {
       dsStatuses: undefined,
       error: undefined,
     };
@@ -96,7 +96,7 @@ export default class Datastore extends HxbAbstract {
    * @returns DsActionSettingRes
    */
   async getActionSettingAsync(datastoreId: string, actionId: string): Promise<DsActionSettingRes> {
-    let data: DsActionSettingRes = {
+    const data: DsActionSettingRes = {
       dsActionSettings: undefined,
       error: undefined,
     };

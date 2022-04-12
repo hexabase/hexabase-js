@@ -22,7 +22,7 @@ export default class AuthMw {
    * @returns TokenModel
    */
   async loginAsync(loginInput: LoginInputPayload): Promise<LoginRes> {
-    let data: LoginRes = {
+    const data: LoginRes = {
       token: undefined,
       error: undefined,
     };
@@ -31,7 +31,7 @@ export default class AuthMw {
     try {
       const res: DtLogin = await this.client.request(LOGIN, { loginInput });
       data.token = res.login.token;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
@@ -40,7 +40,7 @@ export default class AuthMw {
   }
 
   async userInfoAsync(token: string): Promise<UserInfoRes> {
-    let data: UserInfoRes = {
+    const data: UserInfoRes = {
       userInfo: undefined,
       error: undefined,
     };
@@ -51,7 +51,7 @@ export default class AuthMw {
 
       data.userInfo = res.userInfo;
     } catch (error: any) {
-      
+
       data.error = JSON.stringify(error.response.errors);
     }
 

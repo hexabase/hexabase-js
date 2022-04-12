@@ -132,7 +132,7 @@ describe('Item', () => {
       const {itemLinked, error} = await item.getItemRelated(datastoreId, itemId, datastoreId);
 
       // expect response
-      if (itemLinked) { 
+      if (itemLinked) {
 
         expect(typeof itemLinked.datastore_id).toBe('string');
       } else {

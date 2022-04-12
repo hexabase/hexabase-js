@@ -1,4 +1,4 @@
-import {FieldNameENJP} from '../../util/type'
+import { FieldNameENJP } from '../../util/type';
 export interface DsItems {
   items: any;
   totalItems: number;
