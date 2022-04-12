@@ -1,24 +1,34 @@
+import { GraphQLClient } from 'graphql-request';
 import { USER_INFO } from '../../graphql/user';
-import { DtUserInfo, UserInfoRes } from '../../types/user';
+import { DtUserInfo, LoginInputPayload, UserInfoRes } from '../../types/user';
 import { HxbAbstract } from '../../../HxbAbstract';
+import { DtLogin, LoginRes } from '../../types/auth';
+import { LOGIN } from '../../graphql/auth';
 
-export default class Auth extends HxbAbstract {
+export default class Auth {
+  public urlGr: string;
+  public client: GraphQLClient;
 
+  constructor(
+    protected urlGraphql: string,
+  ) {
+    this.urlGr = urlGraphql;
+    this.client = new GraphQLClient(this.urlGr);
+  }
   /**
-   * function userInfoAsync: get user info by token
-   * @returns UserInfoRes
+   * function loginAsync: get user info by token
+   * @returns TokenModel
    */
-  async userInfoAsync(): Promise<UserInfoRes> {
-    const data: UserInfoRes = {
-      userInfo: undefined,
+   async loginAsync(loginInput: LoginInputPayload): Promise<LoginRes> {
+    const data: LoginRes = {
+      token: undefined,
       error: undefined,
     };
 
     // handle call graphql
     try {
-      const res: DtUserInfo = await this.client.request(USER_INFO);
-
-      data.userInfo = res.userInfo;
+      const res: DtLogin = await this.client.request(LOGIN, { loginInput });
+      data.token = res.login.token;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
@@ -26,4 +36,6 @@ export default class Auth extends HxbAbstract {
 
     return data;
   }
+
+
 }

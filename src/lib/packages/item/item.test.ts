@@ -1,4 +1,5 @@
 import Item from '.';
+import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
@@ -47,8 +48,8 @@ const newItemActionParameters = {
 
 beforeAll( async () => {
   if (email && password) {
-    const authMw = new AuthMw(url);
-    const {token, error} = await authMw.loginAsync({email, password});
+    const auth = new Auth(url);
+    const {token, error} = await auth.loginAsync({email, password});
     if (token) {
       return tokenDs = token;
     } else {
