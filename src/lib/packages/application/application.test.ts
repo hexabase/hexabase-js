@@ -1,4 +1,5 @@
 import Application from '.';
+import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
@@ -24,8 +25,8 @@ const createProjectParams = {
 beforeAll(async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
-    const authMw = new AuthMw(url);
-    const { token, error } = await authMw.loginAsync({ email, password });
+    const auth = new Auth(url);
+    const { token, error } = await auth.loginAsync({ email, password });
     if (token) {
       return tokenApp = token;
     } else {

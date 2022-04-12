@@ -17,28 +17,6 @@ export default class AuthMw {
     this.client = new GraphQLClient(this.urlGr);
   }
 
-  /**
-   * function loginAsync: get user info by token
-   * @returns TokenModel
-   */
-  async loginAsync(loginInput: LoginInputPayload): Promise<LoginRes> {
-    const data: LoginRes = {
-      token: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtLogin = await this.client.request(LOGIN, { loginInput });
-      data.token = res.login.token;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
   async userInfoAsync(token: string): Promise<UserInfoRes> {
     const data: UserInfoRes = {
       userInfo: undefined,

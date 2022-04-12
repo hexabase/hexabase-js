@@ -1,4 +1,5 @@
 import User from '.';
+import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
@@ -15,8 +16,8 @@ const password = process.env.PASSWORD || '';
 beforeAll( async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
-    const authMw = new AuthMw(url);
-    const {token, error} = await authMw.loginAsync({email, password});
+    const auth = new Auth(url);
+    const {token, error} = await auth.loginAsync({email, password});
     if (token) {
       return tokenUs = token;
     } else {
@@ -26,24 +27,24 @@ beforeAll( async () => {
 });
 // testing get user register info by confirmId
 describe('User', () => {
-  describe('#userRegisterAsync()', () => {
-    it('should get user register info by confirm id without error', async () => {
-      jest.useFakeTimers('legacy');
-      const user = new User(url, tokenUs);
+  // describe('#userRegisterAsync()', () => {
+  //   it('should get user register info by confirm id without error', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     const user = new User(url, tokenUs);
 
-      /** check user register */
-      const {userRegister, error} = await user.userRegisterAsync(confirmationId);
+  //     /** check user register */
+  //     const {userRegister, error} = await user.userRegisterAsync(confirmationId);
 
-      // expect response respUserRegister
-      if (userRegister) {
+  //     // expect response respUserRegister
+  //     if (userRegister) {
 
-        expect(typeof userRegister.user.id).toBe('string');
-        expect(typeof userRegister.user.email).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
+  //       expect(typeof userRegister.user.id).toBe('string');
+  //       expect(typeof userRegister.user.email).toBe('string');
+  //     } else {
+  //       throw new Error(`Error: ${error}`);
+  //     }
+  //   });
+  // });
 
   describe('#respUserPasswordEx()', () => {
     it('should get user password expiry without error', async () => {
@@ -63,19 +64,41 @@ describe('User', () => {
     });
   });
 
-  describe('#userConfirmAsync()', () => {
-    it('should get user password expiry without error', async () => {
+  // describe('#userConfirmAsync()', () => {
+  //   it('should get user password expiry without error', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     const user = new User(url, tokenUs);
+
+  //     /** check user password expiry */
+  //     const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
+
+  //     // expect response userConfirmAsync
+  //     if (userConfirm) {
+
+  //       expect(typeof userConfirm.user.email).toBe('string');
+  //       expect(typeof userConfirm.user.id).toBe('string');
+  //     } else {
+  //       throw new Error(`Error: ${error}`);
+  //     }
+  //   });
+  // });
+  // get userinfo by token without error
+  describe('#userInfoAsync()', () => {
+    it('should get userinfo by token without error', async () => {
       jest.useFakeTimers('legacy');
       const user = new User(url, tokenUs);
 
-      /** check user password expiry */
-      const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
+      const {userInfo, error} = await user.userInfoAsync();
 
-      // expect response userConfirmAsync
-      if (userConfirm) {
+      // expect response
+      if (userInfo) {
 
-        expect(typeof userConfirm.user.email).toBe('string');
-        expect(typeof userConfirm.user.id).toBe('string');
+        expect(typeof userInfo.username).toBe('string');
+        expect(typeof userInfo.email).toBe('string');
+        expect(typeof userInfo.profile_pic).toBe('string');
+        expect(typeof userInfo.u_id).toBe('string');
+        expect(typeof userInfo.current_workspace_id).toBe('string');
+        expect(typeof userInfo.is_ws_admin).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }
