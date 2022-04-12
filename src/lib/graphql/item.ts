@@ -149,4 +149,4 @@ export const ITEM_LINKED = gql`
       column_settings
     }
   }
-`
+`;

@@ -27,15 +27,15 @@ export default class Item extends HxbAbstract {
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  async getItemsAsync(getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
-    let data: DsItemsRes = {
+  async getItemsAsync (getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
+    const data: DsItemsRes = {
       dsItems: undefined,
       error: undefined,
     };
 
     // handle call graphql
     try {
-      const res: DtDsItems = await this.client.request(DS_ITEMS, { getItemsParameters, datastoreId, projectId });
+      const res: DtDsItems = await this.client.request( DS_ITEMS, { getItemsParameters, datastoreId, projectId } );
 
       data.dsItems = res.datastoreGetDatastoreItems;
     } catch (error: any) {
@@ -52,7 +52,7 @@ export default class Item extends HxbAbstract {
    * @returns ItemHistoriesRes
    */
   async getItemsHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
-    let data: ItemHistoriesRes = {
+    const data: ItemHistoriesRes = {
       itemHistories: undefined,
       error: undefined,
     };
@@ -76,7 +76,7 @@ export default class Item extends HxbAbstract {
    * @returns CreatedItemIdRes
    */
   async createItemId(datastoreId: string): Promise<CreatedItemIdRes> {
-    let data: CreatedItemIdRes = {
+    const data: CreatedItemIdRes = {
       item_id: undefined,
       error: undefined,
     };
@@ -100,7 +100,7 @@ export default class Item extends HxbAbstract {
    * @returns NewItemRes
    */
   async createNewItem(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
-    let data: NewItemRes = {
+    const data: NewItemRes = {
       itemNew: undefined,
       error: undefined,
     };
@@ -123,8 +123,8 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId and linkedDatastoreId is requirement
    * @returns ItemLinkedRes
    */
-   async getItemRelated( datastoreId: string, itemId:string, linkedDatastoreId: string): Promise<ItemLinkedRes> {
-    let data: ItemLinkedRes = {
+   async getItemRelated( datastoreId: string, itemId: string, linkedDatastoreId: string ): Promise<ItemLinkedRes> {
+    const data: ItemLinkedRes = {
       itemLinked: undefined,
       error: undefined,
     };
@@ -133,7 +133,7 @@ export default class Item extends HxbAbstract {
     try {
       const res: DtItemLinked = await this.client.request(ITEM_LINKED, {datastoreId, itemId, linkedDatastoreId});
 
-      data.itemLinked = res.datastoreGetLinkedItems
+      data.itemLinked = res.datastoreGetLinkedItems;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);

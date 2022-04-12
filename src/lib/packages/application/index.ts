@@ -19,7 +19,7 @@ export default class Application extends HxbAbstract {
    * @returns AppAndDsRes
    */
   async getAppAndDsAsync(workspaceId: string): Promise<AppAndDsRes> {
-    let data: AppAndDsRes = {
+    const data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,
     };
@@ -43,7 +43,7 @@ export default class Application extends HxbAbstract {
    * @returns AppAndDsRes
    */
   async createAppAsync(createProjectParams: CreateProjectPl): Promise<CreateAppRes> {
-    let data: CreateAppRes = {
+    const data: CreateAppRes = {
       app: undefined,
       error: undefined,
     };

@@ -36,7 +36,7 @@ describe('Datastore', () => {
       const {dsFieldSettings, error} = await datastore.getFieldSettingsAsync('', datastoreId);
 
       // expect response
-      if(dsFieldSettings && dsFieldSettings.workspace_id) {
+      if (dsFieldSettings && dsFieldSettings.workspace_id) {
 
         expect(typeof dsFieldSettings.workspace_id).toBe('string');
         expect(typeof dsFieldSettings.project_id).toBe('string');
