@@ -9,7 +9,7 @@ export default class Auth extends HxbAbstract {
    * @returns UserInfoRes
    */
   async userInfoAsync(): Promise<UserInfoRes> {
-    let data: UserInfoRes = {
+    const data: UserInfoRes = {
       userInfo: undefined,
       error: undefined,
     };

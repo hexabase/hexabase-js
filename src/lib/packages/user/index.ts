@@ -20,7 +20,7 @@ export default class User extends HxbAbstract {
    * @returns UserRegisterRes
    */
   async userRegisterAsync(confirmationId: string): Promise<UserRegisterRes> {
-    let data: UserRegisterRes = {
+    const data: UserRegisterRes = {
       userRegister: undefined,
       error: undefined,
     };
@@ -30,7 +30,7 @@ export default class User extends HxbAbstract {
       const res: DtUserRegister = await this.client.request(USER_REGISTER, { confirmationId });
 
       data.userRegister = res.userRegister;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
@@ -43,7 +43,7 @@ export default class User extends HxbAbstract {
    * @returns UserPasswordExpiryRes
    */
   async userPasswordExAsync(): Promise<UserPassExRes> {
-    let data: UserPassExRes = {
+    const data: UserPassExRes = {
       userPassEx: undefined,
       error: undefined,
     };
@@ -53,7 +53,7 @@ export default class User extends HxbAbstract {
       const res: DtUserPassEx = await this.client.request(USER_PASSWORD_EXPIRY);
 
       data.userPassEx = res.userPasswordExpiry;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
@@ -67,7 +67,7 @@ export default class User extends HxbAbstract {
    * @returns UserConfirmationsRes
    */
   async userConfirmAsync(confirmationId: string): Promise<UserConfirmRes> {
-    let data: UserConfirmRes = {
+    const data: UserConfirmRes = {
       userConfirm: undefined,
       error: undefined,
     };
@@ -77,7 +77,7 @@ export default class User extends HxbAbstract {
       const res: DtUserConfirm = await this.client.request(USER_CONFIRMATIONS, { confirmationId });
 
       data.userConfirm = res.userConfirmations;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
