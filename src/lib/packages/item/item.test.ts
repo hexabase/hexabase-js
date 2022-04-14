@@ -142,4 +142,20 @@ describe('Item', () => {
     });
   });
 
+  describe('#getItemDetail()', () => {
+    it('should get item detail', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemId, applicationId);
+
+      // expect response
+      if (itemDetails) {
+
+        expect(typeof itemDetails.title).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
 });

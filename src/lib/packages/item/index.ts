@@ -2,19 +2,22 @@ import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
   CREATE_NEW_ITEM,
-  DS_ITEMS, ITEM_HISTORIES, ITEM_LINKED
+  DS_ITEMS, ITEM_DETAIL, ITEM_HISTORIES, ITEM_LINKED
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
   CreateNewItemPl,
   DsItemsRes,
   DtDsItems,
+  DtItemDetail,
   DtItemHistories,
   DtItemIdCreated,
   DtItemLinked,
   DtNewItem,
   GetHistoryPl,
+  GetItemDetailPl,
   GetItemsPl,
+  ItemDetailRes,
   ItemHistoriesRes,
   ItemLinkedRes,
   NewItemRes
@@ -134,6 +137,30 @@ export default class Item extends HxbAbstract {
       const res: DtItemLinked = await this.client.request(ITEM_LINKED, {datastoreId, itemId, linkedDatastoreId});
 
       data.itemLinked = res.datastoreGetLinkedItems;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function getItemDetail: get item detail
+   * @params datastoreId, itemId is requirement. projectId, datastoreItemDetailParams are options
+   * @returns ItemDetailRes
+   */
+   async getItemDetail( datastoreId: string, itemId: string, projectId?: string, itemDetailParams?: GetItemDetailPl): Promise<ItemDetailRes> {
+    const data: ItemDetailRes = {
+      itemDetails: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtItemDetail = await this.client.request(ITEM_DETAIL, {datastoreId, itemId, projectId, datastoreItemDetailParams: itemDetailParams});
+
+      data.itemDetails = res.getDatastoreItemDetails;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
