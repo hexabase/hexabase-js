@@ -68,3 +68,11 @@ export interface CreateNewItemPl {
   related_ds_items?: any;
   access_key_updates?: FieldAccessKeyUpdates;
 }
+
+export interface GetItemDetailPl {
+  include_lookups: boolean;
+  use_display_id: boolean;
+  return_number_value: boolean;
+  format: string;
+  include_linked_items: boolean;
+}

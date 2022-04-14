@@ -150,3 +150,19 @@ export const ITEM_LINKED = gql`
     }
   }
 `;
+
+export const ITEM_DETAIL = gql`
+  query GetDatastoreItemDetails($itemId: String!, $datastoreId: String!, $projectId: String, $datastoreItemDetailParams: DatastoreItemDetailParams) {
+    getDatastoreItemDetails(itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId, datastoreItemDetailParams: $datastoreItemDetailParams) {
+      title
+      rev_no
+      field_values
+      status_list
+      item_actions
+      status_actions
+      status_order
+      status_action_order
+      item_action_order
+    }
+  }
+`;
