@@ -115,6 +115,17 @@ export interface ItemLinked {
   fields?: FieldSettings;
   column_settings: any;
 }
+export interface ItemDetail {
+  title?: string;
+  rev_no?: number;
+  field_values?: any;
+  status_list?: any;
+  status_actions?: any;
+  item_actions?: any;
+  status_order?: any;
+  status_action_order?: any;
+  item_action_order?: any;
+}
 
 /** Data response from request graphql */
 export interface DtDsItems {
@@ -131,6 +142,9 @@ export interface DtNewItem {
 }
 export interface DtItemLinked {
   datastoreGetLinkedItems: ItemLinked;
+}
+export interface DtItemDetail {
+  getDatastoreItemDetails: ItemDetail;
 }
 
 /** export response */
@@ -153,5 +167,10 @@ export interface NewItemRes {
 
 export interface ItemLinkedRes {
   itemLinked?: ItemLinked;
+  error?: string;
+}
+
+export interface ItemDetailRes {
+  itemDetails?: ItemDetail;
   error?: string;
 }
