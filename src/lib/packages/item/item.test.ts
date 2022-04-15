@@ -146,7 +146,7 @@ describe('Item', () => {
     it('should get item detail', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemId, applicationId);
+      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemId);
 
       // expect response
       if (itemDetails) {

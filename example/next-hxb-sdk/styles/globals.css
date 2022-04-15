@@ -1,0 +1,311 @@
+a { cursor: pointer; }
+
+.app-container {
+    min-height: 350px;
+    display: flex;
+}
+
+.top-header {
+    height: 65px;
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    position: absolute;
+    top: 0;
+    left: auto;
+    right: 0;
+    background-color: #1976d2;
+    color: #fff;
+    z-index: 1201;
+    transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,margin 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+.header-body {
+    display: flex;
+    /* text-align: center; */
+    margin-top: 16px;
+}
+
+.left-bar {
+    color: rgba(0, 0, 0, 0.87);
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    box-sizing: inherit;
+    flex: 0 0 auto;
+}
+
+.main {
+    color: rgba(0, 0, 0, 0.87);
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    box-sizing: inherit;
+    background-color: #f5f5f5;
+    flex-grow: 1;
+    height: 100vh;
+    overflow: auto;
+}
+
+.main-top{
+    color: rgba(0, 0, 0, 0.87);
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    box-sizing: inherit;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 24px;
+    padding-right: 24px;
+    min-height: 64px;
+}
+.main-body {
+    color: rgba(0, 0, 0, 0.87);
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    width: 100%;
+    margin-left: auto;
+    box-sizing: border-box;
+    margin-right: auto;
+    display: block;
+    margin-top: 32px;
+    margin-bottom: 32px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.left-main{
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    background-color: #fff;
+    color: rgba(0, 0, 0, 0.87);
+    box-shadow: none;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1 0 auto;
+    z-index: 1200;
+    top: 0;
+    outline: 0;
+    left: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+    position: relative;
+    white-space: nowrap;
+    width: 240px;
+    transition: width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+    box-sizing: border-box;
+}
+
+.left-main-top {
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: nowrap;
+    box-sizing: inherit;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 64px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.left-main-hr{
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: nowrap;
+    box-sizing: inherit;
+    margin: 0;
+    flex-shrink: 0;
+    border-width: 0;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.12);
+    border-bottom-width: thin;
+}
+
+.left-main-nav {
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    color: rgba(0, 0, 0, 0.87);
+    white-space: nowrap;
+    box-sizing: inherit;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.left-itemt {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    white-space: nowrap;
+    list-style: none;
+    background-color: transparent;
+    outline: 0;
+    border: 0;
+    margin: 0;
+    border-radius: 0;
+    padding: 0;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    color: inherit;
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    text-decoration: none;
+    min-width: 0;
+    box-sizing: border-box;
+    text-align: left;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.left-svg-boby{
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    white-space: nowrap;
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+    box-sizing: inherit;
+    min-width: 56px;
+    color: rgba(0, 0, 0, 0.54);
+    flex-shrink: 0;
+    display: inline-flex;
+}
+
+.svg-item {
+   
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    white-space: nowrap;
+    list-style: none;
+    cursor: pointer;
+    text-align: left;
+    color: rgba(0, 0, 0, 0.54);
+    box-sizing: inherit;
+    user-select: none;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    fill: currentColor;
+    flex-shrink: 0;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-size: 1.5rem;
+}
+
+.left-text-boby{ 
+   
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    white-space: nowrap;
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    color: inherit;
+    text-align: left;
+    box-sizing: inherit;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.text-item{
+    white-space: nowrap;
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    color: inherit;
+    text-align: left;
+    box-sizing: inherit;
+    margin: 0;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    display: block;
+}
+.title-header {
+    box-sizing: inherit;
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    letter-spacing: 0.0075em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+    flex-grow: 1;
+    margin-left:30px;
+}
+
+.table-body{
+    margin: 20px;
+    border-collapse: collapse;
+    
+}
+.table-body thead tr th{
+    border: 1px solid;
+}
+.table-body tbody tr td {
+    border: 1px solid;
+}
+
+.current-id-ws {
+    margin: 15px 15px;
+}
+.left-item{
+    display: flex;
+}
