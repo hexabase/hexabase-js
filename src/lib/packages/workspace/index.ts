@@ -252,7 +252,7 @@ export default class Workspace extends HxbAbstract {
    * @param: option: setCurrentWorkSpaceInput: {workspace_id} are required
    * @returns ModelRes
    */
-  async setCurrentWsAsync(setCurrentWorkSpaceInput: SetWsInput): Promise<ModelRes> {
+  async setCurrentWsAsync(setCurrentWsPl: SetWsInput): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
       error: undefined,
@@ -260,7 +260,7 @@ export default class Workspace extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtCurrentWs = await this.client.request( SET_CURRENT_WORKSPACE, {setCurrentWorkSpaceInput} );
+      const res: DtCurrentWs = await this.client.request( SET_CURRENT_WORKSPACE, {setCurrentWorkSpaceInput: setCurrentWsPl} );
 
       data.data = res.setCurrentWorkSpace;
     } catch (error: any) {

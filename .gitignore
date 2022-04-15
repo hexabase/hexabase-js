@@ -1,3 +1,4 @@
 dist
 node_modules/
 .env
+example/next-hxb-sdk/node_modules
