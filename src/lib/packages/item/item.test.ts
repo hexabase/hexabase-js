@@ -141,7 +141,7 @@ describe('Item', () => {
       }
     });
   });
-  
+
   describe('#getItemDetail()', () => {
     it('should get item detail', async () => {
       jest.useFakeTimers('legacy');
