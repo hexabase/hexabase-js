@@ -29,8 +29,11 @@ jobs:
           - v1-dependencies-
 
       - run:
+          name: Set Github username
+          command: git config user.name $CIRCLE_USERNAME
+      - run:
           name: Bump package version
-          command: npm version patch --no-git-tag-version
+          command: npm version patch
 
       - run:
           name: Install dep
