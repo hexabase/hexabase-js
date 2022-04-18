@@ -17,7 +17,7 @@ orbs:
   slack: circleci/slack@4.4.2
 
 jobs:
-  test:
+  install-dep:
     <<: *defaults
     steps:
       - checkout
