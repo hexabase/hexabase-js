@@ -56,13 +56,13 @@ jobs:
 workflows:
   publish-to-npm-registry:
     jobs:
-      - test:
+      - install-dep:
           filters:
             branches:
               only: circleci-setup
       - publish:
           requires:
-            - test
+            - install-dep
           filters:
             branches:
               only: circleci-setup
