@@ -30,7 +30,7 @@ jobs:
 
       - run:
           name: Bump package version
-          command: npm version patch
+          command: npm version patch --no-git-tag-version
 
       - run:
           name: Install dep
