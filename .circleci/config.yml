@@ -30,7 +30,9 @@ jobs:
 
       - run:
           name: Set Github username
-          command: git config user.name $CIRCLE_USERNAME
+          command: |
+             git config user.name circleci
+             git config user.name circleci@hexabase.com
       - run:
           name: Bump package version
           command: npm version patch
