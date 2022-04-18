@@ -32,7 +32,7 @@ jobs:
           name: Set Github info
           command: |
              git config --global user.name circleci
-             git config --global user.name circleci@hexabase.com
+             git config --global user.email circleci@hexabase.com
       - run:
           name: Bump package version
           command: npm version patch
