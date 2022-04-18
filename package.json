@@ -1,6 +1,6 @@
 {
   "name": "hxb-sdk",
-  "version": "1.0.6a",
+  "version": "1.0.6",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
