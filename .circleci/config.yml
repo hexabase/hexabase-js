@@ -17,7 +17,7 @@ orbs:
   slack: circleci/slack@4.4.2
 
 jobs:
-  install-dep:
+  build-dep:
     <<: *defaults
     steps:
       - checkout
@@ -28,10 +28,9 @@ jobs:
          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: npm install
-      #- run:
-      #    name: Run tests
-      #    command: npm test
+      - run: |
+          npm install
+          npm build
 
       - save_cache:
           paths:
@@ -56,13 +55,15 @@ jobs:
 workflows:
   publish-to-npm-registry:
     jobs:
-      - install-dep:
+      - build-dep:
           filters:
             branches:
               only: circleci-setup
+          <<: *slack-fail-post-step
       - publish:
           requires:
-            - install-dep
+            - build-dep
           filters:
             branches:
               only: circleci-setup
+          <<: *slack-fail-post-step
