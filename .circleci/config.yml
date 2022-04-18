@@ -28,9 +28,13 @@ jobs:
          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: |
-          npm install
-          npm build
+      - run:
+          name: Install dep
+          command: npm install
+
+      - run:
+          name: Build package
+          command: npm build
 
       - save_cache:
           paths:
@@ -60,6 +64,7 @@ workflows:
             branches:
               only: circleci-setup
           <<: *slack-fail-post-step
+          context: slack-secrets
       - publish:
           requires:
             - build-dep
@@ -67,3 +72,4 @@ workflows:
             branches:
               only: circleci-setup
           <<: *slack-fail-post-step
+          context: slack-secrets
