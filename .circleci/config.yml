@@ -29,6 +29,10 @@ jobs:
           - v1-dependencies-
 
       - run:
+          name: Bump package version
+          command: npm version patch
+
+      - run:
           name: Install dep
           command: npm install
 
@@ -49,12 +53,11 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/repo/.npmrc
-      - run:
-          name: Bump package version
-          command: npm version patch
+
       - run:
           name: Publish package
           command: npm publish
