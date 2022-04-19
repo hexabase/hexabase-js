@@ -23,7 +23,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "58:db:d4:85:aa:bd:6a:90:dc:67:cd:08:e4:1f:ed:38"
+            - "83:8e:52:79:f7:aa:17:22:d2:9a:0d:65:23:10:2f:50"
 
       - checkout
 
