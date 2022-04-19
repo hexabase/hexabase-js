@@ -20,6 +20,11 @@ jobs:
   build-dep:
     <<: *defaults
     steps:
+
+      - add_ssh_keys:
+          fingerprints:
+            - "b1:93:77:4d:a5:c6:2f:5c:a4:fe:85:15:a1:b5:83:6f"
+
       - checkout
 
       - restore_cache:
@@ -33,10 +38,6 @@ jobs:
           command: |
              git config --global user.name circleci
              git config --global user.email circleci@hexabase.com
-
-      - add_ssh_keys:
-          fingerprints:
-            - "b1:93:77:4d:a5:c6:2f:5c:a4:fe:85:15:a1:b5:83:6f"
 
       - run:
           name: Bump package version
