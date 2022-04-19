@@ -34,10 +34,14 @@ jobs:
              git config --global user.name circleci
              git config --global user.email circleci@hexabase.com
 
+      - add_ssh_keys:
+          fingerprints:
+            - "b1:93:77:4d:a5:c6:2f:5c:a4:fe:85:15:a1:b5:83:6f"
+
       - run:
           name: Bump package version
           command: |
-            npm version prerelease --preid=alpha -m "Bump version number to %s [ci skip]"
+            npm version patch --preid=alpha -m "Bump version number to %s [ci skip]"
             git push origin $CIRCLE_BRANCH
             git push --tags
 
