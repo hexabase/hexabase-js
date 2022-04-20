@@ -43,8 +43,7 @@ jobs:
           name: Bump package version
           command: |
             npm version patch --preid=alpha -m "Bump version number to %s [ci skip]"
-            git push origin $CIRCLE_BRANCH
-            git push --tags
+            git push origin develop
 
       - run:
           name: Install dep
