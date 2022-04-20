@@ -7,11 +7,11 @@ import Item from './lib/packages/item';
 
 export default class HexabaseClient  {
   public auth: Auth;
-  public user: User;
-  public application: Application;
-  public workspace: Workspace;
-  public item: Item;
-  public datastore: Datastore;
+  public users: User;
+  public applications: Application;
+  public workspaces: Workspace;
+  public items: Item;
+  public datastores: Datastore;
   constructor(
     protected urlHxb: string,
     protected tokenHxb: string
@@ -23,11 +23,11 @@ export default class HexabaseClient  {
     this.tokenHxb = tokenHxb;
 
     this.auth = this._initAuth();
-    this.user = this._initUser();
-    this.application = this._initApplication();
-    this.workspace = this._initWorkspace();
-    this.item = this._initItem();
-    this.datastore = this._initDatastore();
+    this.users = this._initUser();
+    this.applications = this._initApplication();
+    this.workspaces = this._initWorkspace();
+    this.items = this._initItem();
+    this.datastores = this._initDatastore();
   }
 
   /**
