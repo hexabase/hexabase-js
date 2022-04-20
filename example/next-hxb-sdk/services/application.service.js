@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import getConfig from 'next/config';
 import Router from 'next/router';
-import {createClient} from 'hxb-sdk' 
+import {createClient} from '@hexabase/hexabase-js' 
 
 const { publicRuntimeConfig } = getConfig();
 // const baseUrl = `${publicRuntimeConfig.apiUrl}`;
@@ -13,7 +13,7 @@ export const appService = {
 async function getAppAndDs(id) {
     const user = JSON.parse(localStorage.getItem('user'))
     const hexabase = await createClient({ url: baseUrl, token: user.token})
-    const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(id)
+    const {appAndDs, error} = await hexabase.applications.getAppAndDsAsync(id)
     return appAndDs
 }
 

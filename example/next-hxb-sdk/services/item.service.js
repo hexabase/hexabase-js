@@ -14,14 +14,14 @@ export const itemService = {
 async function getItems(datastoreId, projectId, getItemsParameters) {
     const user = JSON.parse(localStorage.getItem('user'))
     const hexabase = await createClient({ url: baseUrl, token: user.token})
-    const {dsItems, error} = await hexabase.item.getItemsAsync(getItemsParameters, datastoreId, projectId)
+    const {dsItems, error} = await hexabase.items.getItemsAsync(getItemsParameters, datastoreId, projectId)
     return dsItems
 }
 
 async function getItemDetail(datastoreId, itemId) {
     const user = JSON.parse(localStorage.getItem('user'))
     const hexabase = await createClient({ url: baseUrl, token: user.token})
-    const {itemDetails, error} = await hexabase.item.getItemDetail(datastoreId, itemId)
+    const {itemDetails, error} = await hexabase.items.getItemDetail(datastoreId, itemId)
     return itemDetails
 }
 

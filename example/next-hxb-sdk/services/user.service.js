@@ -20,7 +20,7 @@ async function login(email, password) {
     const hexabase = await createClient({ url: baseUrl, email, password })
     const {token, error} = await hexabase.auth.loginAsync({email, password})
     if(token && !error){
-        const {userInfo, error} = await hexabase.user.userInfoAsync()
+        const {userInfo, error} = await hexabase.users.userInfoAsync()
         user = userInfo
         user.token = token
         userSubject.next(user);
