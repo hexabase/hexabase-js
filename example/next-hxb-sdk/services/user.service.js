@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import getConfig from 'next/config';
 import Router from 'next/router';
-import {createClient} from 'hxb-sdk' 
+import {createClient} from '@hexabase/hexabase-js' 
 
 const { publicRuntimeConfig } = getConfig();
 // const baseUrl = `${publicRuntimeConfig.apiUrl}`;
