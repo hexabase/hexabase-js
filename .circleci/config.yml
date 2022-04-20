@@ -82,7 +82,7 @@ workflows:
       - build-dep:
           filters:
             branches:
-              only: circleci-setup
+              only: master
           <<: *slack-fail-post-step
           context: slack-secrets
       - publish:
@@ -90,6 +90,6 @@ workflows:
             - build-dep
           filters:
             branches:
-              only: circleci-setup
+              only: master
           <<: *slack-fail-post-step
           context: slack-secrets
