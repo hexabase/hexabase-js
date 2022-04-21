@@ -37,7 +37,7 @@ describe('Hexabase', () => {
       // const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class auth');
-      const {userInfo, error} = await hexabase.user.userInfoAsync();
+      const {userInfo, error} = await hexabase.users.userInfoAsync();
       if (userInfo) {
 
         // console.log('userInfo', userInfo);
@@ -55,7 +55,7 @@ describe('Hexabase', () => {
       const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class application');
-      const {appAndDs, error} = await hexabase.application.getAppAndDsAsync(workspaceId);
+      const {appAndDs, error} = await hexabase.applications.getAppAndDsAsync(workspaceId);
       if (appAndDs) {
 
         // console.log('appAndDs', appAndDs);
