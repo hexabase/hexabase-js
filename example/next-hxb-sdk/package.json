@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hexabase/hexabase-js": "^1.0.0",
     "@hookform/resolvers": "^2.8.8",
     "hxb-sdk": "^1.0.5",
     "next": "12.1.4",

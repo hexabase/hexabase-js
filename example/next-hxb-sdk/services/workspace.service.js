@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import getConfig from 'next/config';
 import Router from 'next/router';
-import {createClient} from 'hxb-sdk' 
+import {createClient} from '@hexabase/hexabase-js' 
 
 const { publicRuntimeConfig } = getConfig();
 // const baseUrl = `${publicRuntimeConfig.apiUrl}`;
@@ -18,7 +18,7 @@ export const workspaceService = {
 async function getWorkspaces() {
     const user = JSON.parse(localStorage.getItem('user'))
     const hexabase = await createClient({ url: baseUrl, token: user.token})
-    const {workspaces, error} = await hexabase.workspace.getWorkspacesAsync()
+    const {workspaces, error} = await hexabase.workspaces.getWorkspacesAsync()
     return workspaces
 }
 
@@ -29,7 +29,7 @@ async function setWorkspace(id) {
         workspace_id: id
     }
     const hexabase = await createClient({ url: baseUrl, token: user.token})
-    const {data, error} = await hexabase.workspace.setCurrentWsAsync(setCurrentWsPl)
+    const {data, error} = await hexabase.workspaces.setCurrentWsAsync(setCurrentWsPl)
     return data
 }
 

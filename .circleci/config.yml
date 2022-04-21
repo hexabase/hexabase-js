@@ -73,7 +73,7 @@ jobs:
 
       - run:
           name: Publish package
-          command: npm publish
+          command: npm publish --access public
 
 workflows:
   publish-to-npm-registry:
