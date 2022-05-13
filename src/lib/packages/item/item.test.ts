@@ -49,7 +49,7 @@ const newItemActionParameters = {
 beforeAll( async () => {
   if (email && password) {
     const auth = new Auth(url);
-    const {token, error} = await auth.loginAsync({email, password});
+    const {token, error} = await auth.login({email, password});
     if (token) {
       return tokenDs = token;
     } else {
@@ -59,12 +59,12 @@ beforeAll( async () => {
 });
 
 describe('Item', () => {
-  describe('#getItemsAsync()', () => {
+  describe('#get()', () => {
     it('should get items in Ds', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {dsItems, error} = await item.getItemsAsync(getItemsParameters, datastoreId, applicationId);
+      const {dsItems, error} = await item.get(getItemsParameters, datastoreId, applicationId);
 
       // expect response
       if (dsItems) {
@@ -76,12 +76,12 @@ describe('Item', () => {
     });
   });
 
-  describe('#getItemsHistories()', () => {
+  describe('#getHistories()', () => {
     it('should get items histories', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {itemHistories, error} = await item.getItemsHistories(applicationId, datastoreId, itemId, historyParams);
+      const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemId, historyParams);
 
       // expect response
       if (itemHistories) {
@@ -109,11 +109,11 @@ describe('Item', () => {
     });
   });
 
-  describe('#createItemId()', () => {
+  describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {itemNew, error} = await item.createNewItem(applicationId, datastoreId, newItemActionParameters);
+      const {itemNew, error} = await item.create(applicationId, datastoreId, newItemActionParameters);
 
       // expect response
       if (itemNew) {

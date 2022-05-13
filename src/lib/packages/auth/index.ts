@@ -16,10 +16,10 @@ export default class Auth {
     this.client = new GraphQLClient(this.urlGr);
   }
   /**
-   * function loginAsync: get user info by token
+   * function login: get user info by token
    * @returns TokenModel
    */
-   async loginAsync(loginInput: LoginInputPayload): Promise<LoginRes> {
+   async login(loginInput: LoginInputPayload): Promise<LoginRes> {
     const data: LoginRes = {
       token: undefined,
       error: undefined,

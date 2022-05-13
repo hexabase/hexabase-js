@@ -11,12 +11,12 @@ let tokenAu = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 describe('Auth', () => {
-  describe('#loginAsync()', () => {
+  describe('#login()', () => {
     it('should get field setting in Ds', async () => {
       jest.useFakeTimers('legacy');
       console.log('[email, password]: ', email, password);
       const auth = new Auth(url);
-      const {token, error} = await auth.loginAsync({email, password});
+      const {token, error} = await auth.login({email, password});
       if (token) {
         return tokenAu = token;
       } else {

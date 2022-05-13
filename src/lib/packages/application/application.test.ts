@@ -26,7 +26,7 @@ beforeAll(async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
-    const { token, error } = await auth.loginAsync({ email, password });
+    const { token, error } = await auth.login({ email, password });
     if (token) {
       return tokenApp = token;
     } else {
@@ -37,12 +37,12 @@ beforeAll(async () => {
 
 // get applications info by workspace id
 describe('Application', () => {
-  describe('#getAppAndDsAsync()', () => {
+  describe('#getProjectsAndDatastores()', () => {
     it('should get applications info by workspace id', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
 
-      const { appAndDs, error } = await application.getAppAndDsAsync(workspaceId);
+      const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
       if (appAndDs) {
 
         expect(typeof appAndDs[0].application_id).toBe('string');
@@ -56,12 +56,12 @@ describe('Application', () => {
   });
 
 
-  describe('#createAppAsync()', () => {
+  describe('#create()', () => {
     it('should create application', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
 
-      const { app, error } = await application.createAppAsync(createProjectParams);
+      const { app, error } = await application.create(createProjectParams);
       if (app) {
 
         expect(typeof app.project_id).toBe('string');

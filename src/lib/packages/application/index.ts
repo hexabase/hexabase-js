@@ -14,11 +14,11 @@ import {
 export default class Application extends HxbAbstract {
 
   /**
-   * function getAppAndDsAsync: get list application and datastore in a workspace
+   * function getProjectsAndDatastores: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async getAppAndDsAsync(workspaceId: string): Promise<AppAndDsRes> {
+  async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
     const data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,
@@ -38,11 +38,11 @@ export default class Application extends HxbAbstract {
   }
 
   /**
-   * function getAppAndDsAsync: get list application and datastore in a workspace
+   * function create: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async createAppAsync(createProjectParams: CreateProjectPl): Promise<CreateAppRes> {
+  async create(createProjectParams: CreateProjectPl): Promise<CreateAppRes> {
     const data: CreateAppRes = {
       app: undefined,
       error: undefined,

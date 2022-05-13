@@ -26,11 +26,11 @@ import {
 export default class Item extends HxbAbstract {
 
   /**
-   * function getItemsAsync: get items in datastore
+   * function get: get items in datastore
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  async getItemsAsync (getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
+  async get(getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
     const data: DsItemsRes = {
       dsItems: undefined,
       error: undefined,
@@ -50,11 +50,11 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function getItemsHistories: get items histories
+   * function getHistories: get items histories
    * @params projectId, datastoreId and itemId are requirement, historyParams is option
    * @returns ItemHistoriesRes
    */
-  async getItemsHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
+  async getHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
     const data: ItemHistoriesRes = {
       itemHistories: undefined,
       error: undefined,
@@ -98,11 +98,11 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function createNewItem: create new item
+   * function create: create new item
    * @params projectId and datastoreId is requirement, optional newItemPl
    * @returns NewItemRes
    */
-  async createNewItem(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
+  async create(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
     const data: NewItemRes = {
       itemNew: undefined,
       error: undefined,
