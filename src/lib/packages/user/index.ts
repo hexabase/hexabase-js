@@ -88,26 +88,4 @@ export default class User extends HxbAbstract {
     return data;
   }
 
-  /**
-   * function userInfoAsync: get user info by token
-   * @returns UserInfoRes
-   */
-  async get(): Promise<UserInfoRes> {
-    const data: UserInfoRes = {
-      userInfo: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtUserInfo = await this.client.request(USER_INFO);
-
-      data.userInfo = res.userInfo;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
 }

@@ -10,6 +10,7 @@ const url = process.env.URL || '';
 let tokenAu = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+let tokenU = process.env.TOKEN || '';
 describe('Auth', () => {
   describe('#login()', () => {
     it('should get field setting in Ds', async () => {
@@ -21,6 +22,28 @@ describe('Auth', () => {
         return tokenAu = token;
       } else {
         throw Error(`Need login faild to initialize sdk: ${error}`);
+      }
+    });
+  });
+  // get userinfo by token without error
+  describe('#get()', () => {
+    it('should get userinfo by token without error', async () => {
+      jest.useFakeTimers('legacy');
+      const auth = new Auth(url);
+
+      const {userInfo, error} = await auth.get(tokenU);
+
+      // expect response
+      if (userInfo) {
+
+        expect(typeof userInfo.username).toBe('string');
+        expect(typeof userInfo.email).toBe('string');
+        expect(typeof userInfo.profile_pic).toBe('string');
+        expect(typeof userInfo.u_id).toBe('string');
+        expect(typeof userInfo.current_workspace_id).toBe('string');
+        expect(typeof userInfo.is_ws_admin).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
       }
     });
   });

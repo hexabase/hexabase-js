@@ -22,3 +22,14 @@ export const APPLICATION_CREATE_PROJECT = gql`
   }
 `;
 
+export const GET_REPORTS = gql`
+  query GetReports($projectId: String!) {
+    getReports(projectId: $projectId) {
+      rp_id
+      title
+      display_order
+      hide_menu
+    }
+  }
+`;
+

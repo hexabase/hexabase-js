@@ -1,14 +1,17 @@
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   GET_APPLICATION_AND_DATASTORE,
-  APPLICATION_CREATE_PROJECT
+  APPLICATION_CREATE_PROJECT,
+  GET_REPORTS
 } from '../../graphql/application';
 import {
   AppAndDsRes,
   DtAppAndDs,
   CreateProjectPl,
   CreateAppRes,
-  DtCreateApp
+  DtCreateApp,
+  GetReportsRes,
+  DtGetReports
 } from '../../types/application';
 
 export default class Application extends HxbAbstract {
@@ -53,6 +56,30 @@ export default class Application extends HxbAbstract {
       const res: DtCreateApp = await this.client.request(APPLICATION_CREATE_PROJECT, { createProjectParams });
 
       data.app = res.applicationCreateProject;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function getReports: get reports list in project
+   * @params projectId
+   * @returns GetReportsRes
+   */
+  async getReports(projectId: string): Promise<GetReportsRes> {
+    const data: GetReportsRes = {
+      reports: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtGetReports = await this.client.request(GET_REPORTS, { projectId });
+
+      data.reports = res.getReports;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);

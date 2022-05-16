@@ -43,7 +43,7 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function dsActions: get actions in Ds
+   * function getActions: get actions in Ds
    * @params datastoreId are requirement
    * @returns DsActionRes
    */
@@ -91,7 +91,7 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function dsActionSettingAsync: get field action setting in Ds
+   * function getAction: get field action setting in Ds
    * @params datastoreId and actionIdare requirement
    * @returns DsActionSettingRes
    */

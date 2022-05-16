@@ -228,7 +228,7 @@ export default class Workspace extends HxbAbstract {
    * @param: createWorkSpaceInput: {name}
    * @returns WorkspaceIDRes
    */
-  async create(createWorkSpaceInput: CreateWsInput): Promise<WorkspaceIDRes> {
+  async create(createWsInput: CreateWsInput): Promise<WorkspaceIDRes> {
     const data: WorkspaceIDRes = {
       w_id: undefined,
       error: undefined,
@@ -236,7 +236,7 @@ export default class Workspace extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtWorkspaceID = await this.client.request( CREATE_WORKSPACE, {createWorkSpaceInput} );
+      const res: DtWorkspaceID = await this.client.request( CREATE_WORKSPACE, {createWorkSpaceInput: createWsInput} );
 
       data.w_id = res.createWorkspace?.w_id;
     } catch (error: any) {

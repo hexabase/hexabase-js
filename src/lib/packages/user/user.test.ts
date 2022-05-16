@@ -82,26 +82,4 @@ describe('User', () => {
   //     }
   //   });
   // });
-  // get userinfo by token without error
-  describe('#get()', () => {
-    it('should get userinfo by token without error', async () => {
-      jest.useFakeTimers('legacy');
-      const user = new User(url, tokenUs);
-
-      const {userInfo, error} = await user.get();
-
-      // expect response
-      if (userInfo) {
-
-        expect(typeof userInfo.username).toBe('string');
-        expect(typeof userInfo.email).toBe('string');
-        expect(typeof userInfo.profile_pic).toBe('string');
-        expect(typeof userInfo.u_id).toBe('string');
-        expect(typeof userInfo.current_workspace_id).toBe('string');
-        expect(typeof userInfo.is_ws_admin).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
 });

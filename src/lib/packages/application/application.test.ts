@@ -8,6 +8,7 @@ require('dotenv').config();
  */
 
 const url = process.env.URL || '';
+const projectId = process.env.APPLICATIONID || '';
 let tokenApp = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
@@ -65,6 +66,23 @@ describe('Application', () => {
       if (app) {
 
         expect(typeof app.project_id).toBe('string');
+      }
+      else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+
+  describe('#getReports()', () => {
+    it('should get reports in project', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+
+      const { reports, error } = await application.getReports(projectId);
+      if (reports) {
+        console.log("reports", reports)
+        expect(typeof reports[0].rp_id).toBe('string');
       }
       else {
         throw new Error(`Error: ${error}`);
