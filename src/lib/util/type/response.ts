@@ -25,3 +25,11 @@ export interface ModelRes {
   data?: ResponseOkModel;
   error?: string;
 }
+
+export interface GenericAPIError {
+  error_level?: string;
+  error_code?: string;
+  error?: string;
+  description?: string;
+  reference_id?: string;
+}

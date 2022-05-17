@@ -19,12 +19,14 @@ describe('Auth', () => {
       const auth = new Auth(url);
       const {token, error} = await auth.login({email, password});
       if (token) {
+        console.log("token",token)
         return tokenAu = token;
       } else {
         throw Error(`Need login faild to initialize sdk: ${error}`);
       }
     });
   });
+
   // get userinfo by token without error
   describe('#get()', () => {
     it('should get userinfo by token without error', async () => {
@@ -42,6 +44,24 @@ describe('Auth', () => {
         expect(typeof userInfo.u_id).toBe('string');
         expect(typeof userInfo.current_workspace_id).toBe('string');
         expect(typeof userInfo.is_ws_admin).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  // logout without error
+  describe('#logout()', () => {
+    it('should get logout user', async () => {
+      jest.useFakeTimers('legacy');
+      const auth = new Auth(url);
+
+      const {data, error} = await auth.logout(tokenU);
+
+      // expect response
+      if (data) {
+        console.log("data", data)
+        expect(typeof data.success).toBe('boolean');
       } else {
         throw new Error(`Error: ${error}`);
       }

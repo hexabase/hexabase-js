@@ -96,3 +96,9 @@ export const DS_ACTION_SETTING = gql`
   }
 `;
 
+export const UPDATE_ITEM = gql`
+  mutation DatastoreUpdateItem($itemUpdatePayload: ItemUpdatePayload!, $itemId: String!, $datastoreId: String!, $projectId: String!) {
+    datastoreUpdateItem(itemUpdatePayload: $itemUpdatePayload, itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId)
+  }
+`;
+

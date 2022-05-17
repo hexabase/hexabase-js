@@ -11,10 +11,17 @@ const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const fieldId = process.env.FIELDID || '';
+const projectId = process.env.APPLICATIONID || '';
+const itemId = process.env.ITEMID || '';
 const datastoreId = process.env.DATASTOREID || '';
 const actionId = process.env.ACTIONID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const revNoItem = process.env.REV_NO_ITEM || '';
+
+const itemUpdatePayload = {
+  rev_no: parseInt(revNoItem)
+}
 
 beforeAll( async () => {
   if (email && password) {
@@ -22,6 +29,7 @@ beforeAll( async () => {
     const auth = new Auth(url);
     const {token, error} = await auth.login({email, password});
     if (token) {
+      console.log("token", token)
       return tokenDs = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -99,6 +107,23 @@ describe('Datastore', () => {
 
         expect(typeof dsAction.workspace_id).toBe('string');
         expect(typeof dsAction.name).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#update()', () => {
+    it('should update item', async () => {
+      jest.useFakeTimers('legacy');
+      const datastore = new Datastore(url, tokenDs);
+
+      const { item, error} = await datastore.update(projectId, datastoreId, itemId, itemUpdatePayload);
+
+      // expect response
+      if (item) {
+
+        expect(typeof item).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
       }

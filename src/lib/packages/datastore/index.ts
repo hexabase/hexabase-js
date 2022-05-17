@@ -3,7 +3,8 @@ import {
   DS_ACTIONS,
   DS_FIELD_SETTING,
   DS_ACTION_SETTING,
-  DS_STATUS
+  DS_STATUS,
+  UPDATE_ITEM
 } from '../../graphql/datastore';
 import {
   DsActionRes,
@@ -13,7 +14,10 @@ import {
   DtDsActions,
   DtDsActionSetting,
   DtDsFieldSettings,
-  DtDsStatus
+  DtDsStatus,
+  DtUpdatedItem,
+  ItemUpdatePayload,
+  UpdatedItemRes
 } from '../../types/datastore';
 
 export default class Datastore extends HxbAbstract {
@@ -106,6 +110,30 @@ export default class Datastore extends HxbAbstract {
       const res: DtDsActionSetting = await this.client.request(DS_ACTION_SETTING, { actionId, datastoreId });
 
       data.dsAction = res.datastoreGetActionSetting;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function update: get field action setting in Ds
+   * @params datastoreId and actionIdare requirement
+   * @returns UpdatedItemRes
+   */
+  async update(projectId: string, datastoreId: string, itemId: string, itemUpdatePayload: ItemUpdatePayload,): Promise<UpdatedItemRes> {
+    const data: UpdatedItemRes = {
+      item: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtUpdatedItem = await this.client.request(UPDATE_ITEM, { projectId, datastoreId, itemId, itemUpdatePayload });
+
+      data.item = res.datastoreUpdateItem;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
