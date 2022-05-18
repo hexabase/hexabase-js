@@ -17,7 +17,7 @@ const createClient = async ({ url, token, email, password }: HexabaseConfig): Pr
   let tokenHx = '';
 
   if (email && password && !token) {
-    const {token, error} = await auth.loginAsync({email, password});
+    const {token, error} = await auth.login({email, password});
     if (token) {
       tokenHx = token;
     } else {

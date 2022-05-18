@@ -2,7 +2,7 @@ import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
   CREATE_NEW_ITEM,
-  DS_ITEMS, ITEM_DETAIL, ITEM_HISTORIES, ITEM_LINKED
+  DS_ITEMS, ITEM_DETAIL, ITEM_HISTORIES, ITEM_LINKED, UPDATE_ITEM
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -14,23 +14,26 @@ import {
   DtItemIdCreated,
   DtItemLinked,
   DtNewItem,
+  DtUpdatedItem,
   GetHistoryPl,
   GetItemDetailPl,
   GetItemsPl,
   ItemDetailRes,
   ItemHistoriesRes,
   ItemLinkedRes,
-  NewItemRes
+  ItemUpdatePayload,
+  NewItemRes,
+  UpdatedItemRes
 } from '../../types/item';
 
 export default class Item extends HxbAbstract {
 
   /**
-   * function getItemsAsync: get items in datastore
+   * function get: get items in datastore
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  async getItemsAsync (getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
+  async get(getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
     const data: DsItemsRes = {
       dsItems: undefined,
       error: undefined,
@@ -50,11 +53,11 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function getItemsHistories: get items histories
+   * function getHistories: get items histories
    * @params projectId, datastoreId and itemId are requirement, historyParams is option
    * @returns ItemHistoriesRes
    */
-  async getItemsHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
+  async getHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
     const data: ItemHistoriesRes = {
       itemHistories: undefined,
       error: undefined,
@@ -98,11 +101,11 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function createNewItem: create new item
+   * function create: create new item
    * @params projectId and datastoreId is requirement, optional newItemPl
    * @returns NewItemRes
    */
-  async createNewItem(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
+  async create(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
     const data: NewItemRes = {
       itemNew: undefined,
       error: undefined,
@@ -161,6 +164,30 @@ export default class Item extends HxbAbstract {
       const res: DtItemDetail = await this.client.request(ITEM_DETAIL, {datastoreId, itemId, projectId, datastoreItemDetailParams: itemDetailParams});
 
       data.itemDetails = res.getDatastoreItemDetails;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function update: get field action setting in Ds
+   * @params datastoreId and actionIdare requirement
+   * @returns UpdatedItemRes
+   */
+   async update(projectId: string, datastoreId: string, itemId: string, itemUpdatePayload: ItemUpdatePayload,): Promise<UpdatedItemRes> {
+    const data: UpdatedItemRes = {
+      item: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtUpdatedItem = await this.client.request(UPDATE_ITEM, { projectId, datastoreId, itemId, itemUpdatePayload });
+
+      data.item = res.datastoreUpdateItem;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
