@@ -19,7 +19,7 @@ import {
 export default class Datastore extends HxbAbstract {
 
   /**
-   * function dsFieldSettingsAsync: get field setting in Ds
+   * function getField: get field setting in Ds
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */

@@ -70,6 +70,8 @@
 ```bash
   auth
     - login: login with email password
+    - logout: logout user
+    - get: get infomation user by token
   
   workspace
     - get: get workspaces and current workspace id
@@ -86,6 +88,8 @@
   application
     - getProjectsAndDatastores: get app and ds
     - create: create app
+    - getReports: get reports in project
+    - getDataReport: get data of report
 
   datastore
     - getField: get field setting in Ds
@@ -99,9 +103,9 @@
     - getHistories: get items histories
     - createItemId: create Itemid
     - getItemRelated: get item related in datastore
+    - update: update item
 
   user
-    - get: get infomation user by token
     - register: get user register info by confirmationId
     - confirm: get info user confirm by confirmationId
     - getPasswordExpire: check user password is expiry
