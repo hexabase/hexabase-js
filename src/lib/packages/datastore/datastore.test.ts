@@ -19,9 +19,6 @@ const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const revNoItem = process.env.REV_NO_ITEM || '';
 
-const itemUpdatePayload = {
-  rev_no: parseInt(revNoItem)
-}
 
 beforeAll( async () => {
   if (email && password) {
@@ -107,23 +104,6 @@ describe('Datastore', () => {
 
         expect(typeof dsAction.workspace_id).toBe('string');
         expect(typeof dsAction.name).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
-  describe('#update()', () => {
-    it('should update item', async () => {
-      jest.useFakeTimers('legacy');
-      const datastore = new Datastore(url, tokenDs);
-
-      const { item, error} = await datastore.update(projectId, datastoreId, itemId, itemUpdatePayload);
-
-      // expect response
-      if (item) {
-
-        expect(typeof item).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
       }

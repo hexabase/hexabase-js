@@ -77,10 +77,6 @@ export interface DtDsActionSetting {
 export interface DtDsStatus {
   datastoreGetStatuses: [DsStatus];
 }
-export interface DtUpdatedItem {
-  datastoreUpdateItem: any;
-}
-
 
 /** export response */
 export interface DsFieldSettingsRes {
@@ -102,10 +98,4 @@ export interface DsActionSettingRes {
   dsAction?: DsActionSetting;
   error?: string;
 }
-
-export interface UpdatedItemRes {
-  item?: any;
-  error?: string;
-}
-
 

@@ -147,6 +147,10 @@ export interface DtItemDetail {
   getDatastoreItemDetails: ItemDetail;
 }
 
+export interface DtUpdatedItem {
+  datastoreUpdateItem: any;
+}
+
 /** export response */
 export interface DsItemsRes {
   dsItems?: DsItems;
@@ -174,3 +178,9 @@ export interface ItemDetailRes {
   itemDetails?: ItemDetail;
   error?: string;
 }
+
+export interface UpdatedItemRes {
+  item?: any;
+  error?: string;
+}
+

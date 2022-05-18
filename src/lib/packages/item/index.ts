@@ -2,7 +2,7 @@ import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
   CREATE_NEW_ITEM,
-  DS_ITEMS, ITEM_DETAIL, ITEM_HISTORIES, ITEM_LINKED
+  DS_ITEMS, ITEM_DETAIL, ITEM_HISTORIES, ITEM_LINKED, UPDATE_ITEM
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -14,13 +14,16 @@ import {
   DtItemIdCreated,
   DtItemLinked,
   DtNewItem,
+  DtUpdatedItem,
   GetHistoryPl,
   GetItemDetailPl,
   GetItemsPl,
   ItemDetailRes,
   ItemHistoriesRes,
   ItemLinkedRes,
-  NewItemRes
+  ItemUpdatePayload,
+  NewItemRes,
+  UpdatedItemRes
 } from '../../types/item';
 
 export default class Item extends HxbAbstract {
@@ -161,6 +164,30 @@ export default class Item extends HxbAbstract {
       const res: DtItemDetail = await this.client.request(ITEM_DETAIL, {datastoreId, itemId, projectId, datastoreItemDetailParams: itemDetailParams});
 
       data.itemDetails = res.getDatastoreItemDetails;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function update: get field action setting in Ds
+   * @params datastoreId and actionIdare requirement
+   * @returns UpdatedItemRes
+   */
+   async update(projectId: string, datastoreId: string, itemId: string, itemUpdatePayload: ItemUpdatePayload,): Promise<UpdatedItemRes> {
+    const data: UpdatedItemRes = {
+      item: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtUpdatedItem = await this.client.request(UPDATE_ITEM, { projectId, datastoreId, itemId, itemUpdatePayload });
+
+      data.item = res.datastoreUpdateItem;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
