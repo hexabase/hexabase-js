@@ -22,7 +22,7 @@ export default class User extends HxbAbstract {
    * @param confirmationId
    * @returns UserRegisterRes
    */
-  async userRegisterAsync(confirmationId: string): Promise<UserRegisterRes> {
+  async register(confirmationId: string): Promise<UserRegisterRes> {
     const data: UserRegisterRes = {
       userRegister: undefined,
       error: undefined,
@@ -42,10 +42,10 @@ export default class User extends HxbAbstract {
   }
 
   /**
-   * function userPasswordExAsync: check user password is expiry
+   * function getPasswordExpire: check user password is expiry
    * @returns UserPasswordExpiryRes
    */
-  async userPasswordExAsync(): Promise<UserPassExRes> {
+  async getPasswordExpire(): Promise<UserPassExRes> {
     const data: UserPassExRes = {
       userPassEx: undefined,
       error: undefined,
@@ -65,11 +65,11 @@ export default class User extends HxbAbstract {
   }
 
   /**
-   * function userConfirmAsync: get info user confirm by confirmationId
+   * function userConfirm: get info user confirm by confirmationId
    * @param confirmationId
    * @returns UserConfirmationsRes
    */
-  async userConfirmAsync(confirmationId: string): Promise<UserConfirmRes> {
+  async userConfirm(confirmationId: string): Promise<UserConfirmRes> {
     const data: UserConfirmRes = {
       userConfirm: undefined,
       error: undefined,
@@ -88,26 +88,4 @@ export default class User extends HxbAbstract {
     return data;
   }
 
-  /**
-   * function userInfoAsync: get user info by token
-   * @returns UserInfoRes
-   */
-  async userInfoAsync(): Promise<UserInfoRes> {
-  const data: UserInfoRes = {
-    userInfo: undefined,
-    error: undefined,
-  };
-
-  // handle call graphql
-  try {
-    const res: DtUserInfo = await this.client.request(USER_INFO);
-
-    data.userInfo = res.userInfo;
-  } catch (error: any) {
-
-    data.error = JSON.stringify(error.response.errors);
-  }
-
-  return data;
-}
 }

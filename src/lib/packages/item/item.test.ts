@@ -11,12 +11,14 @@ const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const applicationId = process.env.APPLICATIONID || '';
+// const projectId = process.env.APPLICATIONID || '';
 const datastoreId = process.env.DATASTOREID || '';
 const fieldId = process.env.FIELDID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const itemId = process.env.ITEMID || '';
 const actionId = process.env.ACTIONID || '';
+const revNoItem = process.env.REV_NO_ITEM || '';
 
 // local variable in file for testing
 const getItemsParameters = {
@@ -28,6 +30,10 @@ const historyParams = {
   'from_index': 0,
   'to_index': 1
 };
+
+const itemUpdatePayload = {
+  rev_no: parseInt(revNoItem)
+}
 
 const newItemActionParameters = {
   'action_id': `${actionId}`,
@@ -49,7 +55,7 @@ const newItemActionParameters = {
 beforeAll( async () => {
   if (email && password) {
     const auth = new Auth(url);
-    const {token, error} = await auth.loginAsync({email, password});
+    const {token, error} = await auth.login({email, password});
     if (token) {
       return tokenDs = token;
     } else {
@@ -59,12 +65,12 @@ beforeAll( async () => {
 });
 
 describe('Item', () => {
-  describe('#getItemsAsync()', () => {
+  describe('#get()', () => {
     it('should get items in Ds', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {dsItems, error} = await item.getItemsAsync(getItemsParameters, datastoreId, applicationId);
+      const {dsItems, error} = await item.get(getItemsParameters, datastoreId, applicationId);
 
       // expect response
       if (dsItems) {
@@ -76,12 +82,12 @@ describe('Item', () => {
     });
   });
 
-  describe('#getItemsHistories()', () => {
+  describe('#getHistories()', () => {
     it('should get items histories', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {itemHistories, error} = await item.getItemsHistories(applicationId, datastoreId, itemId, historyParams);
+      const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemId, historyParams);
 
       // expect response
       if (itemHistories) {
@@ -109,11 +115,11 @@ describe('Item', () => {
     });
   });
 
-  describe('#createItemId()', () => {
+  describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {itemNew, error} = await item.createNewItem(applicationId, datastoreId, newItemActionParameters);
+      const {itemNew, error} = await item.create(applicationId, datastoreId, newItemActionParameters);
 
       // expect response
       if (itemNew) {
@@ -158,4 +164,21 @@ describe('Item', () => {
     });
   });
 
+
+  describe('#update()', () => {
+    it('should update item', async () => {
+      jest.useFakeTimers('legacy');
+      const itemClass = new Item(url, tokenDs);
+
+      const { item, error} = await itemClass.update(applicationId, datastoreId, itemId, itemUpdatePayload);
+
+      // expect response
+      if (item) {
+
+        expect(typeof item).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 });

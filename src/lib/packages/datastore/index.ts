@@ -3,7 +3,7 @@ import {
   DS_ACTIONS,
   DS_FIELD_SETTING,
   DS_ACTION_SETTING,
-  DS_STATUS
+  DS_STATUS,
 } from '../../graphql/datastore';
 import {
   DsActionRes,
@@ -13,19 +13,19 @@ import {
   DtDsActions,
   DtDsActionSetting,
   DtDsFieldSettings,
-  DtDsStatus
+  DtDsStatus,
 } from '../../types/datastore';
 
 export default class Datastore extends HxbAbstract {
 
   /**
-   * function dsFieldSettingsAsync: get field setting in Ds
+   * function getField: get field setting in Ds
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */
-  async getFieldSettingsAsync(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
+  async getField(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
     const data: DsFieldSettingsRes = {
-      dsFieldSettings: undefined,
+      dsField: undefined,
       error: undefined,
     };
 
@@ -33,7 +33,7 @@ export default class Datastore extends HxbAbstract {
     try {
       const res: DtDsFieldSettings = await this.client.request(DS_FIELD_SETTING, { fieldId, datastoreId });
 
-      data.dsFieldSettings = res.datastoreGetFieldSettings;
+      data.dsField = res.datastoreGetFieldSettings;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
@@ -43,11 +43,11 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function dsActionsAsync: get actions in Ds
+   * function getActions: get actions in Ds
    * @params datastoreId are requirement
    * @returns DsActionRes
    */
-  async getActionsAsync(datastoreId: string): Promise<DsActionRes> {
+  async getActions(datastoreId: string): Promise<DsActionRes> {
     const data: DsActionRes = {
       dsActions: undefined,
       error: undefined,
@@ -67,11 +67,11 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function dsStatusAsync: get statuses in Ds
+   * function getStatuses: get statuses in Ds
    * @params datastoreId are requirement
    * @returns DsStatusRes
    */
-  async getStatusesAsync(datastoreId: string): Promise<DsStatusRes> {
+  async getStatuses(datastoreId: string): Promise<DsStatusRes> {
     const data: DsStatusRes = {
       dsStatuses: undefined,
       error: undefined,
@@ -91,13 +91,13 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function dsActionSettingAsync: get field action setting in Ds
+   * function getAction: get field action setting in Ds
    * @params datastoreId and actionIdare requirement
    * @returns DsActionSettingRes
    */
-  async getActionSettingAsync(datastoreId: string, actionId: string): Promise<DsActionSettingRes> {
+  async getAction(datastoreId: string, actionId: string): Promise<DsActionSettingRes> {
     const data: DsActionSettingRes = {
-      dsActionSettings: undefined,
+      dsAction: undefined,
       error: undefined,
     };
 
@@ -105,7 +105,7 @@ export default class Datastore extends HxbAbstract {
     try {
       const res: DtDsActionSetting = await this.client.request(DS_ACTION_SETTING, { actionId, datastoreId });
 
-      data.dsActionSettings = res.datastoreGetActionSetting;
+      data.dsAction = res.datastoreGetActionSetting;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
