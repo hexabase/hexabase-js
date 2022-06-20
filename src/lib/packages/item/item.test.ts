@@ -33,7 +33,7 @@ const historyParams = {
 
 const itemUpdatePayload = {
   rev_no: parseInt(revNoItem)
-}
+};
 
 const newItemActionParameters = {
   'action_id': `${actionId}`,

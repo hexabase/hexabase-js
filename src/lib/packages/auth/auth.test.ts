@@ -10,7 +10,7 @@ const url = process.env.URL || '';
 let tokenAu = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-let tokenU = process.env.TOKEN || '';
+const tokenU = process.env.TOKEN || '';
 describe('Auth', () => {
   describe('#login()', () => {
     it('should get field setting in Ds', async () => {
@@ -19,7 +19,6 @@ describe('Auth', () => {
       const auth = new Auth(url);
       const {token, error} = await auth.login({email, password});
       if (token) {
-        console.log("token",token)
         return tokenAu = token;
       } else {
         throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -60,7 +59,6 @@ describe('Auth', () => {
 
       // expect response
       if (data) {
-        console.log("data", data)
         expect(typeof data.success).toBe('boolean');
       } else {
         throw new Error(`Error: ${error}`);

@@ -97,7 +97,6 @@ describe('Application', () => {
 
       const { dataReport, error } = await application.getDataReport(projectId, reportId);
       if (dataReport) {
-        console.log("dataReport", dataReport)
         expect(typeof dataReport.report_title).toBe('string');
       }
       else {

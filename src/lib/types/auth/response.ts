@@ -1,5 +1,5 @@
 import { TokenModel } from '../../util/type/response';
-import { ResponseOkModel } from '../../util/type/response'
+import { ResponseOkModel } from '../../util/type/response';
 /** Data response from request graphql */
 export interface DtLogin {
   login: TokenModel;
@@ -12,5 +12,5 @@ export interface LoginRes {
 }
 
 export interface DtLogOut {
-  logout: ResponseOkModel
+  logout: ResponseOkModel;
 }
