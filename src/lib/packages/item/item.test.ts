@@ -59,7 +59,7 @@ beforeAll( async () => {
     if (token) {
       return tokenDs = token;
     } else {
-      throw Error(`Need login faild to initialize sdk: ${error}`);
+      throw Error(`Login to initialize sdk: ${error}`);
     }
   }
 });
