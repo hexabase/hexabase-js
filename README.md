@@ -12,7 +12,7 @@
   - create file ```.env``` from ```.env.test``` then Config file testing at ```.env```:
     ```bash
       - cp .env.test .env
-      - config enviroment in .env file
+      - config environment in .env file
     ```
   - Run test hexabase client:
     ```bash
@@ -28,7 +28,7 @@
     ```
   - Run test hexabase auth:
     ```bash
-      - yarn run test:dataauthstore
+      - yarn run test:auth
       or
       - yarn jest src/lib/packages/auth/auth.test.ts
     ```
@@ -50,7 +50,7 @@
       or
       - yarn jest src/lib/packages/datastore/datastore.test.ts
     ```
-### - Initialize for SDK Packge
+### - Initialize for SDK Package
 #### - Requirement:
   - credentials must obtain from hexabase: 
     ```bash
@@ -58,20 +58,12 @@
       - token
     ```
 
-### - Using SDK
-  - Configuration:
-    ```bash
-      import { Hexabase } from 'hexabase-sdk'
-
-      const hexabase = Hexabase.createClient({url, token});
-    ```
-
 #### functions created:
 ```bash
   auth
     - login: login with email password
     - logout: logout user
-    - get: get infomation user by token
+    - get: get information user by token
   
   workspace
     - get: get workspaces and current workspace id
@@ -79,9 +71,9 @@
     - getCurrent: get workspaces id current
     - create: created workspace 
     - getPasswordPolicy: get workspace password policy
-    - getFunctionality: get workspace functionlity
+    - getFunctionality: get workspace functionality
     - getUsage: get workspace usage
-    - getGroupChildren: get workspace childrent in group
+    - getGroupChildren: get workspace children in group
     - getTaskQueueList: get queue list
     - getTaskQueueStatus: get task queue status
 

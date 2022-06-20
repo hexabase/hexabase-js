@@ -33,16 +33,15 @@ export const GET_REPORTS = gql`
   }
 `;
 
-
 export const REPORT_DEFAULT = gql`
-  query ReportData($reportId: String!, $projectId: String!, $reportDataPayload: ReportDataPayload) {
-    reportData(reportId: $reportId, projectId: $projectId, reportDataPayload: $reportDataPayload) {
+  query ReportData($reportId: String!, $reportDataProjectId2: String!, $reportDataPayload: ReportDataPayload) {
+    reportData(reportId: $reportId, projectId: $reportDataProjectId2, reportDataPayload: $reportDataPayload) {
       errors {
-        reference_id
-        error
-      description
         error_level
         error_code
+        reference_id
+        error
+        description
       }
       error
       report_title
@@ -51,49 +50,47 @@ export const REPORT_DEFAULT = gql`
       item_index_to
       merge_cells {
         colspan
+        rowspan
+        col
         row
-      col
-      rowspan
       }
       report_results
       report_fields {
         title
-        display_id
-      display_id
-      rpf_id
-        align
-      display_type
-        negative_sign_type
-        width
+        rpf_id
+        display_type
         data_type
+        display_id
+        align
+        width
+        negative_sign_type
         num_format
         num_info {
           no_comma
+          suffix
           prefix
-        suffix
         }
         conditions {
+          font_weight
           cond_rpf_id
+          condition
+          cond_type
+          value
           bg_color
-        cond_type
-        condition
           ft_color
           use_field_ref
+          value_rpf_id
+          apply_row
           font_size
           font_style
           negative_sign_type
           num_format
-          font_weight
-          value_rpf_id
-          apply_row
-          value
         }
         f_id
         d_id
         merge_cells
-      merge_cells
+        hide
         disable_search
-      hide
         use_integrated_report
         is_cross_key
       }
