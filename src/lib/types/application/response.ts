@@ -72,7 +72,8 @@ export interface ReportUIField {
 }
 
 export interface ReportDefaultData {
-  error?: [GenericAPIError];
+  errors?: [GenericAPIError];
+  error?: string;
   report_title?: string;
   totalItems?: number;
   item_index_from?: number;
