@@ -177,7 +177,7 @@ export default class Item extends HxbAbstract {
    * @params datastoreId and actionIdare requirement
    * @returns UpdatedItemRes
    */
-   async update(projectId: string, datastoreId: string, itemId: string, itemUpdatePayload: ItemUpdatePayload,): Promise<UpdatedItemRes> {
+   async update(projectId: string, datastoreId: string, itemId: string, itemUpdatePayload: ItemUpdatePayload): Promise<UpdatedItemRes> {
     const data: UpdatedItemRes = {
       item: undefined,
       error: undefined,

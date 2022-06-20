@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
-import { DtUserInfo, LoginInputPayload } from '../../types/user';
+import { DtUserInfo } from '../../types/user';
 import { LOGIN } from '../../graphql/auth';
 import { USER_INFO } from '../../graphql/user';
 import { DtLogin, LoginRes } from '../../types/auth';

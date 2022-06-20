@@ -31,24 +31,6 @@ beforeAll( async () => {
 // testing createClient
 describe('Hexabase', () => {
   describe('#createClient()', () => {
-    it('auth: get createClient and testing', async () => {
-      jest.useFakeTimers('legacy');
-      const hexabase = await createClient({ url, email, password });
-      // const hexabase = await createClient({ url, token: tokenClient });
-
-      console.log('Test: class auth');
-      const {userInfo, error} = await hexabase.users.get();
-      if (userInfo) {
-
-        // console.log('userInfo', userInfo);
-        expect(typeof userInfo.email).toBe('string');
-        expect(typeof userInfo.current_workspace_id).toBe('string');
-        expect(typeof userInfo.profile_pic).toBe('string');
-        expect(typeof userInfo.is_ws_admin).toBe('string');
-        expect(typeof userInfo.u_id).toBe('string');
-      }
-    });
-
     it('application: get createClient and testing', async () => {
       jest.useFakeTimers('legacy');
       // const hexabase = await createClient({ url, email, password });
