@@ -26,7 +26,6 @@ beforeAll( async () => {
     const auth = new Auth(url);
     const {token, error} = await auth.login({email, password});
     if (token) {
-      console.log("token", token)
       return tokenDs = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);

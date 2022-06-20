@@ -54,7 +54,7 @@ export default class Auth {
     try {
       this.client.setHeader(
         'authorization', `Bearer ${token}`
-      )
+      );
       const res: DtUserInfo = await this.client.request(USER_INFO);
 
       data.userInfo = res.userInfo;
@@ -81,7 +81,7 @@ export default class Auth {
     try {
       this.client.setHeader(
         'authorization', `Bearer ${token}`
-      )
+      );
       const res: DtLogOut = await this.client.request(LOG_OUT);
 
       data.data = res.logout;
