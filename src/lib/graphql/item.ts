@@ -57,6 +57,30 @@ export const CREATE_NEW_ITEM = gql`
   }
 `;
 
+export const DELETE_ITEM = gql`
+  mutation DatastoreDeleteItem($deleteItemReq: DeleteItemReq!, $itemId: String!, $datastoreId: String!, $projectId: String!) {
+    datastoreDeleteItem(deleteItemReq: $deleteItemReq, itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId) {
+      error
+    }
+  }
+`
+
+export const DATASTORE_UPDATE_ITEM = gql`
+  mutation DatastoreUpdateItem(
+    $itemActionParameters: ItemActionParameters!
+    $itemId: String!
+    $datastoreId: String!
+    $projectId: String!
+  ) {
+    datastoreUpdateItem(
+      ItemActionParameters: $itemActionParameters
+      itemId: $itemId
+      datastoreId: $datastoreId
+      projectId: $projectId
+    )
+  }
+`;
+
 export const ITEM_LINKED = gql`
   query DatastoreGetLinkedItems($linkedDatastoreId: String!, $itemId: String!, $datastoreId: String!) {
     datastoreGetLinkedItems(linkedDatastoreId: $linkedDatastoreId, itemId: $itemId, datastoreId: $datastoreId) {

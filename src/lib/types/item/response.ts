@@ -1,4 +1,4 @@
-import {FieldNameENJP} from '../../util/type'
+import {FieldNameENJP, ResponseOkModel} from '../../util/type'
 export interface DsItems {
   items: any;
   totalItems: number;
@@ -131,6 +131,12 @@ export interface DtNewItem {
 }
 export interface DtItemLinked {
   datastoreGetLinkedItems: ItemLinked;
+}
+export interface DtDeleteItem {
+  datastoreDeleteItem: ResponseOkModel;
+}
+export interface DtUpdateItem {
+  datastoreUpdateItem: ResponseOkModel;
 }
 
 /** export response */

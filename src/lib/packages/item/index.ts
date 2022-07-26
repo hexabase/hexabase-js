@@ -1,20 +1,27 @@
+import { ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
   CREATE_NEW_ITEM,
+  DATASTORE_UPDATE_ITEM,
+  DELETE_ITEM,
   DS_ITEMS, ITEM_HISTORIES, ITEM_LINKED
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
   CreateNewItemPl,
+  DeleteItemReq,
   DsItemsRes,
+  DtDeleteItem,
   DtDsItems,
   DtItemHistories,
   DtItemIdCreated,
   DtItemLinked,
   DtNewItem,
+  DtUpdateItem,
   GetHistoryPl,
   GetItemsPl,
+  ItemActionParameters,
   ItemHistoriesRes,
   ItemLinkedRes,
   NewItemRes
@@ -134,6 +141,56 @@ export default class Item extends HxbAbstract {
       const res: DtItemLinked = await this.client.request(ITEM_LINKED, {datastoreId, itemId, linkedDatastoreId});
 
       data.itemLinked = res.datastoreGetLinkedItems
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function deleteItem: delete item in datastore
+   * @params projectId, datastoreId, itemId and deleteItemReq is requirement
+   * @returns ModelRes
+   */
+   async delete( projectId: string, datastoreId: string, itemId: string, deleteItemReq: DeleteItemReq): Promise<ModelRes> {
+    let data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+
+    // handle call graphql
+    try {
+      const res: DtDeleteItem = await this.client.request(DELETE_ITEM, {datastoreId, itemId, projectId, deleteItemReq});
+
+      data.data = res.datastoreDeleteItem
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function update: delete item in datastore
+   * @params projectId, datastoreId, itemId and itemActionParameters is requirement
+   * @returns ModelRes
+   */
+   async update( projectId: string, datastoreId: string, itemId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
+    let data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+
+    // handle call graphql
+    try {
+      const res: DtUpdateItem = await this.client.request(DATASTORE_UPDATE_ITEM, {datastoreId, itemId, projectId, itemActionParameters});
+
+      data.data = res.datastoreUpdateItem
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
