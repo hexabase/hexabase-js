@@ -1,0 +1,94 @@
+version: 2.1
+
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/notify:
+        channel: 'deployments'
+        mentions: '<@U0PKAAQBB>, <@U0ADZSDP1>'
+        event: fail
+        template: basic_fail_1
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:8.9.1
+
+orbs:
+  slack: circleci/slack@4.4.2
+
+jobs:
+  build-dep:
+    <<: *defaults
+    steps:
+
+      - add_ssh_keys:
+          fingerprints:
+            - "2c:b8:39:34:7c:5d:51:65:94:12:f3:2d:9f:8e:01:85"
+
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+         # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      # - run:
+      #     name: Set Github info
+      #     command: |
+      #        git config --global user.name circleci
+      #        git config --global user.email circleci@hexabase.com
+
+      # - run:
+      #     name: Bump package version
+      #     command: |
+      #       npm version patch --preid=alpha -m "Bump version number to %s [ci skip]"
+      #       git push origin develop
+
+      - run:
+          name: Install dep
+          command: npm install
+
+      - run:
+          name: Build package
+          command: npm run build
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+  publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/repo/.npmrc
+
+      - run:
+          name: Publish package
+          command: npm publish --access public
+
+workflows:
+  publish-to-npm-registry:
+    jobs:
+      - build-dep:
+          filters:
+            branches:
+              only: master
+          <<: *slack-fail-post-step
+          context: slack-secrets
+      - publish:
+          requires:
+            - build-dep
+          filters:
+            branches:
+              only: master
+          <<: *slack-fail-post-step
+          context: slack-secrets

@@ -5,7 +5,11 @@ import {
   CREATE_NEW_ITEM,
   DATASTORE_UPDATE_ITEM,
   DELETE_ITEM,
-  DS_ITEMS, ITEM_HISTORIES, ITEM_LINKED
+  DS_ITEMS,
+  ITEM_DETAIL,
+  ITEM_HISTORIES,
+  ITEM_LINKED,
+  UPDATE_ITEM
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -14,35 +18,41 @@ import {
   DsItemsRes,
   DtDeleteItem,
   DtDsItems,
+  DtItemDetail,
   DtItemHistories,
   DtItemIdCreated,
   DtItemLinked,
   DtNewItem,
   DtUpdateItem,
+  DtUpdatedItem,
   GetHistoryPl,
+  GetItemDetailPl,
   GetItemsPl,
   ItemActionParameters,
+  ItemDetailRes,
   ItemHistoriesRes,
   ItemLinkedRes,
-  NewItemRes
+  ItemUpdatePayload,
+  NewItemRes,
+  UpdatedItemRes
 } from '../../types/item';
 
 export default class Item extends HxbAbstract {
 
   /**
-   * function getItemsAsync: get items in datastore
+   * function get: get items in datastore
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  async getItemsAsync(getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
-    let data: DsItemsRes = {
+  async get(getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
+    const data: DsItemsRes = {
       dsItems: undefined,
       error: undefined,
     };
 
     // handle call graphql
     try {
-      const res: DtDsItems = await this.client.request(DS_ITEMS, { getItemsParameters, datastoreId, projectId });
+      const res: DtDsItems = await this.client.request( DS_ITEMS, { getItemsParameters, datastoreId, projectId } );
 
       data.dsItems = res.datastoreGetDatastoreItems;
     } catch (error: any) {
@@ -54,12 +64,12 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function getItemsHistories: get items histories
+   * function getHistories: get items histories
    * @params projectId, datastoreId and itemId are requirement, historyParams is option
    * @returns ItemHistoriesRes
    */
-  async getItemsHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
-    let data: ItemHistoriesRes = {
+  async getHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
+    const data: ItemHistoriesRes = {
       itemHistories: undefined,
       error: undefined,
     };
@@ -83,7 +93,7 @@ export default class Item extends HxbAbstract {
    * @returns CreatedItemIdRes
    */
   async createItemId(datastoreId: string): Promise<CreatedItemIdRes> {
-    let data: CreatedItemIdRes = {
+    const data: CreatedItemIdRes = {
       item_id: undefined,
       error: undefined,
     };
@@ -102,12 +112,12 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function createNewItem: create new item
+   * function create: create new item
    * @params projectId and datastoreId is requirement, optional newItemPl
    * @returns NewItemRes
    */
-  async createNewItem(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
-    let data: NewItemRes = {
+  async create(projectId: string, datastoreId: string, newItemPl: CreateNewItemPl): Promise<NewItemRes> {
+    const data: NewItemRes = {
       itemNew: undefined,
       error: undefined,
     };
@@ -130,8 +140,8 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId and linkedDatastoreId is requirement
    * @returns ItemLinkedRes
    */
-   async getItemRelated( datastoreId: string, itemId:string, linkedDatastoreId: string): Promise<ItemLinkedRes> {
-    let data: ItemLinkedRes = {
+   async getItemRelated( datastoreId: string, itemId: string, linkedDatastoreId: string ): Promise<ItemLinkedRes> {
+    const data: ItemLinkedRes = {
       itemLinked: undefined,
       error: undefined,
     };
@@ -140,7 +150,31 @@ export default class Item extends HxbAbstract {
     try {
       const res: DtItemLinked = await this.client.request(ITEM_LINKED, {datastoreId, itemId, linkedDatastoreId});
 
-      data.itemLinked = res.datastoreGetLinkedItems
+      data.itemLinked = res.datastoreGetLinkedItems;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function getItemDetail: get item detail
+   * @params datastoreId, itemId is requirement. projectId, datastoreItemDetailParams are options
+   * @returns ItemDetailRes
+   */
+   async getItemDetail( datastoreId: string, itemId: string, projectId?: string, itemDetailParams?: GetItemDetailPl): Promise<ItemDetailRes> {
+    const data: ItemDetailRes = {
+      itemDetails: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtItemDetail = await this.client.request(ITEM_DETAIL, {datastoreId, itemId, projectId, datastoreItemDetailParams: itemDetailParams});
+
+      data.itemDetails = res.getDatastoreItemDetails;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);

@@ -2,12 +2,16 @@ import Auth from './lib/packages/auth';
 import Workspace from './lib/packages/workspace';
 import User from './lib/packages/user';
 import Application from './lib/packages/application';
+import Datastore from './lib/packages/datastore';
+import Item from './lib/packages/item';
 
 export default class HexabaseClient  {
   public auth: Auth;
-  public user: User;
-  public application: Application;
-  public workspace: Workspace;
+  public users: User;
+  public applications: Application;
+  public workspaces: Workspace;
+  public items: Item;
+  public datastores: Datastore;
   constructor(
     protected urlHxb: string,
     protected tokenHxb: string
@@ -19,9 +23,11 @@ export default class HexabaseClient  {
     this.tokenHxb = tokenHxb;
 
     this.auth = this._initAuth();
-    this.user = this._initUser();
-    this.application = this._initApplication();
-    this.workspace = this._initWorkspace();
+    this.users = this._initUser();
+    this.applications = this._initApplication();
+    this.workspaces = this._initWorkspace();
+    this.items = this._initItem();
+    this.datastores = this._initDatastore();
   }
 
   /**
@@ -29,7 +35,7 @@ export default class HexabaseClient  {
    * @returns new Auth
    */
   public _initAuth() {
-    return new Auth(this.urlHxb, this.tokenHxb);
+    return new Auth(this.urlHxb);
   }
 
   /**
@@ -54,6 +60,22 @@ export default class HexabaseClient  {
    */
   public _initApplication() {
     return new Application(this.urlHxb, this.tokenHxb);
+  }
+
+  /**
+   * initialize class Application
+   * @returns new Application
+   */
+  public _initDatastore() {
+    return new Datastore(this.urlHxb, this.tokenHxb);
+  }
+
+  /**
+   * initialize class Application
+   * @returns new Application
+   */
+  public _initItem() {
+    return new Item(this.urlHxb, this.tokenHxb);
   }
 
 }

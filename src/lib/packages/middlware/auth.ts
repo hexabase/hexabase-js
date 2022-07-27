@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
-import { DtUserInfo, LoginInputPayload } from '../../types/user';
+import { DtUserInfo } from '../../types/user';
 import { LOGIN } from '../../graphql/auth';
 import { USER_INFO } from '../../graphql/user';
 import { DtLogin, LoginRes } from '../../types/auth';
@@ -17,30 +17,8 @@ export default class AuthMw {
     this.client = new GraphQLClient(this.urlGr);
   }
 
-  /**
-   * function loginAsync: get user info by token
-   * @returns TokenModel
-   */
-  async loginAsync(loginInput: LoginInputPayload): Promise<LoginRes> {
-    let data: LoginRes = {
-      token: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtLogin = await this.client.request(LOGIN, { loginInput });
-      data.token = res.login.token;
-    } catch(error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
   async userInfoAsync(token: string): Promise<UserInfoRes> {
-    let data: UserInfoRes = {
+    const data: UserInfoRes = {
       userInfo: undefined,
       error: undefined,
     };
@@ -51,7 +29,7 @@ export default class AuthMw {
 
       data.userInfo = res.userInfo;
     } catch (error: any) {
-      
+
       data.error = JSON.stringify(error.response.errors);
     }
 

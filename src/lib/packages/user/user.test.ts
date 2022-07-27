@@ -1,4 +1,5 @@
 import User from '.';
+import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
@@ -13,10 +14,10 @@ const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
 beforeAll( async () => {
-  if(email && password) {
+  if (email && password) {
     console.log('[email, password]: ', email, password);
-    const authMw = new AuthMw(url);
-    const {token, error} = await authMw.loginAsync({email, password});
+    const auth = new Auth(url);
+    const {token, error} = await auth.login({email, password});
     if (token) {
       return tokenUs = token;
     } else {
@@ -26,38 +27,36 @@ beforeAll( async () => {
 });
 // testing get user register info by confirmId
 describe('User', () => {
-  // describe('#userRegisterAsync()', () => {
+  // describe('#register()', () => {
   //   it('should get user register info by confirm id without error', async () => {
   //     jest.useFakeTimers('legacy');
   //     const user = new User(url, tokenUs);
 
   //     /** check user register */
-  //     const {userRegister, error} = await user.userRegisterAsync(confirmationId);
+  //     const {userRegister, error} = await user.register(confirmationId);
 
   //     // expect response respUserRegister
-  //     if(userRegister) {
-  //       console.log('userRegister: ', userRegister);
-        
+  //     if (userRegister) {
+
   //       expect(typeof userRegister.user.id).toBe('string');
   //       expect(typeof userRegister.user.email).toBe('string');
-  //     }else{
+  //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
   //   });
   // });
 
-  describe('#respUserPasswordEx()', () => {
+  describe('#getPasswordExpire()', () => {
     it('should get user password expiry without error', async () => {
       jest.useFakeTimers('legacy');
       const user = new User(url, tokenUs);
 
       /** check user password expiry */
-      const {userPassEx, error} = await user.userPasswordExAsync();
+      const {userPassEx, error} = await user.getPasswordExpire();
 
-      // expect response respUserPasswordEx
+      // expect response getPasswordExpire
       if (userPassEx) {
-        // console.log('userPassEx: ', userPassEx);
-        
+
         expect(typeof userPassEx.is_expired).toBe('boolean');
       } else {
         throw new Error(`Error: ${error}`);
@@ -65,21 +64,20 @@ describe('User', () => {
     });
   });
 
-  // describe('#userConfirmAsync()', () => {
+  // describe('#userConfirm()', () => {
   //   it('should get user password expiry without error', async () => {
   //     jest.useFakeTimers('legacy');
   //     const user = new User(url, tokenUs);
 
   //     /** check user password expiry */
-  //     const {userConfirm, error} = await user.userConfirmAsync(confirmationId);
+  //     const {userConfirm, error} = await user.userConfirm(confirmationId);
 
   //     // expect response userConfirmAsync
-  //     if(userConfirm) {
-  //       console.log('userConfirm: ', userConfirm);
-        
+  //     if (userConfirm) {
+
   //       expect(typeof userConfirm.user.email).toBe('string');
   //       expect(typeof userConfirm.user.id).toBe('string');
-  //     }else{
+  //     } else {
   //       throw new Error(`Error: ${error}`);
   //     }
   //   });

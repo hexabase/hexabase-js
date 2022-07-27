@@ -2,11 +2,7 @@ export interface UserInfoPayload {
   token: string;
 }
 
-export interface LoginInputPayload {
+export interface LoginPayload {
   email: string;
   password: string;
 }
-
-// export interface LoginInputPayload {
-//   loginInput: LoginInput;
-// }

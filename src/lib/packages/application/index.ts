@@ -1,25 +1,32 @@
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   GET_APPLICATION_AND_DATASTORE,
-  APPLICATION_CREATE_PROJECT
+  APPLICATION_CREATE_PROJECT,
+  GET_REPORTS,
+  REPORT_DEFAULT
 } from '../../graphql/application';
 import {
   AppAndDsRes,
   DtAppAndDs,
   CreateProjectPl,
   CreateAppRes,
-  DtCreateApp
+  DtCreateApp,
+  GetReportsRes,
+  DtGetReports,
+  ReportDataPayload,
+  ReportDataRes,
+  DtReportData
 } from '../../types/application';
 
 export default class Application extends HxbAbstract {
 
   /**
-   * function getAppAndDsAsync: get list application and datastore in a workspace
+   * function getProjectsAndDatastores: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async getAppAndDsAsync(workspaceId: string): Promise<AppAndDsRes> {
-    let data: AppAndDsRes = {
+  async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
+    const data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,
     };
@@ -38,12 +45,12 @@ export default class Application extends HxbAbstract {
   }
 
   /**
-   * function getAppAndDsAsync: get list application and datastore in a workspace
+   * function create: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async createAppAsync(createProjectParams: CreateProjectPl): Promise<CreateAppRes> {
-    let data: CreateAppRes = {
+  async create(createProjectParams: CreateProjectPl): Promise<CreateAppRes> {
+    const data: CreateAppRes = {
       app: undefined,
       error: undefined,
     };
@@ -53,6 +60,54 @@ export default class Application extends HxbAbstract {
       const res: DtCreateApp = await this.client.request(APPLICATION_CREATE_PROJECT, { createProjectParams });
 
       data.app = res.applicationCreateProject;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function getReports: get reports list in project
+   * @params projectId
+   * @returns GetReportsRes
+   */
+  async getReports(projectId: string): Promise<GetReportsRes> {
+    const data: GetReportsRes = {
+      reports: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtGetReports = await this.client.request(GET_REPORTS, { projectId });
+
+      data.reports = res.getReports;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function getDataReport: get data report by report id in project
+   * @params projectId, reportId, reportDataPayload
+   * @returns ReportDataRes
+   */
+  async getDataReport(projectId: string, reportId: string, reportDataPayload?: ReportDataPayload): Promise<ReportDataRes> {
+    const data: ReportDataRes = {
+      dataReport: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtReportData = await this.client.request(REPORT_DEFAULT, { projectId, reportId, reportDataPayload });
+
+      data.dataReport = res.reportData;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);

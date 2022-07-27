@@ -1,13 +1,16 @@
 import {
   USER_CONFIRMATIONS,
+  USER_INFO,
   USER_PASSWORD_EXPIRY,
   USER_REGISTER
 } from '../../graphql/user';
 import {
   DtUserConfirm,
+  DtUserInfo,
   DtUserPassEx,
   DtUserRegister,
   UserConfirmRes,
+  UserInfoRes,
   UserPassExRes,
   UserRegisterRes
 } from '../../types/user';
@@ -19,8 +22,8 @@ export default class User extends HxbAbstract {
    * @param confirmationId
    * @returns UserRegisterRes
    */
-  async userRegisterAsync(confirmationId: string): Promise<UserRegisterRes> {
-    let data: UserRegisterRes = {
+  async register(confirmationId: string): Promise<UserRegisterRes> {
+    const data: UserRegisterRes = {
       userRegister: undefined,
       error: undefined,
     };
@@ -30,7 +33,7 @@ export default class User extends HxbAbstract {
       const res: DtUserRegister = await this.client.request(USER_REGISTER, { confirmationId });
 
       data.userRegister = res.userRegister;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
@@ -39,11 +42,11 @@ export default class User extends HxbAbstract {
   }
 
   /**
-   * function userPasswordExAsync: check user password is expiry
+   * function getPasswordExpire: check user password is expiry
    * @returns UserPasswordExpiryRes
    */
-  async userPasswordExAsync(): Promise<UserPassExRes> {
-    let data: UserPassExRes = {
+  async getPasswordExpire(): Promise<UserPassExRes> {
+    const data: UserPassExRes = {
       userPassEx: undefined,
       error: undefined,
     };
@@ -53,7 +56,7 @@ export default class User extends HxbAbstract {
       const res: DtUserPassEx = await this.client.request(USER_PASSWORD_EXPIRY);
 
       data.userPassEx = res.userPasswordExpiry;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
@@ -62,12 +65,12 @@ export default class User extends HxbAbstract {
   }
 
   /**
-   * function userConfirmAsync: get info user confirm by confirmationId
+   * function userConfirm: get info user confirm by confirmationId
    * @param confirmationId
    * @returns UserConfirmationsRes
    */
-  async userConfirmAsync(confirmationId: string): Promise<UserConfirmRes> {
-    let data: UserConfirmRes = {
+  async userConfirm(confirmationId: string): Promise<UserConfirmRes> {
+    const data: UserConfirmRes = {
       userConfirm: undefined,
       error: undefined,
     };
@@ -77,11 +80,12 @@ export default class User extends HxbAbstract {
       const res: DtUserConfirm = await this.client.request(USER_CONFIRMATIONS, { confirmationId });
 
       data.userConfirm = res.userConfirmations;
-    } catch(error: any) {
+    } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
     }
 
     return data;
   }
+
 }

@@ -74,3 +74,13 @@ export const USER_CONFIRMATIONS = gql`
     }
   }
 `;
+
+
+export const LOG_OUT = gql`
+  mutation Logout {
+    logout {
+      data
+      success
+    }
+  }
+`;

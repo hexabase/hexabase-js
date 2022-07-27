@@ -1,4 +1,5 @@
 import Item from '.';
+import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
@@ -10,6 +11,7 @@ const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const applicationId = process.env.APPLICATIONID || '';
+// const projectId = process.env.APPLICATIONID || '';
 const datastoreId = process.env.DATASTOREID || '';
 const fieldId = process.env.FIELDID || '';
 const email = process.env.EMAIL || '';
@@ -17,6 +19,7 @@ const password = process.env.PASSWORD || '';
 const itemId = process.env.ITEMID || '';
 const actionId = process.env.ACTIONID || '';
 const actionDelete = process.env.ACTION_DELETE || '';
+const revNoItem = process.env.REV_NO_ITEM || '';
 
 // local variable in file for testing
 const getItemsParameters = {
@@ -27,6 +30,10 @@ const getItemsParameters = {
 const historyParams = {
   'from_index': 0,
   'to_index': 1
+};
+
+const itemUpdatePayload = {
+  rev_no: parseInt(revNoItem)
 };
 
 const newItemActionParameters = {
@@ -80,28 +87,26 @@ const itemActionParameters = {
 
 beforeAll( async () => {
   if (email && password) {
-    console.log('[email, password]: ', email, password);
-    const authMw = new AuthMw(url);
-    const {token, error} = await authMw.loginAsync({email, password});
+    const auth = new Auth(url);
+    const {token, error} = await auth.login({email, password});
     if (token) {
       return tokenDs = token;
     } else {
-      throw Error(`Need login faild to initialize sdk: ${error}`);
+      throw Error(`Login to initialize sdk: ${error}`);
     }
   }
 });
 
 describe('Item', () => {
-  describe('#getItemsAsync()', () => {
+  describe('#get()', () => {
     it('should get items in Ds', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {dsItems, error} = await item.getItemsAsync(getItemsParameters, datastoreId, applicationId);
+      const {dsItems, error} = await item.get(getItemsParameters, datastoreId, applicationId);
 
       // expect response
       if (dsItems) {
-        // console.log('Items in Datastore: ', dsItems);
 
         expect(typeof dsItems.totalItems).toBe('number');
       } else {
@@ -110,16 +115,15 @@ describe('Item', () => {
     });
   });
 
-  describe('#getItemsHistories()', () => {
+  describe('#getHistories()', () => {
     it('should get items histories', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {itemHistories, error} = await item.getItemsHistories(applicationId, datastoreId, itemId, historyParams);
+      const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemId, historyParams);
 
       // expect response
       if (itemHistories) {
-        // console.log('Histories in Datastore: ', itemHistories);
 
         expect(typeof itemHistories.unread).toBe('number');
       } else {
@@ -136,7 +140,6 @@ describe('Item', () => {
 
       // expect response
       if (item_id) {
-        // console.log('Item_id created in Datastore: ', item_id);
 
         expect(typeof item_id).toBe('string');
       } else {
@@ -145,15 +148,14 @@ describe('Item', () => {
     });
   });
 
-  describe('#createItemId()', () => {
+  describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {itemNew, error} = await item.createNewItem(applicationId, datastoreId, newItemActionParameters);
+      const {itemNew, error} = await item.create(applicationId, datastoreId, newItemActionParameters);
 
       // expect response
       if (itemNew) {
-        // console.log('new Item created: ', itemNew);
 
         expect(typeof itemNew.history_id).toBe('string');
         expect(typeof itemNew.item_id).toBe('string');
@@ -170,8 +172,7 @@ describe('Item', () => {
       const {itemLinked, error} = await item.getItemRelated(datastoreId, itemId, datastoreId);
 
       // expect response
-      if (itemLinked) { 
-        // console.log('Item related: ', itemLinked);
+      if (itemLinked) {
 
         expect(typeof itemLinked.datastore_id).toBe('string');
       } else {
@@ -189,6 +190,20 @@ describe('Item', () => {
       if (data) { 
 
         expect(typeof data).toBe('object');
+      }
+    });
+  });
+  
+  describe('#getItemDetail()', () => {
+    it('should get item detail', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemId);
+
+      // expect response
+      if (itemDetails) {
+
+        expect(typeof itemDetails.title).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }
@@ -203,8 +218,6 @@ describe('Item', () => {
       // expect response
       if (data) { 
         expect(typeof data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
       }
     });
   });

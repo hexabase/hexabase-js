@@ -1,5 +1,3 @@
-
-
 # Hexabase-sdk
 
 ### - Started:
@@ -7,10 +5,14 @@
     ```bash
       - yarn install
     ```
+  - Building:
+    ```bash
+      - yarn run build
+    ```
   - create file ```.env``` from ```.env.test``` then Config file testing at ```.env```:
     ```bash
       - cp .env.test .env
-      - config enviroment in .env file
+      - config environment in .env file
     ```
   - Run test hexabase client:
     ```bash
@@ -26,7 +28,7 @@
     ```
   - Run test hexabase auth:
     ```bash
-      - yarn run test:dataauthstore
+      - yarn run test:auth
       or
       - yarn jest src/lib/packages/auth/auth.test.ts
     ```
@@ -48,7 +50,7 @@
       or
       - yarn jest src/lib/packages/datastore/datastore.test.ts
     ```
-### - Initialize for SDK Packge
+### - Initialize for SDK Package
 #### - Requirement:
   - credentials must obtain from hexabase: 
     ```bash
@@ -56,51 +58,47 @@
       - token
     ```
 
-### - Using SDK
-  - Configuration:
-    ```bash
-      import { Hexabase } from 'hexabase-sdk'
-
-      const hexabase = Hexabase.createClient({url, token});
-    ```
-
 #### functions created:
 ```bash
   auth
-    - userInfoAsync: get user info by token
-    - loginAsync: login with email password
+    - login: login with email password
+    - logout: logout user
+    - get: get information user by token
   
   workspace
-    - setCurrentWsAsync: set workspace current with id
-    - createWorkspaceAsync: created workspace 
-    - getWorkspacesAsync: get workspaces and current workspace id
-    - getCurrentWorkspaceAsync: get workspaces id current
-    - getPasswordPolicyAsync: get workspace password policy
-    - getFunctionalityAsync: get workspace functionlity
-    - getUsageAsync: get workspace usage
-    - getGroupChildrenAsync: get workspace childrent in group
-    - getTaskQueueListAsync: get queue list
-    - getTaskQueueStatusAsync: get task queue status
+    - get: get workspaces and current workspace id
+    - setCurrent: set workspace current with id
+    - getCurrent: get workspaces id current
+    - create: created workspace 
+    - getPasswordPolicy: get workspace password policy
+    - getFunctionality: get workspace functionality
+    - getUsage: get workspace usage
+    - getGroupChildren: get workspace children in group
+    - getTaskQueueList: get queue list
+    - getTaskQueueStatus: get task queue status
 
   application
-    - getAppAndDsAsync: get app and ds
-    - createAppAsync: create app
+    - getProjectsAndDatastores: get app and ds
+    - create: create app
+    - getReports: get reports in project
+    - getDataReport: get data of report
 
   datastore
-    - getFieldSettingsAsync: get field setting in Ds
-    - getActionsAsync: get actions in Ds
-    - getStatusesAsync: get statuses in Ds
-    - getActionSettingAsync: get field action setting in Ds
+    - getField: get field setting in Ds
+    - getActions: get actions in Ds
+    - getStatuses: get statuses in Ds
+    - getAction: get field action setting in Ds
 
   item
-    - getItemsAsync: get items in datastore
-    - getItemsHistories: get items histories
+    - get: get items in datastore
+    - create: create new item
+    - getHistories: get items histories
     - createItemId: create Itemid
-    - createNewItem: create new item
     - getItemRelated: get item related in datastore
+    - update: update item
 
   user
-    - userRegisterAsync: get user register info by confirmationId
-    - userPasswordExAsync: check user password is expiry
-    - userConfirmAsync: get info user confirm by confirmationId
+    - register: get user register info by confirmationId
+    - confirm: get info user confirm by confirmationId
+    - getPasswordExpire: check user password is expiry
 ```

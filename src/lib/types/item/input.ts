@@ -76,6 +76,13 @@ export interface DeleteItemReq {
   delete_linked_items?: boolean;
   target_datastores?: any;
 }
+export interface GetItemDetailPl {
+  include_lookups: boolean;
+  use_display_id: boolean;
+  return_number_value: boolean;
+  format: string;
+  include_linked_items: boolean;
+}
 
 export interface ItemHistory {
   history_id?: string;
@@ -118,4 +125,31 @@ export interface ItemActionParameters {
   disable_linker?: boolean;
   as_params?: any;
   related_ds_items?: any;
+}
+export interface FieldAccessKeyUpdates {
+  overwrite?: boolean;
+  ignore_action_settings?: boolean;
+  apply_related_ds?: boolean;
+  groups_to_publish?: any;
+  roles_to_publish?: any;
+  users_to_publish?: any;
+}
+
+export interface ItemUpdatePayload {
+  action_id?: string;
+  comment?: string;
+  rev_no?: number;
+  is_force_update?: boolean;
+  use_display_id?: boolean;
+  is_notify_to_sender?: boolean;
+  history?: ItemHistory;
+  changes?: any;
+  groups_to_publish?: any;
+  item?: any;
+  return_item_result?: boolean;
+  ensure_transaction?: boolean;
+  exec_children_post_procs?: boolean;
+  as_params?: any;
+  related_ds_items?: any;
+  access_key_updates?: FieldAccessKeyUpdates;
 }

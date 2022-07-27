@@ -1,4 +1,5 @@
 import HexabaseClient from './HexabaseClient';
+import Auth from './lib/packages/auth';
 import AuthMw from './lib/packages/middlware/auth';
 
 interface HexabaseConfig {
@@ -12,11 +13,11 @@ interface HexabaseConfig {
  * create client for hexabase-sdk
  */
 const createClient = async ({ url, token, email, password }: HexabaseConfig): Promise<HexabaseClient> => {
-  const authMw = new AuthMw(url);
+  const auth = new Auth(url);
   let tokenHx = '';
 
   if (email && password && !token) {
-    const {token, error} = await authMw.loginAsync({email, password});
+    const {token, error} = await auth.login({email, password});
     if (token) {
       tokenHx = token;
     } else {
