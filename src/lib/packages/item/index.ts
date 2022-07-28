@@ -189,7 +189,7 @@ export default class Item extends HxbAbstract {
    * @returns ModelRes
    */
    async delete( projectId: string, datastoreId: string, itemId: string, deleteItemReq: DeleteItemReq): Promise<ModelRes> {
-    let data: ModelRes = {
+    const data: ModelRes = {
       data: undefined,
       error: undefined,
     };
@@ -199,7 +199,7 @@ export default class Item extends HxbAbstract {
     try {
       const res: DtDeleteItem = await this.client.request(DELETE_ITEM, {datastoreId, itemId, projectId, deleteItemReq});
 
-      data.data = res.datastoreDeleteItem
+      data.data = res.datastoreDeleteItem;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
@@ -214,7 +214,7 @@ export default class Item extends HxbAbstract {
    * @returns ModelRes
    */
    async update( projectId: string, datastoreId: string, itemId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
-    let data: ModelRes = {
+    const data: ModelRes = {
       data: undefined,
       error: undefined,
     };
@@ -224,7 +224,7 @@ export default class Item extends HxbAbstract {
     try {
       const res: DtUpdateItem = await this.client.request(DATASTORE_UPDATE_ITEM, {datastoreId, itemId, projectId, itemActionParameters});
 
-      data.data = res.datastoreUpdateItem
+      data.data = res.datastoreUpdateItem;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);

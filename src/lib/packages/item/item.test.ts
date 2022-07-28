@@ -55,35 +55,35 @@ const newItemActionParameters = {
 
 const deleteItemReq = {
   a_id: `${actionDelete}`
-}
+};
 
 const itemActionParameters = {
-  "rev_no": 2,
-  "changes": [
+  'rev_no': 2,
+  'changes': [
   {
-      "x": 5,
-      "y": 0,
-      "title": "first_name",
-      "id": "005712f2-af61-4a44-8ea1-0674de697c71",
-      "rowHeight": "item.rowHeight",
-      "cols": 5,
-      "rows": 1,
-      "dataType": "text",
-      "status": false,
-      "as_title": true,
-      "unique": false,
-      "value": "BBBBBBBBBBBBBB",
-      "tabindex": 15,
-      "idx": 0
+      'x': 5,
+      'y': 0,
+      'title': 'first_name',
+      'id': '005712f2-af61-4a44-8ea1-0674de697c71',
+      'rowHeight': 'item.rowHeight',
+      'cols': 5,
+      'rows': 1,
+      'dataType': 'text',
+      'status': false,
+      'as_title': true,
+      'unique': false,
+      'value': 'BBBBBBBBBBBBBB',
+      'tabindex': 15,
+      'idx': 0
   }
 ],
-  "datastore_id": datastoreId,
-  "action_id": actionId,
-  "history": {
-    "comment": "tessssstststststststststs",
-    "datastore_id":  datastoreId
+  'datastore_id': datastoreId,
+  'action_id': actionId,
+  'history': {
+    'comment': 'tessssstststststststststs',
+    'datastore_id':  datastoreId
   }
-}
+};
 
 beforeAll( async () => {
   if (email && password) {
@@ -187,13 +187,12 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
       const { data, error} = await item.delete(applicationId, datastoreId, itemId, deleteItemReq);
       // expect response
-      if (data) { 
-
+      if (data) {
         expect(typeof data).toBe('object');
       }
     });
   });
-  
+
   describe('#getItemDetail()', () => {
     it('should get item detail', async () => {
       jest.useFakeTimers('legacy');
@@ -216,7 +215,7 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
       const { data, error} = await item.update(applicationId, datastoreId, itemId, itemActionParameters);
       // expect response
-      if (data) { 
+      if (data) {
         expect(typeof data).toBe('object');
       }
     });
