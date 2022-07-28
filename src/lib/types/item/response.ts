@@ -1,4 +1,4 @@
-import {FieldNameENJP, ResponseOkModel} from '../../util/type'
+import { FieldNameENJP, ResponseOkModel } from '../../util/type';
 export interface DsItems {
   items: any;
   totalItems: number;

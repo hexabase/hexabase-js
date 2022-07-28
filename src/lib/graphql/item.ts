@@ -63,7 +63,7 @@ export const DELETE_ITEM = gql`
       error
     }
   }
-`
+`;
 
 export const DATASTORE_UPDATE_ITEM = gql`
   mutation DatastoreUpdateItem(
