@@ -67,10 +67,9 @@ describe('Workspace', () => {
           workspace_id: wsps.workspaces?.current_workspace_id
         };
         const {data, error} = await workspace.setCurrent(setCurrentWsPl);
-        
+
         // expect response
         if (data) {
-          
           expect(typeof data.success).toBe('boolean');
           expect(typeof data.data).toBe('object');
         } else {
