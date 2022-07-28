@@ -1,23 +1,34 @@
+import { ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
   CREATE_NEW_ITEM,
-  DS_ITEMS, ITEM_DETAIL, ITEM_HISTORIES, ITEM_LINKED, UPDATE_ITEM
+  DATASTORE_UPDATE_ITEM,
+  DELETE_ITEM,
+  DS_ITEMS,
+  ITEM_DETAIL,
+  ITEM_HISTORIES,
+  ITEM_LINKED,
+  UPDATE_ITEM
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
   CreateNewItemPl,
+  DeleteItemReq,
   DsItemsRes,
+  DtDeleteItem,
   DtDsItems,
   DtItemDetail,
   DtItemHistories,
   DtItemIdCreated,
   DtItemLinked,
   DtNewItem,
+  DtUpdateItem,
   DtUpdatedItem,
   GetHistoryPl,
   GetItemDetailPl,
   GetItemsPl,
+  ItemActionParameters,
   ItemDetailRes,
   ItemHistoriesRes,
   ItemLinkedRes,
@@ -173,21 +184,47 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function update: get field action setting in Ds
-   * @params datastoreId and actionIdare requirement
-   * @returns UpdatedItemRes
+   * function deleteItem: delete item in datastore
+   * @params projectId, datastoreId, itemId and deleteItemReq is requirement
+   * @returns ModelRes
    */
-   async update(projectId: string, datastoreId: string, itemId: string, itemUpdatePayload: ItemUpdatePayload): Promise<UpdatedItemRes> {
-    const data: UpdatedItemRes = {
-      item: undefined,
+   async delete( projectId: string, datastoreId: string, itemId: string, deleteItemReq: DeleteItemReq): Promise<ModelRes> {
+    let data: ModelRes = {
+      data: undefined,
       error: undefined,
     };
 
+
     // handle call graphql
     try {
-      const res: DtUpdatedItem = await this.client.request(UPDATE_ITEM, { projectId, datastoreId, itemId, itemUpdatePayload });
+      const res: DtDeleteItem = await this.client.request(DELETE_ITEM, {datastoreId, itemId, projectId, deleteItemReq});
 
-      data.item = res.datastoreUpdateItem;
+      data.data = res.datastoreDeleteItem
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function update: delete item in datastore
+   * @params projectId, datastoreId, itemId and itemActionParameters is requirement
+   * @returns ModelRes
+   */
+   async update( projectId: string, datastoreId: string, itemId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
+    let data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+
+    // handle call graphql
+    try {
+      const res: DtUpdateItem = await this.client.request(DATASTORE_UPDATE_ITEM, {datastoreId, itemId, projectId, itemActionParameters});
+
+      data.data = res.datastoreUpdateItem
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);

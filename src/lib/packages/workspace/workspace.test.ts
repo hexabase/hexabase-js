@@ -1,3 +1,4 @@
+import { SetWsInput, WorkspacesRes } from '../../types/workspace';
 import Workspace from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
@@ -13,15 +14,12 @@ const workspaceId = process.env.WORKSPACEID || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const workspaceIdSet = process.env.WORKSPACEIDSET || '';
 
 // local variable in file for testing
 const createWorkSpaceInput = {
   name: 'new Workspace'
 };
-const setCurrentWorkSpaceInput = {
-  workspace_id: workspaceIdSet
-};
+
 
 
 /** run first testing  */
@@ -63,15 +61,21 @@ describe('Workspace', () => {
       jest.useFakeTimers('legacy');
 
       const workspace = new Workspace(url, tokenWs);
-      const {data, error} = await workspace.setCurrent(setCurrentWorkSpaceInput);
-
-      // expect response
-      if (data) {
-
-        expect(typeof data.success).toBe('boolean');
-        expect(typeof data.data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
+      const wsps: WorkspacesRes = await workspace.get();
+      if (wsps && wsps.workspaces && wsps.workspaces.current_workspace_id) {
+        const setCurrentWsPl: SetWsInput = {
+          workspace_id: wsps.workspaces?.current_workspace_id
+        };
+        const {data, error} = await workspace.setCurrent(setCurrentWsPl);
+        
+        // expect response
+        if (data) {
+          
+          expect(typeof data.success).toBe('boolean');
+          expect(typeof data.data).toBe('object');
+        } else {
+          throw new Error(`Error: ${error}`);
+        }
       }
     });
   });

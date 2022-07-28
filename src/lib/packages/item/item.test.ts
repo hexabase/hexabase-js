@@ -18,6 +18,7 @@ const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const itemId = process.env.ITEMID || '';
 const actionId = process.env.ACTIONID || '';
+const actionDelete = process.env.ACTION_DELETE || '';
 const revNoItem = process.env.REV_NO_ITEM || '';
 
 // local variable in file for testing
@@ -51,6 +52,38 @@ const newItemActionParameters = {
     'param3' : 'person in charge'
   }
 };
+
+const deleteItemReq = {
+  a_id: `${actionDelete}`
+}
+
+const itemActionParameters = {
+  "rev_no": 2,
+  "changes": [
+  {
+      "x": 5,
+      "y": 0,
+      "title": "first_name",
+      "id": "005712f2-af61-4a44-8ea1-0674de697c71",
+      "rowHeight": "item.rowHeight",
+      "cols": 5,
+      "rows": 1,
+      "dataType": "text",
+      "status": false,
+      "as_title": true,
+      "unique": false,
+      "value": "BBBBBBBBBBBBBB",
+      "tabindex": 15,
+      "idx": 0
+  }
+],
+  "datastore_id": datastoreId,
+  "action_id": actionId,
+  "history": {
+    "comment": "tessssstststststststststs",
+    "datastore_id":  datastoreId
+  }
+}
 
 beforeAll( async () => {
   if (email && password) {
@@ -148,6 +181,19 @@ describe('Item', () => {
     });
   });
 
+  describe('#delete()', () => {
+    it('should delete item in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const { data, error} = await item.delete(applicationId, datastoreId, itemId, deleteItemReq);
+      // expect response
+      if (data) { 
+
+        expect(typeof data).toBe('object');
+      }
+    });
+  });
+  
   describe('#getItemDetail()', () => {
     it('should get item detail', async () => {
       jest.useFakeTimers('legacy');
@@ -164,21 +210,16 @@ describe('Item', () => {
     });
   });
 
-
   describe('#update()', () => {
-    it('should update item', async () => {
+    it('should update item in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const itemClass = new Item(url, tokenDs);
-
-      const { item, error} = await itemClass.update(applicationId, datastoreId, itemId, itemUpdatePayload);
-
+      const item = new Item(url, tokenDs);
+      const { data, error} = await item.update(applicationId, datastoreId, itemId, itemActionParameters);
       // expect response
-      if (item) {
-
-        expect(typeof item).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
+      if (data) { 
+        expect(typeof data).toBe('object');
       }
     });
   });
+
 });

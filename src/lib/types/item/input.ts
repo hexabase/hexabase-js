@@ -69,6 +69,13 @@ export interface CreateNewItemPl {
   access_key_updates?: FieldAccessKeyUpdates;
 }
 
+export interface DeleteItemReq {
+  u_id?: string;
+  a_id: string;
+  use_display_id?: boolean;
+  delete_linked_items?: boolean;
+  target_datastores?: any;
+}
 export interface GetItemDetailPl {
   include_lookups: boolean;
   use_display_id: boolean;
@@ -98,6 +105,27 @@ export interface ItemHistory {
   file_ids?: any;
 }
 
+export interface ItemActionParameters {
+  action_id?: string;
+  rev_no?: number;
+  use_display_id?: boolean;
+  is_notify_to_sender?: boolean;
+  ensure_transaction?: boolean;
+  exec_children_post_procs?: boolean;
+  history?: ItemHistory;
+  datastore_id?: string;
+  comment?: string;
+  changes?: any;
+  item?: any;
+  groups_to_publish?: any;
+  is_force_update?: boolean;
+  access_key_updates?: FieldAccessKeyUpdates;
+  return_item_result?: boolean;
+  return_actionscript_logs?: boolean;
+  disable_linker?: boolean;
+  as_params?: any;
+  related_ds_items?: any;
+}
 export interface FieldAccessKeyUpdates {
   overwrite?: boolean;
   ignore_action_settings?: boolean;
