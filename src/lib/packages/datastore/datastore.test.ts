@@ -9,15 +9,10 @@ require('dotenv').config();
 
 const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
-const workspaceId = process.env.WORKSPACEID || '';
-const fieldId = process.env.FIELDID || '';
-const projectId = process.env.APPLICATIONID || '';
-const itemId = process.env.ITEMID || '';
 const datastoreId = process.env.DATASTOREID || '';
 const actionId = process.env.ACTIONID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const revNoItem = process.env.REV_NO_ITEM || '';
 
 
 beforeAll( async () => {
@@ -48,7 +43,6 @@ describe('Datastore', () => {
         expect(typeof dsField.project_id).toBe('string');
         expect(typeof dsField.datastore_id).toBe('string');
         expect(typeof dsField.field_id).toBe('string');
-        expect(typeof dsField.display_id).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }
