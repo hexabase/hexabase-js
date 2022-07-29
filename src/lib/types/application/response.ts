@@ -83,6 +83,15 @@ export interface ReportDefaultData {
   report_fields: ReportUIField[];
 }
 
+export interface ProjectInfo {
+  p_id?: string;
+  w_id?: string;
+  name?: string;
+  display_id?: string;
+  template_id?: string;
+  display_order?: number;
+}
+
 /** Data response from request graphql */
 
 export interface DtAppAndDs {
@@ -98,6 +107,9 @@ export interface DtGetReports {
 }
 export interface DtReportData {
   reportData: ReportDefaultData;
+}
+export interface DtProjectInfo{
+  getInfoProject: ProjectInfo;
 }
 
 /** Response */
@@ -118,5 +130,9 @@ export interface GetReportsRes {
 
 export interface ReportDataRes {
   dataReport?: ReportDefaultData;
+  error?: string;
+}
+export interface ProjectInfoRes {
+  project?: ProjectInfo;
   error?: string;
 }

@@ -44,7 +44,7 @@ export default class Item extends HxbAbstract {
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  async get(getItemsParameters: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
+  async get(params: GetItemsPl, datastoreId: string, projectId?: string): Promise<DsItemsRes> {
     const data: DsItemsRes = {
       dsItems: undefined,
       error: undefined,
@@ -52,7 +52,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDsItems = await this.client.request( DS_ITEMS, { getItemsParameters, datastoreId, projectId } );
+      const res: DtDsItems = await this.client.request( DS_ITEMS, { getItemsParameters: params, datastoreId, projectId } );
 
       data.dsItems = res.datastoreGetDatastoreItems;
     } catch (error: any) {

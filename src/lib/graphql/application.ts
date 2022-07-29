@@ -33,9 +33,22 @@ export const GET_REPORTS = gql`
   }
 `;
 
+export const GET_INFO_PROJECT = gql`
+ query Query($projectId: String!) {
+    getInfoProject(projectId: $projectId) {
+      p_id
+      display_order
+      template_id
+      display_id
+      name
+      w_id
+    }
+  }
+`;
+
 export const REPORT_DEFAULT = gql`
-  query ReportData($reportId: String!, $reportDataProjectId2: String!, $reportDataPayload: ReportDataPayload) {
-    reportData(reportId: $reportId, projectId: $reportDataProjectId2, reportDataPayload: $reportDataPayload) {
+  query ReportData($reportId: String!, $projectId: String!, $reportDataPayload: ReportDataPayload) {
+    reportData(reportId: $reportId, projectId: $projectId, reportDataPayload: $reportDataPayload) {
       errors {
         error_level
         error_code

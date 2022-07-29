@@ -22,7 +22,7 @@ const actionDelete = process.env.ACTION_DELETE || '';
 const revNoItem = process.env.REV_NO_ITEM || '';
 
 // local variable in file for testing
-const getItemsParameters = {
+const params = {
   'page': 1,
   'per_page': 0
 };
@@ -103,7 +103,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {dsItems, error} = await item.get(getItemsParameters, datastoreId, applicationId);
+      const {dsItems, error} = await item.get(params, datastoreId, applicationId);
 
       // expect response
       if (dsItems) {
