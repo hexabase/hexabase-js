@@ -108,7 +108,7 @@ export interface DtGetReports {
 export interface DtReportData {
   reportData: ReportDefaultData;
 }
-export interface DtProjectInfo{
+export interface DtProjectInfo {
   getInfoProject: ProjectInfo;
 }
 
