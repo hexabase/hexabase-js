@@ -56,7 +56,7 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
       const reportDt = await application.getReports(projectId);
       const reportId = reportDt.reports?.[0].rp_id;
-      
+
       if (reportId) {
         const createProjectParams = {
           tp_id: reportId,
@@ -64,10 +64,10 @@ describe('Application', () => {
             en: 'EN Project',
             ja: 'JA Project',
           }
-        }
+        };
         const { app, error } = await application.create(createProjectParams);
         if (app) {
-  
+
           expect(typeof app.project_id).toBe('string');
         }
         else {
@@ -77,7 +77,6 @@ describe('Application', () => {
         throw new Error(`Error:can't get report with projectId`);
 
       }
-      
     });
   });
 
@@ -102,15 +101,13 @@ describe('Application', () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
       const reportDt = await application.getReports(projectId);
-      const reportId = reportDt.reports?.[0].rp_id
+      const reportId = reportDt.reports?.[0].rp_id;
       if (reportId) {
         const { dataReport, error } = await application.getDataReport(projectId, reportId);
         if (dataReport) {
           expect(typeof dataReport.report_title).toBe('string');
-        }
-        else {
-          throw new Error(`Error: ${error}`);
-        }
+        } else {
+          throw new Error(`Error: ${error}`); }
       } else {
         throw new Error(`Error:can't get report with projectId`);
       }
