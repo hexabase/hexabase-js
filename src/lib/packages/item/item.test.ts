@@ -1,6 +1,8 @@
 import Item from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
+import Datastore from '../datastore/index';
+
 require('dotenv').config();
 /**
  * Test with class Datastore
@@ -32,41 +34,6 @@ const historyParams = {
   'to_index': 1
 };
 
-const itemUpdatePayload = {
-  rev_no: parseInt(revNoItem)
-};
-
-const deleteItemReq = {
-  a_id: `${actionDelete}`
-};
-
-// const itemActionParameters = {
-//   'rev_no': 2,
-//   'changes': [
-//   {
-//       'x': 5,
-//       'y': 0,
-//       'title': 'first_name',
-//       'id': '005712f2-af61-4a44-8ea1-0674de697c71',
-//       'rowHeight': 'item.rowHeight',
-//       'cols': 5,
-//       'rows': 1,
-//       'dataType': 'text',
-//       'status': false,
-//       'as_title': true,
-//       'unique': false,
-//       'value': 'BBBBBBBBBBBBBB',
-//       'tabindex': 15,
-//       'idx': 0
-//   }
-// ],
-//   'datastore_id': datastoreId,
-//   'action_id': actionId,
-//   'history': {
-//     'comment': 'tessssstststststststststs',
-//     'datastore_id':  datastoreId
-//   }
-// };
 
 beforeAll( async () => {
   if (email && password) {
@@ -138,10 +105,24 @@ describe('Item', () => {
   describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
+      let actionCreate;
+      const datastore = new Datastore(url, tokenDs);
+      const dsA = await datastore.getActions(datastoreId);
+      const actions = dsA?.dsActions
+      console.log('actions', actions)
+      if (actions) {
+        for (let i=0; i < actions.length; i++) {
+          if (actions[i].operation == 'create' || actions[i].operation == 'new') {
+            actionCreate = actions[i].action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: ${dsA.error}`);
+      }
+      console.log('actionCreate', actionCreate)
       const item = new Item(url, tokenDs);
-
       const newItemActionParameters = {
-        'action_id': `${actionId}`,
+        'action_id': `${actionCreate}`,
         'use_display_id': true,
         'return_item_result': true,
         'ensure_transaction': false,
@@ -195,12 +176,31 @@ describe('Item', () => {
   describe('#delete()', () => {
     it('should delete item in datastore', async () => {
       jest.useFakeTimers('legacy');
+
+      let actionDelete;
+      const datastore = new Datastore(url, tokenDs);
+      const dsA = await datastore.getActions(datastoreId);
+      const actions = dsA?.dsActions
+      if (actions) {
+        for (let i=0; i < actions.length; i++) {
+          if (actions[i].operation == 'delete') {
+            actionDelete = actions[i].action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: ${dsA.error}`);
+      }
+
       const item = new Item(url, tokenDs);
       // get items list
       const itemS = await item.get(params, datastoreId, applicationId);
       const indexLastItem = itemS.dsItems?.items.length
       const i = itemS.dsItems?.items?.[indexLastItem-1]
       const itemID = i?.i_id;
+
+      const deleteItemReq = {
+        a_id: `${actionDelete}`
+      };
 
       const { data, error} = await item.delete(applicationId, datastoreId, itemID, deleteItemReq);
       // expect response
