@@ -1,6 +1,8 @@
 import Item from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
+import Datastore from '../datastore/index';
+
 require('dotenv').config();
 /**
  * Test with class Datastore
@@ -13,13 +15,8 @@ const workspaceId = process.env.WORKSPACEID || '';
 const applicationId = process.env.APPLICATIONID || '';
 // const projectId = process.env.APPLICATIONID || '';
 const datastoreId = process.env.DATASTOREID || '';
-const fieldId = process.env.FIELDID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const itemId = process.env.ITEMID || '';
-const actionId = process.env.ACTIONID || '';
-const actionDelete = process.env.ACTION_DELETE || '';
-const revNoItem = process.env.REV_NO_ITEM || '';
 
 // local variable in file for testing
 const params = {
@@ -32,58 +29,6 @@ const historyParams = {
   'to_index': 1
 };
 
-const itemUpdatePayload = {
-  rev_no: parseInt(revNoItem)
-};
-
-const newItemActionParameters = {
-  'action_id': `${actionId}`,
-  'use_display_id': true,
-  'return_item_result': true,
-  'ensure_transaction': false,
-  'exec_children_post_procs': true,
-  'access_key_updates': {
-    'overwrite': true,
-    'ignore_action_settings': true
-  },
-  'item': {
-    'param1' : 'field_id' ,
-    'param2': 'TITLE test',
-    'param3' : 'person in charge'
-  }
-};
-
-const deleteItemReq = {
-  a_id: `${actionDelete}`
-};
-
-const itemActionParameters = {
-  'rev_no': 2,
-  'changes': [
-  {
-      'x': 5,
-      'y': 0,
-      'title': 'first_name',
-      'id': '005712f2-af61-4a44-8ea1-0674de697c71',
-      'rowHeight': 'item.rowHeight',
-      'cols': 5,
-      'rows': 1,
-      'dataType': 'text',
-      'status': false,
-      'as_title': true,
-      'unique': false,
-      'value': 'BBBBBBBBBBBBBB',
-      'tabindex': 15,
-      'idx': 0
-  }
-],
-  'datastore_id': datastoreId,
-  'action_id': actionId,
-  'history': {
-    'comment': 'tessssstststststststststs',
-    'datastore_id':  datastoreId
-  }
-};
 
 beforeAll( async () => {
   if (email && password) {
@@ -104,7 +49,6 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
 
       const {dsItems, error} = await item.get(params, datastoreId, applicationId);
-
       // expect response
       if (dsItems) {
 
@@ -120,7 +64,12 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemId, historyParams);
+      // get items list
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+
+      const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemID, historyParams);
 
       // expect response
       if (itemHistories) {
@@ -151,7 +100,37 @@ describe('Item', () => {
   describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
+      let actionCreate;
+      const datastore = new Datastore(url, tokenDs);
+      const dsA = await datastore.getActions(datastoreId);
+      const actions = dsA?.dsActions;
+      if (actions) {
+        for (let i = 0; i < actions.length; i++) {
+          if (actions[i].operation == 'create' || actions[i].operation == 'new') {
+            actionCreate = actions[i].action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: ${dsA.error}`);
+      }
       const item = new Item(url, tokenDs);
+      const newItemActionParameters = {
+        'action_id': `${actionCreate}`,
+        'use_display_id': true,
+        'return_item_result': true,
+        'ensure_transaction': false,
+        'exec_children_post_procs': true,
+        'access_key_updates': {
+          'overwrite': true,
+          'ignore_action_settings': true
+        },
+        'item': {
+          'param1' : 'field_id' ,
+          'param2': 'TITLE test',
+          'param3' : 'person in charge'
+        }
+      };
+
       const {itemNew, error} = await item.create(applicationId, datastoreId, newItemActionParameters);
 
       // expect response
@@ -169,7 +148,13 @@ describe('Item', () => {
     it('should get item related in datastore', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {itemLinked, error} = await item.getItemRelated(datastoreId, itemId, datastoreId);
+
+      // get items list
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+
+      const {itemLinked, error} = await item.getItemRelated(datastoreId, itemID, datastoreId);
 
       // expect response
       if (itemLinked) {
@@ -184,8 +169,33 @@ describe('Item', () => {
   describe('#delete()', () => {
     it('should delete item in datastore', async () => {
       jest.useFakeTimers('legacy');
+
+      let actionDelete;
+      const datastore = new Datastore(url, tokenDs);
+      const dsA = await datastore.getActions(datastoreId);
+      const actions = dsA?.dsActions;
+      if (actions) {
+        for (let i = 0; i < actions.length; i++) {
+          if (actions[i].operation == 'delete') {
+            actionDelete = actions[i].action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: ${dsA.error}`);
+      }
+
       const item = new Item(url, tokenDs);
-      const { data, error} = await item.delete(applicationId, datastoreId, itemId, deleteItemReq);
+      // get items list
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const indexLastItem = itemS.dsItems?.items.length;
+      const i = itemS.dsItems?.items?.[indexLastItem - 1];
+      const itemID = i?.i_id;
+
+      const deleteItemReq = {
+        a_id: `${actionDelete}`
+      };
+
+      const { data, error} = await item.delete(applicationId, datastoreId, itemID, deleteItemReq);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
@@ -197,7 +207,13 @@ describe('Item', () => {
     it('should get item detail', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemId);
+
+      // get items list
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+
+      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemID);
 
       // expect response
       if (itemDetails) {
@@ -213,10 +229,41 @@ describe('Item', () => {
     it('should update item in datastore', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const { data, error} = await item.update(applicationId, datastoreId, itemId, itemActionParameters);
+
+      // get items list
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+
+      const itemDetail = await item.getItemDetail(datastoreId, itemID);
+      const { itemDetails } = itemDetail;
+      let actionIdUpdate = '';
+
+      if (itemDetails && itemDetails.item_actions) {
+        for (let i = 0; i < itemDetails.item_actions.length; i++) {
+          if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name == 'update') {
+            actionIdUpdate = itemDetails.item_actions[i].action_id;
+          }
+        }
+      }
+
+      const revNo = itemDetails?.rev_no;
+      const itemActionParameters = {
+        'rev_no': revNo,
+        'datastore_id': datastoreId,
+        'action_id': actionIdUpdate,
+        'history': {
+          'comment': 'unitest update item command',
+          'datastore_id':  datastoreId
+        }
+      };
+
+      const { data, error} = await item.update(applicationId, datastoreId, itemID, itemActionParameters);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
       }
     });
   });
