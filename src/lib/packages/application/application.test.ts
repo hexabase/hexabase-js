@@ -37,7 +37,6 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
 
       const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
-      console.log('appAndDs', appAndDs)
       if (appAndDs) {
 
         expect(typeof appAndDs[0].application_id).toBe('string');

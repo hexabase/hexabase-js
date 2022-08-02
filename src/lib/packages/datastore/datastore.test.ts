@@ -81,14 +81,14 @@ describe('Datastore', () => {
   describe('#getAction()', () => {
     it('should get action by Id in Ds', async () => {
       jest.useFakeTimers('legacy');
-      
+
       let actionId;
 
       const datastore = new Datastore(url, tokenDs);
       const dsA = await datastore.getActions(datastoreId);
-      const actions = dsA?.dsActions
+      const actions = dsA?.dsActions;
       if (actions) {
-        for (let i=0; i < actions.length; i++) {
+        for (let i = 0; i < actions.length; i++) {
           if (actions[i].operation == 'create') {
             actionId = actions[i].action_id;
           }
@@ -99,10 +99,10 @@ describe('Datastore', () => {
 
       if (actionId) {
         const {dsAction, error} = await datastore.getAction(datastoreId, actionId);
-        
+
         // expect response
         if (dsAction) {
-          
+
           expect(typeof dsAction.workspace_id).toBe('string');
           expect(typeof dsAction.name).toBe('string');
         } else {

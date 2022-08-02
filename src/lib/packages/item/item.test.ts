@@ -15,13 +15,8 @@ const workspaceId = process.env.WORKSPACEID || '';
 const applicationId = process.env.APPLICATIONID || '';
 // const projectId = process.env.APPLICATIONID || '';
 const datastoreId = process.env.DATASTOREID || '';
-const fieldId = process.env.FIELDID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const itemId = process.env.ITEMID || '';
-const actionId = process.env.ACTIONID || '';
-const actionDelete = process.env.ACTION_DELETE || '';
-const revNoItem = process.env.REV_NO_ITEM || '';
 
 // local variable in file for testing
 const params = {
@@ -68,10 +63,10 @@ describe('Item', () => {
     it('should get items histories', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      
+
       // get items list
       const itemS = await item.get(params, datastoreId, applicationId);
-      const i = itemS.dsItems?.items?.[0]
+      const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
       const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemID, historyParams);
@@ -108,10 +103,9 @@ describe('Item', () => {
       let actionCreate;
       const datastore = new Datastore(url, tokenDs);
       const dsA = await datastore.getActions(datastoreId);
-      const actions = dsA?.dsActions
-      console.log('actions', actions)
+      const actions = dsA?.dsActions;
       if (actions) {
-        for (let i=0; i < actions.length; i++) {
+        for (let i = 0; i < actions.length; i++) {
           if (actions[i].operation == 'create' || actions[i].operation == 'new') {
             actionCreate = actions[i].action_id;
           }
@@ -119,7 +113,6 @@ describe('Item', () => {
       } else {
         throw new Error(`Error: ${dsA.error}`);
       }
-      console.log('actionCreate', actionCreate)
       const item = new Item(url, tokenDs);
       const newItemActionParameters = {
         'action_id': `${actionCreate}`,
@@ -137,7 +130,7 @@ describe('Item', () => {
           'param3' : 'person in charge'
         }
       };
-      
+
       const {itemNew, error} = await item.create(applicationId, datastoreId, newItemActionParameters);
 
       // expect response
@@ -158,7 +151,7 @@ describe('Item', () => {
 
       // get items list
       const itemS = await item.get(params, datastoreId, applicationId);
-      const i = itemS.dsItems?.items?.[0]
+      const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
       const {itemLinked, error} = await item.getItemRelated(datastoreId, itemID, datastoreId);
@@ -180,9 +173,9 @@ describe('Item', () => {
       let actionDelete;
       const datastore = new Datastore(url, tokenDs);
       const dsA = await datastore.getActions(datastoreId);
-      const actions = dsA?.dsActions
+      const actions = dsA?.dsActions;
       if (actions) {
-        for (let i=0; i < actions.length; i++) {
+        for (let i = 0; i < actions.length; i++) {
           if (actions[i].operation == 'delete') {
             actionDelete = actions[i].action_id;
           }
@@ -194,8 +187,8 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
       // get items list
       const itemS = await item.get(params, datastoreId, applicationId);
-      const indexLastItem = itemS.dsItems?.items.length
-      const i = itemS.dsItems?.items?.[indexLastItem-1]
+      const indexLastItem = itemS.dsItems?.items.length;
+      const i = itemS.dsItems?.items?.[indexLastItem - 1];
       const itemID = i?.i_id;
 
       const deleteItemReq = {
@@ -217,7 +210,7 @@ describe('Item', () => {
 
       // get items list
       const itemS = await item.get(params, datastoreId, applicationId);
-      const i = itemS.dsItems?.items?.[0]
+      const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
       const {itemDetails, error} = await item.getItemDetail(datastoreId, itemID);
@@ -239,22 +232,22 @@ describe('Item', () => {
 
       // get items list
       const itemS = await item.get(params, datastoreId, applicationId);
-      const i = itemS.dsItems?.items?.[0]
+      const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
       const itemDetail = await item.getItemDetail(datastoreId, itemID);
-      const { itemDetails } = itemDetail
+      const { itemDetails } = itemDetail;
       let actionIdUpdate = '';
 
       if (itemDetails && itemDetails.item_actions) {
-        for (let i = 0; i< itemDetails.item_actions.length; i++) {
+        for (let i = 0; i < itemDetails.item_actions.length; i++) {
           if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name == 'update') {
-            actionIdUpdate = itemDetails.item_actions[i].action_id
+            actionIdUpdate = itemDetails.item_actions[i].action_id;
           }
         }
       }
 
-      const revNo = itemDetails?.rev_no
+      const revNo = itemDetails?.rev_no;
       const itemActionParameters = {
         'rev_no': revNo,
         'datastore_id': datastoreId,
