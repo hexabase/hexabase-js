@@ -9,7 +9,8 @@ import {
   ITEM_DETAIL,
   ITEM_HISTORIES,
   ITEM_LINKED,
-  UPDATE_ITEM
+  UPDATE_ITEM,
+  EXECUTE_ITEM_ACTION,
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -34,7 +35,9 @@ import {
   ItemLinkedRes,
   ItemUpdatePayload,
   NewItemRes,
-  UpdatedItemRes
+  UpdatedItemRes,
+  ItemExecuteActionPayload,
+  DtUpdateItemRes,
 } from '../../types/item';
 
 export default class Item extends HxbAbstract {
@@ -233,5 +236,25 @@ export default class Item extends HxbAbstract {
     return data;
   }
 
+/**
+   * function execute: execute action item in datastore
+   * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
+   * @returns ModelRes
+   */
+ async execute( projectId: string, datastoreId: string, itemId: string, actionId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
+  const data: ModelRes = {
+    data: undefined,
+    error: undefined,
+  };
+
+  // handle call graphql
+  try {
+    const res: DtUpdateItemRes = await this.client.request(EXECUTE_ITEM_ACTION, {projectId, datastoreId, itemId, actionId, itemActionParameters});
+    data.data = res.item;
+  } catch (error: any) {
+    data.error = JSON.stringify(error.response.errors);
+  }
+  return data;
+}
 }
 
