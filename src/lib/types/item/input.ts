@@ -153,3 +153,12 @@ export interface ItemUpdatePayload {
   related_ds_items?: any;
   access_key_updates?: FieldAccessKeyUpdates;
 }
+
+export interface ItemExecuteActionPayload {
+  projectId: string;
+  datastoreId: string;
+	actionId: string;
+  itemId: string; 
+  itemActionParameters: ItemActionParameters;
+}
+

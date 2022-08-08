@@ -196,3 +196,25 @@ export const UPDATE_ITEM = gql`
     datastoreUpdateItem(itemUpdatePayload: $itemUpdatePayload, itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId)
   }
 `;
+
+export const EXECUTE_ITEM_ACTION = gql`
+  mutation(
+    $projectId: String!, 
+    $datastoreId: String!,
+    $actionId: String!,
+    $itemId: String!,
+    $itemActionParameters: ItemActionParameters!
+  ) {
+    datastoreExecuteItemAction(
+      projectId: $projectId, 
+      datastoreId: $datastoreId,
+      actionId: $actionId,
+      itemId: $itemId,
+      itemActionParameters: $itemActionParameters
+    ) {
+      item_id
+      item
+      error
+    }
+  }
+`;
