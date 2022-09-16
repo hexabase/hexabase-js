@@ -34,5 +34,6 @@ const createClient = async ({ url, token, email, password }: HexabaseConfig): Pr
 };
 
 export {
-  createClient
+  createClient,
+  HexabaseClient,
 };
