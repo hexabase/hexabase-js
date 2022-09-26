@@ -1,10 +1,12 @@
+import { ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   GET_APPLICATION_AND_DATASTORE,
   APPLICATION_CREATE_PROJECT,
   GET_REPORTS,
   REPORT_DEFAULT,
-  GET_INFO_PROJECT
+  GET_INFO_PROJECT,
+  DELETE_PROJECT
 } from '../../graphql/application';
 import {
   AppAndDsRes,
@@ -18,7 +20,9 @@ import {
   ReportDataRes,
   DtReportData,
   ProjectInfoRes,
-  DtProjectInfo
+  DtProjectInfo,
+  DtDeleteProject,
+  DeleteProjectPl
 } from '../../types/application';
 
 export default class Application extends HxbAbstract {
@@ -142,5 +146,28 @@ export default class Application extends HxbAbstract {
 
     return data;
   }
+
+    /**
+     * function delete: delete project in workspace
+     * @params {DeleteProjectPl} payload is requirement
+     * @returns ModelRes
+   */
+     async delete(payload: DeleteProjectPl): Promise<ModelRes> {
+      const data: ModelRes = {
+        data: undefined,
+        error: undefined,
+      };
+
+      // handle call graphql
+      try {
+        const res: DtDeleteProject = await this.client.request(DELETE_PROJECT, { payload });
+
+        data.data = res.deleteProject;
+      } catch (error: any) {
+        data.error = JSON.stringify(error.response.errors);
+      }
+  
+      return data;
+    }
 
 }

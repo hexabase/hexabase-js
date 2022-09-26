@@ -1,4 +1,4 @@
-import { GenericAPIError } from '../../util/type/response';
+import { GenericAPIError, ResponseOkModel } from '../../util/type/response';
 import { CreateProgram } from 'typescript';
 import { Datastore } from '../datastore';
 
@@ -135,4 +135,8 @@ export interface ReportDataRes {
 export interface ProjectInfoRes {
   project?: ProjectInfo;
   error?: string;
+}
+
+export interface DtDeleteProject {
+  deleteProject: ResponseOkModel;
 }

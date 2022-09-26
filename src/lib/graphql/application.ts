@@ -111,3 +111,11 @@ export const REPORT_DEFAULT = gql`
   }
 `;
 
+export const DELETE_PROJECT = gql`
+  mutation DeleteProject($payload: DeleteProjectPl!) {
+    deleteProject(payload: $payload) {
+      data
+      success
+    }
+  }
+`;

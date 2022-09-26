@@ -20,3 +20,11 @@ export interface ReportDataPayload {
   data_result_timeout_sec?: number;
   debug_query?: boolean;
 }
+
+export interface DeleteParamsProject {
+  project_id: string;
+}
+
+export interface DeleteProjectPl {
+  payload: DeleteParamsProject;
+}
