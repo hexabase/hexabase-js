@@ -140,3 +140,11 @@ export interface ProjectInfoRes {
 export interface DtDeleteProject {
   deleteProject: ResponseOkModel;
 }
+
+export interface DtUpdateThemeProject {
+  updateProjectTheme: ResponseOkModel;
+}
+
+export interface DtUpdateNameProject {
+  updateProjectName: ResponseOkModel;
+}
