@@ -2,8 +2,6 @@ import { HxbAbstract } from '../../../HxbAbstract';
 import {
   GET_APPLICATION_AND_DATASTORE,
   APPLICATION_CREATE_PROJECT,
-  GET_REPORTS,
-  REPORT_DEFAULT,
   GET_INFO_PROJECT
 } from '../../graphql/application';
 import {

@@ -14,6 +14,8 @@ const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
+let newApplicationId = '';
+
 // local variable in file for testing
 
 beforeAll(async () => {
@@ -37,8 +39,10 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
 
       const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
+      if (appAndDs && typeof appAndDs[0].application_id === "string") {
+        newApplicationId = appAndDs[0].application_id;
+      }
       if (appAndDs) {
-
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
         expect(typeof appAndDs[0].display_id).toBe('string');
@@ -54,7 +58,7 @@ describe('Application', () => {
     it('should create application', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const reportDt = await application.getReports(projectId);
+      const reportDt = await application.getReports(newApplicationId);
       const reportId = reportDt.reports?.[0].rp_id;
 
       if (reportId) {
@@ -86,7 +90,7 @@ describe('Application', () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
 
-      const { reports, error } = await application.getReports(projectId);
+      const { reports, error } = await application.getReports(newApplicationId);
       if (reports && reports[0]) {
         expect(typeof reports[0].rp_id).toBe('string');
       }
@@ -100,10 +104,10 @@ describe('Application', () => {
     it('should get reports in project', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const reportDt = await application.getReports(projectId);
+      const reportDt = await application.getReports(newApplicationId);
       const reportId = reportDt.reports?.[0].rp_id;
       if (reportId) {
-        const { dataReport, error } = await application.getDataReport(projectId, reportId);
+        const { dataReport, error } = await application.getDataReport(newApplicationId, reportId);
         if (dataReport) {
           expect(typeof dataReport.report_title).toBe('string');
         } else {
@@ -119,7 +123,7 @@ describe('Application', () => {
     it('should get info project', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const {project, error} = await application.get(projectId);
+      const {project, error} = await application.get(newApplicationId);
       if (project) {
         expect(typeof project.name).toBe('string');
       } else {
