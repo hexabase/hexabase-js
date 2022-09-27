@@ -1,5 +1,6 @@
 import Application from '.';
 import Auth from '../auth';
+import DataReport from '../dataReport';
 import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
@@ -8,7 +9,7 @@ require('dotenv').config();
  */
 
 const url = process.env.URL || '';
-const projectId = process.env.APPLICATIONID || '';
+let projectId = process.env.APPLICATIONID || '';
 let tokenApp = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
@@ -37,8 +38,12 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
 
       const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
+      
+      if (appAndDs && appAndDs[0].application_id) {
+        projectId = appAndDs[0].application_id;
+      }
+      
       if (appAndDs) {
-
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
         expect(typeof appAndDs[0].display_id).toBe('string');
@@ -54,7 +59,8 @@ describe('Application', () => {
     it('should create application', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const reportDt = await application.getReports(projectId);
+      const dataReport = new DataReport(url, tokenApp);
+      const reportDt = await dataReport.getReports(projectId);
       const reportId = reportDt.reports?.[0].rp_id;
 
       if (reportId) {
@@ -80,40 +86,6 @@ describe('Application', () => {
     });
   });
 
-
-  describe('#getReports()', () => {
-    it('should get reports in project', async () => {
-      jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-
-      const { reports, error } = await application.getReports(projectId);
-      if (reports && reports[0]) {
-        expect(typeof reports[0].rp_id).toBe('string');
-      }
-      else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
-  describe('#getDataReport()', () => {
-    it('should get reports in project', async () => {
-      jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-      const reportDt = await application.getReports(projectId);
-      const reportId = reportDt.reports?.[0].rp_id;
-      if (reportId) {
-        const { dataReport, error } = await application.getDataReport(projectId, reportId);
-        if (dataReport) {
-          expect(typeof dataReport.report_title).toBe('string');
-        } else {
-          throw new Error(`Error: ${error}`); }
-      } else {
-        throw new Error(`Error:can't get report with projectId`);
-      }
-
-    });
-  });
 
   describe('#get()', () => {
     it('should get info project', async () => {

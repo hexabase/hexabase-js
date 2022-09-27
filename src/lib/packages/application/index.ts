@@ -2,8 +2,6 @@ import { HxbAbstract } from '../../../HxbAbstract';
 import {
   GET_APPLICATION_AND_DATASTORE,
   APPLICATION_CREATE_PROJECT,
-  GET_REPORTS,
-  REPORT_DEFAULT,
   GET_INFO_PROJECT
 } from '../../graphql/application';
 import {
@@ -12,11 +10,6 @@ import {
   CreateProjectPl,
   CreateAppRes,
   DtCreateApp,
-  GetReportsRes,
-  DtGetReports,
-  ReportDataPayload,
-  ReportDataRes,
-  DtReportData,
   ProjectInfoRes,
   DtProjectInfo
 } from '../../types/application';
@@ -63,54 +56,6 @@ export default class Application extends HxbAbstract {
       const res: DtCreateApp = await this.client.request(APPLICATION_CREATE_PROJECT, { createProjectParams });
 
       data.app = res.applicationCreateProject;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
-  /**
-   * function getReports: get reports list in project
-   * @params projectId
-   * @returns GetReportsRes
-   */
-  async getReports(projectId: string): Promise<GetReportsRes> {
-    const data: GetReportsRes = {
-      reports: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtGetReports = await this.client.request(GET_REPORTS, { projectId });
-
-      data.reports = res.getReports;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
-  /**
-   * function getDataReport: get data report by report id in project
-   * @params projectId, reportId, reportDataPayload
-   * @returns ReportDataRes
-   */
-  async getDataReport(projectId: string, reportId: string, reportDataPayload?: ReportDataPayload): Promise<ReportDataRes> {
-    const data: ReportDataRes = {
-      dataReport: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtReportData = await this.client.request(REPORT_DEFAULT, { projectId, reportId, reportDataPayload });
-
-      data.dataReport = res.reportData;
     } catch (error: any) {
 
       data.error = JSON.stringify(error.response.errors);
