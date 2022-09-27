@@ -1,3 +1,4 @@
+import { DatastoreUpdateName } from '../../types/datastore';
 import Datastore from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
@@ -108,6 +109,30 @@ describe('Datastore', () => {
         } else {
           throw new Error(`Error: ${error}`);
         }
+      }
+    });
+  });
+
+  describe('#UpdateDatastoreName()', () => {
+    it('should update datastore current without error', async () => {
+      jest.useFakeTimers('legacy');
+      const datastore = new Datastore(url, tokenDs);
+      const payload: DatastoreUpdateName = {
+        payload: {
+          datastore_id: '63293e3e194aa0660e05b052',
+          name: {
+            en: 'DSN_001',
+            ja: 'DSN_001'
+          },
+          display_id: 'display_id_001'
+        }
+      }
+      const { data, error } = await datastore.UpdateDatastoreName(payload);
+
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
       }
     });
   });

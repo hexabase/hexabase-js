@@ -97,3 +97,11 @@ export const DS_ACTION_SETTING = gql`
 `;
 
 
+export const UPDATE_DATASTORE_NAME = gql`
+  mutation UpdateDatastoreName($payload: DatastoreUpdateName!) {
+    updateDatastoreName(payload: $payload) {
+      data
+      success
+    }
+  }
+`;
