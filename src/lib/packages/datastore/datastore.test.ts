@@ -119,7 +119,7 @@ describe('Datastore', () => {
       const datastore = new Datastore(url, tokenDs);
       const payload: DatastoreUpdateName = {
         payload: {
-          datastore_id: '63293e3e194aa0660e05b052',
+          datastore_id: datastoreId,
           name: {
             en: 'DSN_001',
             ja: 'DSN_001'

@@ -15,6 +15,7 @@
     "test": "yarn run test:client && yarn run test:auth && yarn run test:user && yarn run test:workspace && yarn run test:application && yarn run test:datastore",
     "test:client": "yarn jest src/hexabase.test.ts",
     "test:auth": "yarn jest src/lib/packages/auth/auth.test.ts",
+    "test:data-report": "yarn jest src/lib/packages/dataReport/dataReport.test.ts",
     "test:user": "yarn jest src/lib/packages/user/user.test.ts",
     "test:workspace": "yarn jest src/lib/packages/workspace/workspace.test.ts",
     "test:application": "yarn jest src/lib/packages/application/application.test.ts",

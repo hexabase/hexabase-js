@@ -16,8 +16,6 @@ const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
-let newApplicationId = '';
-
 // local variable in file for testing
 
 beforeAll(async () => {
@@ -115,7 +113,7 @@ describe('#create()', () => {
         const application = new Application(url, tokenApp);
         const payload: DeleteProjectPl = {
           payload: {
-            project_id: "63315fb4c32cd43154ffee0d",
+            project_id: projectId,
           }
         }
         const { data, error } = await application.delete(payload);
@@ -134,7 +132,7 @@ describe('#create()', () => {
         const application = new Application(url, tokenApp);
         const payload: UpdateProjectThemePl = {
           payload: {
-            project_id: "633166e015ff31c3b77ec150",
+            project_id: projectId,
             theme: "black",
           }
         }
@@ -154,7 +152,7 @@ describe('#create()', () => {
         const application = new Application(url, tokenApp);
         const payload: UpdateProjectNamePl = {
           payload: {
-            project_id: "633166e015ff31c3b77ec150",
+            project_id: projectId,
             project_displayid: "samplelogin4",
             project_name: {
               en: "test update 4",
