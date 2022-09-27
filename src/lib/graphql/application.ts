@@ -35,3 +35,30 @@ export const GET_INFO_PROJECT = gql`
   }
 `;
 
+
+export const DELETE_PROJECT = gql`
+  mutation DeleteProject($payload: DeleteProjectPl!) {
+    deleteProject(payload: $payload) {
+      data
+      success
+    }
+  }
+`;
+
+export const UPDATE_PROJECT_THEME = gql`
+  mutation UpdateProjectTheme($payload: UpdateProjectThemePl!) {
+    updateProjectTheme(payload: $payload) {
+      data
+      success
+    }
+  }
+`;
+
+export const UPDATE_PROJECT_NAME = gql`
+  mutation UpdateProjectName($payload: UpdateProjectNamePl!) {
+    updateProjectName(payload: $payload) {
+      data
+      success
+    }
+  }
+`;

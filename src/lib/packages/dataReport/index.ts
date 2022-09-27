@@ -60,5 +60,4 @@ export default class DataReport extends HxbAbstract {
 
     return data;
   }
-
 }
