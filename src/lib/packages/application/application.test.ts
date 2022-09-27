@@ -16,6 +16,8 @@ const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
+let display_id = '';
+
 // local variable in file for testing
 
 beforeAll(async () => {
@@ -38,9 +40,11 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
 
       const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
-      console.log('appAndDs, error', appAndDs, error)
-      if (appAndDs) {
-
+      if (appAndDs && appAndDs[0]) {
+        if (appAndDs[0].application_id && appAndDs[0].display_id) {
+          projectId = appAndDs[0].application_id;
+          display_id = appAndDs[0].display_id;
+        }
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
         expect(typeof appAndDs[0].display_id).toBe('string');
@@ -129,19 +133,21 @@ describe('#create()', () => {
     describe('#updateProjectTheme()', () => {
       it('should update project by id project current without error', async () => {
         jest.useFakeTimers('legacy');
-        const application = new Application(url, tokenApp);
-        const payload: UpdateProjectThemePl = {
-          payload: {
-            project_id: projectId,
-            theme: "black",
+        try {
+          if (projectId) {
+            const application = new Application(url, tokenApp);
+            const payload: UpdateProjectThemePl = {
+              payload: {
+                project_id: projectId,
+                theme: "black",
+              }
+            }
+            const { data, error } = await application.updateProjectTheme(payload);
+      
+            if (data) expect(typeof data).toBe('object');
           }
-        }
-        const { data, error } = await application.updateProjectTheme(payload);
-  
-        if (data) {
-          expect(typeof data).toBe('object');
-        } else {
-          throw new Error(`Error: ${error}`);
+        } catch (e) {
+          throw new Error(`Error: ${e}`);
         }
       });
     });
@@ -149,25 +155,28 @@ describe('#create()', () => {
     describe('#updateProjectName()', () => {
       it('should update project by id project current without error', async () => {
         jest.useFakeTimers('legacy');
-        const application = new Application(url, tokenApp);
-        const payload: UpdateProjectNamePl = {
-          payload: {
-            project_id: projectId,
-            project_displayid: "samplelogin4",
-            project_name: {
-              en: "test update 4",
-              ja: "test update 4",
-            },
+        try {
+          if (projectId) {
+            const application = new Application(url, tokenApp);
+            const payload: UpdateProjectNamePl = {
+              payload: {
+                project_id: projectId,
+                project_displayid: display_id,
+                project_name: {
+                  en: "test update 4",
+                  ja: "test update 4",
+                },
+              }
+            }
+            const { data, error } = await application.updateProjectName(payload);
+      
+            if (data) {
+              expect(typeof data).toBe('object');
+            }
           }
-        }
-        const { data, error } = await application.updateProjectName(payload);
-  
-        if (data) {
-          expect(typeof data).toBe('object');
-        } else {
-          throw new Error(`Error: ${error}`);
+        } catch(e) {
+          throw new Error(`Error: ${e}`);
         }
       });
     });
-
   });
