@@ -39,34 +39,6 @@ export default class Auth {
     return data;
   }
 
-
-  /**
-   * function get: get user info by token
-   * @returns UserInfoRes
-   */
-   async get(token: string): Promise<UserInfoRes> {
-    const data: UserInfoRes = {
-      userInfo: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      this.client.setHeader(
-        'authorization', `Bearer ${token}`
-      );
-      const res: DtUserInfo = await this.client.request(USER_INFO);
-
-      data.userInfo = res.userInfo;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
-
   /**
    * function logout: log out user
    * @returns ModelRes

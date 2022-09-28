@@ -1,4 +1,4 @@
-import { FieldRoles, FieldNameENJP } from '../../util/type';
+import { FieldRoles, FieldNameENJP, ResponseOkModel } from '../../util/type';
 
 export interface Datastore {
   name?: string;
@@ -99,3 +99,6 @@ export interface DsActionSettingRes {
   error?: string;
 }
 
+export interface DtUpdateNameDatastore {
+  updateDatastoreName: ResponseOkModel;
+}
