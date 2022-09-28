@@ -26,8 +26,8 @@ export interface DeleteParamsProject {
 }
 
 export interface UpdateProjectThemeParamsProject {
-  project_id: string,
-  theme: "blue" | "white" | "gray" | "black";
+  project_id: string;
+  theme: 'blue' | 'white' | 'gray' | 'black';
 }
 
 export interface ProjectName {
@@ -36,10 +36,10 @@ export interface ProjectName {
 }
 
 export interface UpdateProjectNameParamsProject {
-  project_id: string,
+  project_id: string;
   project_name: ProjectName;
   project_displayid?: string;
-  theme?: "blue" | "white" | "gray" | "black";
+  theme?: 'blue' | 'white' | 'gray' | 'black';
 }
 
 export interface DeleteProjectPl {

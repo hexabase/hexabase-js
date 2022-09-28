@@ -1,5 +1,5 @@
-import { GenericAPIError } from "../../../../src/lib/util/type";
-import { MergeCells, ReportUIField } from "../application";
+import { GenericAPIError } from '../../../../src/lib/util/type';
+import { MergeCells, ReportUIField } from '../application';
 
 export interface ReportListItem {
   rp_id?: string;
@@ -31,8 +31,8 @@ export interface GetReportsRes {
     reports?: [ReportListItem];
     error?: string;
   }
-  
-  export interface ReportDataRes {
-    dataReport?: ReportDefaultData;
-    error?: string;
-  }
+
+export interface ReportDataRes {
+  dataReport?: ReportDefaultData;
+  error?: string;
+}

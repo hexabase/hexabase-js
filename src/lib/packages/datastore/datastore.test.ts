@@ -126,7 +126,7 @@ describe('Datastore', () => {
           },
           display_id: 'display_id_001'
         }
-      }
+      };
       const { data, error } = await datastore.UpdateDatastoreName(payload);
 
       if (data) {

@@ -29,29 +29,6 @@ describe('Auth', () => {
     });
   });
 
-  // get userinfo by token without error
-  describe('#get()', () => {
-    it('should get userinfo by token without error', async () => {
-      jest.useFakeTimers('legacy');
-      const auth = new Auth(url);
-
-      const {userInfo, error} = await auth.get(newToken);
-
-      // expect response
-      if (userInfo) {
-
-        expect(typeof userInfo.username).toBe('string');
-        expect(typeof userInfo.email).toBe('string');
-        expect(typeof userInfo.profile_pic).toBe('string');
-        expect(typeof userInfo.u_id).toBe('string');
-        expect(typeof userInfo.current_workspace_id).toBe('string');
-        expect(typeof userInfo.is_ws_admin).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
   // logout without error
   describe('#logout()', () => {
     it('should get logout user', async () => {

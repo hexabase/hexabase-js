@@ -82,54 +82,6 @@ export default class Application extends HxbAbstract {
   }
 
   /**
-   * function getReports: get reports list in project
-   * @params projectId
-   * @returns GetReportsRes
-   */
-  async getReports(projectId: string): Promise<GetReportsRes> {
-    const data: GetReportsRes = {
-      reports: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtGetReports = await this.client.request(GET_REPORTS, { projectId });
-
-      data.reports = res.getReports;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
-  /**
-   * function getDataReport: get data report by report id in project
-   * @params projectId, reportId, reportDataPayload
-   * @returns ReportDataRes
-   */
-  async getDataReport(projectId: string, reportId: string, reportDataPayload?: ReportDataPayload): Promise<ReportDataRes> {
-    const data: ReportDataRes = {
-      dataReport: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtReportData = await this.client.request(REPORT_DEFAULT, { projectId, reportId, reportDataPayload });
-
-      data.dataReport = res.reportData;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
-  /**
    * function getInfoProject: get info project
    * @params projectId string
    * @returns ReportDataRes
@@ -157,7 +109,7 @@ export default class Application extends HxbAbstract {
    * function delete: delete project in workspace
    * @params {DeleteProjectPl} payload is requirement
    * @returns ModelRes
- */
+   */
   async delete(payload: DeleteProjectPl): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
@@ -181,7 +133,7 @@ export default class Application extends HxbAbstract {
    * function updateProjectTheme: update project theme in workspace
    * @params {UpdateProjectThemePl} payload is requirement
    * @returns ModelRes
-  */
+   */
   async updateProjectTheme(payload: UpdateProjectThemePl): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
@@ -201,10 +153,10 @@ export default class Application extends HxbAbstract {
   }
 
   /**
-* function updateProjectName: update project name in workspace
-* @params {UpdateProjectNamePl} payload is requirement
-* @returns ModelRes
-*/
+   * function updateProjectName: update project name in workspace
+   * @params {UpdateProjectNamePl} payload is requirement
+   * @returns ModelRes
+   */
   async updateProjectName(payload: UpdateProjectNamePl): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
