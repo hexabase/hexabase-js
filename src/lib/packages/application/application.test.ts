@@ -15,8 +15,10 @@ let tokenApp = process.env.TOKEN || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const template = process.env.PROJECT_TEMPLATE || '';
 
 let display_id = '';
+let newApplicationId = '';
 
 // local variable in file for testing
 
@@ -26,6 +28,11 @@ beforeAll(async () => {
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
     if (token) {
+      const application = new Application(url, token);
+      const projectAndDs = await application.getProjectsAndDatastores(workspaceId);
+      if (projectAndDs && projectAndDs.appAndDs && projectAndDs.appAndDs[0].application_id) {
+        newApplicationId = projectAndDs.appAndDs[0].application_id;
+      }
       return tokenApp = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -72,13 +79,13 @@ describe('#create()', () => {
       const createProjectParams = {
         tp_id: reportId,
         name: {
-          en: "EN Project",
-          ja: "JA Project",
+          en: 'EN Project',
+          ja: 'JA Project',
         },
       };
       const { app, error } = await application.create(createProjectParams);
       if (app) {
-        expect(typeof app.project_id).toBe("string");
+        expect(typeof app.project_id).toBe('string');
       } else {
         const t = () => {
           throw new Error(`Error: ${error}`);
@@ -101,82 +108,77 @@ describe('#create()', () => {
     it('should get info project', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const {project, error} = await application.get(projectId);
+      const { project, error } = await application.get(newApplicationId);
       if (project) {
         expect(typeof project.name).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }
 
-      });
-    });
-
-    describe('#delete()', () => {
-      it('should delete project by id project current without error', async () => {
-        jest.useFakeTimers('legacy');
-        const application = new Application(url, tokenApp);
-        const payload: DeleteProjectPl = {
-          payload: {
-            project_id: projectId,
-          }
-        }
-        const { data, error } = await application.delete(payload);
-  
-        if (data) {
-          expect(typeof data).toBe('object');
-        } else {
-          throw new Error(`Error: ${error}`);
-        }
-      });
-    });
-
-    describe('#updateProjectTheme()', () => {
-      it('should update project by id project current without error', async () => {
-        jest.useFakeTimers('legacy');
-        try {
-          if (projectId) {
-            const application = new Application(url, tokenApp);
-            const payload: UpdateProjectThemePl = {
-              payload: {
-                project_id: projectId,
-                theme: "black",
-              }
-            }
-            const { data, error } = await application.updateProjectTheme(payload);
-      
-            if (data) expect(typeof data).toBe('object');
-          }
-        } catch (e) {
-          throw new Error(`Error: ${e}`);
-        }
-      });
-    });
-
-    describe('#updateProjectName()', () => {
-      it('should update project by id project current without error', async () => {
-        jest.useFakeTimers('legacy');
-        try {
-          if (projectId) {
-            const application = new Application(url, tokenApp);
-            const payload: UpdateProjectNamePl = {
-              payload: {
-                project_id: projectId,
-                project_displayid: display_id,
-                project_name: {
-                  en: "test update 4",
-                  ja: "test update 4",
-                },
-              }
-            }
-            const { data, error } = await application.updateProjectName(payload);
-      
-            if (data) {
-              expect(typeof data).toBe('object');
-            }
-          }
-        } catch(e) {
-          throw new Error(`Error: ${e}`);
-        }
-      });
     });
   });
+
+  describe('#updateProjectTheme()', () => {
+    it('should update project by id project current without error', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const payload: UpdateProjectThemePl = {
+        payload: {
+          project_id: newApplicationId,
+          theme: 'black',
+        }
+      };
+      const { data, error } = await application.updateProjectTheme(payload);
+
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#updateProjectName()', () => {
+    it('should update project by id project current without error', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const payload: UpdateProjectNamePl = {
+        payload: {
+          project_id: newApplicationId,
+          project_displayid: 'samplelogi',
+          project_name: {
+            en: 'test update',
+            ja: 'test update',
+          },
+        }
+      };
+      const { data, error } = await application.updateProjectName(payload);
+
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#delete()', () => {
+    it('should delete project by id project current without error', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const payload: DeleteProjectPl = {
+        payload: {
+          project_id: newApplicationId,
+        }
+      };
+      const { data, error } = await application.delete(payload);
+
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+});

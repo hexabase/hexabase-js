@@ -104,7 +104,7 @@ export default class Application extends HxbAbstract {
    * function delete: delete project in workspace
    * @params {DeleteProjectPl} payload is requirement
    * @returns ModelRes
- */
+   */
   async delete(payload: DeleteProjectPl): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
@@ -128,7 +128,7 @@ export default class Application extends HxbAbstract {
    * function updateProjectTheme: update project theme in workspace
    * @params {UpdateProjectThemePl} payload is requirement
    * @returns ModelRes
-  */
+   */
   async updateProjectTheme(payload: UpdateProjectThemePl): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
@@ -148,10 +148,10 @@ export default class Application extends HxbAbstract {
   }
 
   /**
-* function updateProjectName: update project name in workspace
-* @params {UpdateProjectNamePl} payload is requirement
-* @returns ModelRes
-*/
+   * function updateProjectName: update project name in workspace
+   * @params {UpdateProjectNamePl} payload is requirement
+   * @returns ModelRes
+   */
   async updateProjectName(payload: UpdateProjectNamePl): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,

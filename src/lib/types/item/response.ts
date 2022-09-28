@@ -151,7 +151,7 @@ export interface DtDeleteItem {
 export interface DtUpdateItem {
   datastoreUpdateItem: ResponseOkModel;
 }
-  export interface DtItemDetail {
+export interface DtItemDetail {
   getDatastoreItemDetails: ItemDetail;
 }
 
@@ -192,7 +192,7 @@ export interface UpdatedItemRes {
   error?: string;
 }
 
-export interface revNo {
+export interface RevNo {
   _id: any;
   rev_no: number;
 }
@@ -201,7 +201,7 @@ export interface DtUpdateItemRes {
   error?: any;
   item?: any;
   itemHistory?: ItemHistory;
-  rev_no?: revNo;
+  rev_no?: RevNo;
   history_id?: string;
   item_id?: string;
 }

@@ -119,10 +119,10 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-  * function UpdateDatastoreName: update datastore name in project
-  * @params {UpdateProjectNamePl} payload is requirement
-  * @returns ModelRes
-  */
+   * function UpdateDatastoreName: update datastore name in project
+   * @params {UpdateProjectNamePl} payload is requirement
+   * @returns ModelRes
+   */
   async UpdateDatastoreName(payload: DatastoreUpdateName): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,

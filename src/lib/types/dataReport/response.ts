@@ -1,4 +1,4 @@
-import { GenericAPIError } from "../../../lib/util/type";
+import { GenericAPIError } from '../../../../src/lib/util/type';
 
 export interface ReportListItem {
   rp_id?: string;
@@ -87,4 +87,13 @@ export interface DtGetReports {
 export interface DtReportData {
     reportData: ReportDefaultData;
 }
-  
+
+export interface GetReportsRes {
+    reports?: [ReportListItem];
+    error?: string;
+  }
+
+export interface ReportDataRes {
+  dataReport?: ReportDefaultData;
+  error?: string;
+}
