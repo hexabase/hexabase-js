@@ -1,6 +1,6 @@
 {
   "name": "@hexabase/hexabase-js",
-  "version": "1.0.13",
+  "version": "1.0.12",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
