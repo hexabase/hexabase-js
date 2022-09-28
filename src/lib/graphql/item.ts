@@ -199,14 +199,14 @@ export const UPDATE_ITEM = gql`
 
 export const EXECUTE_ITEM_ACTION = gql`
   mutation(
-    $projectId: String!, 
+    $projectId: String!,
     $datastoreId: String!,
     $actionId: String!,
     $itemId: String!,
     $itemActionParameters: ItemActionParameters!
   ) {
     datastoreExecuteItemAction(
-      projectId: $projectId, 
+      projectId: $projectId,
       datastoreId: $datastoreId,
       actionId: $actionId,
       itemId: $itemId,

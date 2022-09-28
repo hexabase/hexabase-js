@@ -55,7 +55,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDsItems = await this.client.request( DS_ITEMS, { getItemsParameters: params, datastoreId, projectId } );
+      const res: DtDsItems = await this.client.request(DS_ITEMS, { getItemsParameters: params, datastoreId, projectId });
 
       data.dsItems = res.datastoreGetDatastoreItems;
     } catch (error: any) {
@@ -71,7 +71,7 @@ export default class Item extends HxbAbstract {
    * @params projectId, datastoreId and itemId are requirement, historyParams is option
    * @returns ItemHistoriesRes
    */
-  async getHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl ): Promise<ItemHistoriesRes> {
+  async getHistories(projectId: string, datastoreId: string, itemId: string, historyParams?: GetHistoryPl): Promise<ItemHistoriesRes> {
     const data: ItemHistoriesRes = {
       itemHistories: undefined,
       error: undefined,
@@ -103,7 +103,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemIdCreated = await this.client.request(CREATE_ITEMID, {datastoreId});
+      const res: DtItemIdCreated = await this.client.request(CREATE_ITEMID, { datastoreId });
 
       data.item_id = res.datastoreCreateItemID.item_id;
     } catch (error: any) {
@@ -127,7 +127,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtNewItem = await this.client.request(CREATE_NEW_ITEM, {projectId, datastoreId, newItemActionParameters: newItemPl});
+      const res: DtNewItem = await this.client.request(CREATE_NEW_ITEM, { projectId, datastoreId, newItemActionParameters: newItemPl });
 
       data.itemNew = res.datastoreCreateNewItem;
     } catch (error: any) {
@@ -143,7 +143,7 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId and linkedDatastoreId is requirement
    * @returns ItemLinkedRes
    */
-   async getItemRelated( datastoreId: string, itemId: string, linkedDatastoreId: string ): Promise<ItemLinkedRes> {
+  async getItemRelated(datastoreId: string, itemId: string, linkedDatastoreId: string): Promise<ItemLinkedRes> {
     const data: ItemLinkedRes = {
       itemLinked: undefined,
       error: undefined,
@@ -151,7 +151,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemLinked = await this.client.request(ITEM_LINKED, {datastoreId, itemId, linkedDatastoreId});
+      const res: DtItemLinked = await this.client.request(ITEM_LINKED, { datastoreId, itemId, linkedDatastoreId });
 
       data.itemLinked = res.datastoreGetLinkedItems;
     } catch (error: any) {
@@ -167,7 +167,7 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId is requirement. projectId, datastoreItemDetailParams are options
    * @returns ItemDetailRes
    */
-   async getItemDetail( datastoreId: string, itemId: string, projectId?: string, itemDetailParams?: GetItemDetailPl): Promise<ItemDetailRes> {
+  async getItemDetail(datastoreId: string, itemId: string, projectId?: string, itemDetailParams?: GetItemDetailPl): Promise<ItemDetailRes> {
     const data: ItemDetailRes = {
       itemDetails: undefined,
       error: undefined,
@@ -175,7 +175,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemDetail = await this.client.request(ITEM_DETAIL, {datastoreId, itemId, projectId, datastoreItemDetailParams: itemDetailParams});
+      const res: DtItemDetail = await this.client.request(ITEM_DETAIL, { datastoreId, itemId, projectId, datastoreItemDetailParams: itemDetailParams });
 
       data.itemDetails = res.getDatastoreItemDetails;
     } catch (error: any) {
@@ -191,7 +191,7 @@ export default class Item extends HxbAbstract {
    * @params projectId, datastoreId, itemId and deleteItemReq is requirement
    * @returns ModelRes
    */
-   async delete( projectId: string, datastoreId: string, itemId: string, deleteItemReq: DeleteItemReq): Promise<ModelRes> {
+  async delete(projectId: string, datastoreId: string, itemId: string, deleteItemReq: DeleteItemReq): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
       error: undefined,
@@ -200,7 +200,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDeleteItem = await this.client.request(DELETE_ITEM, {datastoreId, itemId, projectId, deleteItemReq});
+      const res: DtDeleteItem = await this.client.request(DELETE_ITEM, { datastoreId, itemId, projectId, deleteItemReq });
 
       data.data = res.datastoreDeleteItem;
     } catch (error: any) {
@@ -216,7 +216,7 @@ export default class Item extends HxbAbstract {
    * @params projectId, datastoreId, itemId and itemActionParameters is requirement
    * @returns ModelRes
    */
-   async update( projectId: string, datastoreId: string, itemId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
+  async update(projectId: string, datastoreId: string, itemId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
       error: undefined,
@@ -225,7 +225,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateItem = await this.client.request(DATASTORE_UPDATE_ITEM, {datastoreId, itemId, projectId, itemActionParameters});
+      const res: DtUpdateItem = await this.client.request(DATASTORE_UPDATE_ITEM, { datastoreId, itemId, projectId, itemActionParameters });
 
       data.data = res.datastoreUpdateItem;
     } catch (error: any) {
@@ -236,25 +236,25 @@ export default class Item extends HxbAbstract {
     return data;
   }
 
-/**
+  /**
    * function execute: execute action item in datastore
    * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
    * @returns ModelRes
    */
- async execute( projectId: string, datastoreId: string, itemId: string, actionId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
-  const data: ModelRes = {
-    data: undefined,
-    error: undefined,
-  };
+  async execute(projectId: string, datastoreId: string, itemId: string, actionId: string, itemActionParameters: ItemActionParameters): Promise<ModelRes> {
+    const data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
 
-  // handle call graphql
-  try {
-    const res: DtUpdateItemRes = await this.client.request(EXECUTE_ITEM_ACTION, {projectId, datastoreId, itemId, actionId, itemActionParameters});
-    data.data = res.item;
-  } catch (error: any) {
-    data.error = JSON.stringify(error.response.errors);
+    // handle call graphql
+    try {
+      const res: DtUpdateItemRes = await this.client.request(EXECUTE_ITEM_ACTION, { projectId, datastoreId, itemId, actionId, itemActionParameters });
+      data.data = res.item;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+    return data;
   }
-  return data;
-}
 }
 
