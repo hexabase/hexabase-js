@@ -268,4 +268,16 @@ describe('Item', () => {
     });
   });
 
+  describe('#execute()', () => {
+    it('should execute action for item in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const actionId = 'BackToInProgress';
+      const { data, error} = await item.execute(applicationId, datastoreId, itemId, actionId, itemActionParameters);
+      // expect response
+      if (data) {
+        expect(typeof data).toBe('object');
+      }
+    });
+  });
 });

@@ -1,4 +1,6 @@
 import { FieldNameENJP, ResponseOkModel } from '../../util/type';
+import { ItemHistory } from './input';
+
 export interface DsItems {
   items: any;
   totalItems: number;
@@ -190,3 +192,16 @@ export interface UpdatedItemRes {
   error?: string;
 }
 
+export interface revNo {
+  _id: any;
+  rev_no: number;
+}
+
+export interface DtUpdateItemRes {
+  error?: any;
+  item?: any;
+  itemHistory?: ItemHistory;
+  rev_no?: revNo;
+  history_id?: string;
+  item_id?: string;
+}
