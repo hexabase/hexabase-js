@@ -12,4 +12,4 @@ export interface ReportDataPayload {
     total_count_timeout_sec?: number;
     data_result_timeout_sec?: number;
     debug_query?: boolean;
-  }
+}

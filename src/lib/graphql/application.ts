@@ -22,7 +22,6 @@ export const APPLICATION_CREATE_PROJECT = gql`
   }
 `;
 
-
 export const GET_INFO_PROJECT = gql`
  query Query($projectId: String!) {
     getInfoProject(projectId: $projectId) {
