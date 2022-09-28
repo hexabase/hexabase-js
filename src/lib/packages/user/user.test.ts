@@ -37,7 +37,6 @@ describe('User', () => {
 
       // expect response respUserRegister
       if (userRegister) {
-
         expect(typeof userRegister.user.id).toBe('string');
         expect(typeof userRegister.user.email).toBe('string');
       } else {

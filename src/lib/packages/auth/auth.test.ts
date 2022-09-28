@@ -10,9 +10,7 @@ const url = process.env.URL || '';
 let tokenAu = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const tokenU = process.env.TOKEN || '';
 
-let newToken = '';
 describe('Auth', () => {
   describe('#login()', () => {
     it('should get field setting in Ds', async () => {
@@ -21,7 +19,6 @@ describe('Auth', () => {
       const auth = new Auth(url);
       const {token, error} = await auth.login({email, password});
       if (token) {
-        newToken = token;
         return tokenAu = token;
       } else {
         throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -35,7 +32,7 @@ describe('Auth', () => {
       jest.useFakeTimers('legacy');
       const auth = new Auth(url);
 
-      const {data, error} = await auth.logout(newToken);
+      const {data, error} = await auth.logout(tokenAu);
 
       // expect response
       if (data) {

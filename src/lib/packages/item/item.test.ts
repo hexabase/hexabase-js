@@ -30,10 +30,10 @@ const historyParams = {
 };
 
 
-beforeAll( async () => {
+beforeAll(async () => {
   if (email && password) {
     const auth = new Auth(url);
-    const {token, error} = await auth.login({email, password});
+    const { token, error } = await auth.login({ email, password });
     if (token) {
       return tokenDs = token;
     } else {
@@ -48,7 +48,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const {dsItems, error} = await item.get(params, datastoreId, applicationId);
+      const { dsItems, error } = await item.get(params, datastoreId, applicationId);
       // expect response
       if (dsItems) {
 
@@ -69,7 +69,7 @@ describe('Item', () => {
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const {itemHistories, error} = await item.getHistories(applicationId, datastoreId, itemID, historyParams);
+      const { itemHistories, error } = await item.getHistories(applicationId, datastoreId, itemID, historyParams);
 
       // expect response
       if (itemHistories) {
@@ -85,7 +85,7 @@ describe('Item', () => {
     it('should create new item id', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const {item_id, error} = await item.createItemId(datastoreId);
+      const { item_id, error } = await item.createItemId(datastoreId);
 
       // expect response
       if (item_id) {
@@ -125,13 +125,13 @@ describe('Item', () => {
           'ignore_action_settings': true
         },
         'item': {
-          'param1' : 'field_id' ,
+          'param1': 'field_id',
           'param2': 'TITLE test',
-          'param3' : 'person in charge'
+          'param3': 'person in charge'
         }
       };
 
-      const {itemNew, error} = await item.create(applicationId, datastoreId, newItemActionParameters);
+      const { itemNew, error } = await item.create(applicationId, datastoreId, newItemActionParameters);
 
       // expect response
       if (itemNew) {
@@ -154,7 +154,7 @@ describe('Item', () => {
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const {itemLinked, error} = await item.getItemRelated(datastoreId, itemID, datastoreId);
+      const { itemLinked, error } = await item.getItemRelated(datastoreId, itemID, datastoreId);
 
       // expect response
       if (itemLinked) {
@@ -162,43 +162,6 @@ describe('Item', () => {
         expect(typeof itemLinked.datastore_id).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
-  describe('#delete()', () => {
-    it('should delete item in datastore', async () => {
-      jest.useFakeTimers('legacy');
-
-      let actionDelete;
-      const datastore = new Datastore(url, tokenDs);
-      const dsA = await datastore.getActions(datastoreId);
-      const actions = dsA?.dsActions;
-      if (actions) {
-        for (let i = 0; i < actions.length; i++) {
-          if (actions[i].operation == 'delete') {
-            actionDelete = actions[i].action_id;
-          }
-        }
-      } else {
-        throw new Error(`Error: ${dsA.error}`);
-      }
-
-      const item = new Item(url, tokenDs);
-      // get items list
-      const itemS = await item.get(params, datastoreId, applicationId);
-      const indexLastItem = itemS.dsItems?.items.length;
-      const i = itemS.dsItems?.items?.[indexLastItem - 1];
-      const itemID = i?.i_id;
-
-      const deleteItemReq = {
-        a_id: `${actionDelete}`
-      };
-
-      const { data, error} = await item.delete(applicationId, datastoreId, itemID, deleteItemReq);
-      // expect response
-      if (data) {
-        expect(typeof data).toBe('object');
       }
     });
   });
@@ -213,7 +176,7 @@ describe('Item', () => {
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const {itemDetails, error} = await item.getItemDetail(datastoreId, itemID);
+      const { itemDetails, error } = await item.getItemDetail(datastoreId, itemID);
 
       // expect response
       if (itemDetails) {
@@ -254,11 +217,11 @@ describe('Item', () => {
         'action_id': actionIdUpdate,
         'history': {
           'comment': 'unitest update item command',
-          'datastore_id':  datastoreId
+          'datastore_id': datastoreId
         }
       };
 
-      const { data, error} = await item.update(applicationId, datastoreId, itemID, itemActionParameters);
+      const { data, error } = await item.update(applicationId, datastoreId, itemID, itemActionParameters);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
@@ -295,11 +258,48 @@ describe('Item', () => {
         'action_id': actionIdUpdate,
         'history': {
           'comment': 'unitest update item command',
-          'datastore_id':  datastoreId
+          'datastore_id': datastoreId
         }
       };
       const actionId = 'BackToInProgress';
-      const { data, error} = await item.execute(applicationId, datastoreId, itemID, actionId, itemActionParameters);
+      const { data, error } = await item.execute(applicationId, datastoreId, itemID, actionId, itemActionParameters);
+      // expect response
+      if (data) {
+        expect(typeof data).toBe('object');
+      }
+    });
+  });
+
+  describe('#delete()', () => {
+    it('should delete item in datastore', async () => {
+      jest.useFakeTimers('legacy');
+
+      let actionDelete;
+      const datastore = new Datastore(url, tokenDs);
+      const dsA = await datastore.getActions(datastoreId);
+      const actions = dsA?.dsActions;
+      if (actions) {
+        for (let i = 0; i < actions.length; i++) {
+          if (actions[i].operation == 'delete') {
+            actionDelete = actions[i].action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: ${dsA.error}`);
+      }
+
+      const item = new Item(url, tokenDs);
+      // get items list
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const indexLastItem = itemS.dsItems?.items.length;
+      const i = itemS.dsItems?.items?.[indexLastItem - 1];
+      const itemID = i?.i_id;
+
+      const deleteItemReq = {
+        a_id: `${actionDelete}`
+      };
+
+      const { data, error } = await item.delete(applicationId, datastoreId, itemID, deleteItemReq);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
