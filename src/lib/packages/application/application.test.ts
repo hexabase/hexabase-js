@@ -16,7 +16,7 @@ const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const template = process.env.PROJECT_TEMPLATE || '';
 
-let newApplicationId: any = '';
+let newApplicationId = '';
 
 // local variable in file for testing
 
@@ -28,7 +28,7 @@ beforeAll(async () => {
     if (token) {
       const application = new Application(url, token);
       const projectAndDs = await application.getProjectsAndDatastores(workspaceId);
-      if (projectAndDs && projectAndDs.appAndDs && projectAndDs.appAndDs.length > 0) {
+      if (projectAndDs && projectAndDs.appAndDs && projectAndDs.appAndDs[0].application_id) {
         newApplicationId = projectAndDs.appAndDs[0].application_id;
       }
       return tokenApp = token;
@@ -76,32 +76,13 @@ describe('Application', () => {
     });
   });
 
-  describe('#delete()', () => {
-    it('should delete project by id project current without error', async () => {
-      jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-      const payload: DeleteProjectPl = {
-        payload: {
-          project_id: '63315fb4c32cd43154ffee0d',
-        }
-      };
-      const { data, error } = await application.delete(payload);
-
-      if (data) {
-        expect(typeof data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
   describe('#updateProjectTheme()', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
       const payload: UpdateProjectThemePl = {
         payload: {
-          project_id: '633166e015ff31c3b77ec150',
+          project_id: newApplicationId,
           theme: 'black',
         }
       };
@@ -121,15 +102,34 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
       const payload: UpdateProjectNamePl = {
         payload: {
-          project_id: '633166e015ff31c3b77ec150',
-          project_displayid: 'samplelogin4',
+          project_id: newApplicationId,
+          project_displayid: 'samplelogi',
           project_name: {
-            en: 'test update 4',
-            ja: 'test update 4',
+            en: 'test update',
+            ja: 'test update',
           },
         }
       };
       const { data, error } = await application.updateProjectName(payload);
+
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#delete()', () => {
+    it('should delete project by id project current without error', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const payload: DeleteProjectPl = {
+        payload: {
+          project_id: newApplicationId,
+        }
+      };
+      const { data, error } = await application.delete(payload);
 
       if (data) {
         expect(typeof data).toBe('object');
