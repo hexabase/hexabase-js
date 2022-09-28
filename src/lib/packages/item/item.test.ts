@@ -272,8 +272,34 @@ describe('Item', () => {
     it('should execute action for item in datastore', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
+      const itemS = await item.get(params, datastoreId, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+
+      const itemDetail = await item.getItemDetail(datastoreId, itemID);
+      const { itemDetails } = itemDetail;
+      let actionIdUpdate = '';
+
+      if (itemDetails && itemDetails.item_actions) {
+        for (let i = 0; i < itemDetails.item_actions.length; i++) {
+          if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name == 'update') {
+            actionIdUpdate = itemDetails.item_actions[i].action_id;
+          }
+        }
+      }
+
+      const revNo = itemDetails?.rev_no;
+      const itemActionParameters = {
+        'rev_no': revNo,
+        'datastore_id': datastoreId,
+        'action_id': actionIdUpdate,
+        'history': {
+          'comment': 'unitest update item command',
+          'datastore_id':  datastoreId
+        }
+      };
       const actionId = 'BackToInProgress';
-      const { data, error} = await item.execute(applicationId, datastoreId, itemId, actionId, itemActionParameters);
+      const { data, error} = await item.execute(applicationId, datastoreId, itemID, actionId, itemActionParameters);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');

@@ -1,11 +1,14 @@
+import { ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   DS_ACTIONS,
   DS_FIELD_SETTING,
   DS_ACTION_SETTING,
   DS_STATUS,
+  UPDATE_DATASTORE_NAME,
 } from '../../graphql/datastore';
 import {
+  DatastoreUpdateName,
   DsActionRes,
   DsActionSettingRes,
   DsFieldSettingsRes,
@@ -14,6 +17,7 @@ import {
   DtDsActionSetting,
   DtDsFieldSettings,
   DtDsStatus,
+  DtUpdateNameDatastore,
 } from '../../types/datastore';
 
 export default class Datastore extends HxbAbstract {
@@ -113,4 +117,28 @@ export default class Datastore extends HxbAbstract {
 
     return data;
   }
+
+  /**
+  * function UpdateDatastoreName: update datastore name in project
+  * @params {UpdateProjectNamePl} payload is requirement
+  * @returns ModelRes
+  */
+  async UpdateDatastoreName(payload: DatastoreUpdateName): Promise<ModelRes> {
+    const data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtUpdateNameDatastore = await this.client.request(UPDATE_DATASTORE_NAME, payload);
+
+      data.data = res.updateDatastoreName;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
 }
