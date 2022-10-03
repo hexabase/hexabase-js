@@ -139,3 +139,11 @@ export const SET_CURRENT_WORKSPACE = gql`
     }
   }
 `;
+
+export const UPDATE_WORKSPACE_SETTINGS = gql`
+  mutation UpdateWorkspaceSettings($payload: WorkspaceSettingReq!) {
+  updateWorkspaceSettings(payload: $payload) {
+    error
+  }
+} 
+`
