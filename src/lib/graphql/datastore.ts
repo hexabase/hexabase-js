@@ -104,9 +104,17 @@ export const CREATE_DATASTORE_FROM_TEMPLATE = gql`
   }
 `;
 
+export const VALIDATE_DS_DISPLAY_ID = gql`
+  mutation ValidateDatastoreDisplayID($payload: IsExistsDSDisplayIDExcludeOwnReq!) {
+    validateDatastoreDisplayID(payload: $payload) {
+      exits
+    }
+  }
+`;
+
 export const UPDATE_DATASTORE_SETTING = gql`
-  mutation UpdateDatastoreSetting($payload: DatastoreUpdateSetting!, $validate: IsExistsDSDisplayIDExcludeOwnReq!) {
-    updateDatastoreSetting(payload: $payload, validate: $validate) {
+  mutation UpdateDatastoreSetting($payload: DatastoreUpdateSetting!) {
+    updateDatastoreSetting(payload: $payload) {
       data
       success
     }

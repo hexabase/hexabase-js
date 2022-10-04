@@ -43,5 +43,5 @@ export interface ExistsDSDisplayIDExcludeOwnInput {
 }
 
 export interface IsExistsDSDisplayIDExcludeOwnReq {
-  validate: ExistsDSDisplayIDExcludeOwnInput;
+  payload: ExistsDSDisplayIDExcludeOwnInput;
 }

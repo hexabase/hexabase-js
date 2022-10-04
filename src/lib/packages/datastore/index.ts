@@ -8,6 +8,7 @@ import {
   UPDATE_DATASTORE_SETTING,
   CREATE_DATASTORE_FROM_TEMPLATE,
   DELETE_DATASTORE,
+  VALIDATE_DS_DISPLAY_ID,
 } from '../../graphql/datastore';
 import {
   CreateDatastoreFromSeedReq,
@@ -24,6 +25,8 @@ import {
   DtDsFieldSettings,
   DtDsStatus,
   DtUpdateDatastore,
+  DtValidateBeforeUpdateDsRes,
+  ExistsDSDisplayIDExcludeOwnRes,
   IsExistsDSDisplayIDExcludeOwnReq,
 } from '../../types/datastore';
 
@@ -52,13 +55,34 @@ export default class Datastore extends HxbAbstract {
     return data;
   }
 
+  /**
+   * function validateDatastoreDisplayID: validate before update datastore in project
+   * @params {IsExistsDSDisplayIDExcludeOwnReq} payload is requirement
+   * @returns ExistsDSDisplayIDExcludeOwnRes
+   */
+  async validateDatastoreDisplayID(payload: IsExistsDSDisplayIDExcludeOwnReq): Promise<ExistsDSDisplayIDExcludeOwnRes> {
+    const data: ExistsDSDisplayIDExcludeOwnRes = {
+      exits: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const resUpdate: DtValidateBeforeUpdateDsRes = await this.client.request(VALIDATE_DS_DISPLAY_ID, payload);
+      data.exits = resUpdate?.validateDatastoreDisplayID?.exits;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
 
   /**
    * function UpdateDatastoreName: update datastore in project
    * @params {DatastoreUpdateSetting} payload, {DatastoreUpdateSetting} validate is requirement
    * @returns ModelRes
    */
-  async updateDatastoreSetting(payload: DatastoreUpdateSetting, validate: IsExistsDSDisplayIDExcludeOwnReq): Promise<ModelRes> {
+  async updateDatastoreSetting(payload: DatastoreUpdateSetting): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
       error: undefined,
@@ -66,7 +90,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const resUpdate: DtUpdateDatastore = await this.client.request(UPDATE_DATASTORE_SETTING, { ...payload, ...validate });
+      const resUpdate: DtUpdateDatastore = await this.client.request(UPDATE_DATASTORE_SETTING, payload);
       data.data = resUpdate?.updateDatastoreSetting;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);

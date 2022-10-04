@@ -106,8 +106,9 @@ export interface DsActionSettingRes {
   error?: string;
 }
 
-export interface ExistsDSDisplayIDExcludeOwnResp {
-  exits: boolean;
+export interface ExistsDSDisplayIDExcludeOwnRes {
+  exits?: boolean;
+  error?: string;
 }
 
 export interface CreateDatastoreFromSeedRes {
@@ -115,6 +116,13 @@ export interface CreateDatastoreFromSeedRes {
   error?: string;
 }
 
+export interface DtValidateBeforeUpdateDs {
+  exits?: boolean
+}
+
+export interface DtValidateBeforeUpdateDsRes {
+  validateDatastoreDisplayID?: DtValidateBeforeUpdateDs;
+}
 
 export interface DtUpdateDatastore {
   updateDatastoreSetting: ResponseOkModel;
