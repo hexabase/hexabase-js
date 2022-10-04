@@ -11,7 +11,9 @@ import {
   TASK_QUEUE_STATUS,
   CREATE_WORKSPACE,
   SET_CURRENT_WORKSPACE,
-  UPDATE_WORKSPACE_SETTINGS
+  UPDATE_WORKSPACE_SETTINGS,
+  WORKSPACE_DETAIL,
+  ARCHIVE_WORKSPACE
 } from '../../graphql/workspace';
 import {
   QueryTaskList,
@@ -36,7 +38,9 @@ import {
   DtWorkspaceID,
   DtCurrentWs,
   SetWsInput,
-  WorkspaceSettingReq
+  WorkspaceSettingReq,
+  WorkspaceDetailRes,
+  ArchiveWorkspace
 } from '../../types/workspace';
 import { error } from 'console';
 
@@ -64,6 +68,29 @@ export default class Workspace extends HxbAbstract {
 
     return data;
   }
+
+  /**
+   * function getDetail: get workspace detail
+   * @params: workspaceId
+   * @returns Workspace
+   */
+     async getDetail(): Promise<WorkspaceDetailRes> {
+      const data: WorkspaceDetailRes = {
+        workspace: undefined,
+        error: undefined,
+      };
+  
+      // handle call graphql
+      try {
+        const res: WorkspaceDetailRes = await this.client.request(WORKSPACE_DETAIL);
+        data.workspace = res.workspace;
+      } catch (error: any) {
+        console.log('error', error);
+        data.error = JSON.stringify(error.response.errors);
+      }
+  
+      return data;
+    }
 
   /**
    * function getCurrent: get workspaces id current
@@ -270,6 +297,26 @@ export default class Workspace extends HxbAbstract {
     return data;
   }
 
+    /**
+   * function archive: archive workspace
+   * @param: payload: WorkspaceSettingReq
+   * @returns ResponseErrorNull
+   */
+     async archive(payload: ArchiveWorkspace ): Promise<ResponseErrorNull> {
+      const data: ResponseErrorNull = {
+        error: undefined,
+      }
+
+      try {
+        const res: ResponseErrorNull = await this.client.request(ARCHIVE_WORKSPACE, payload);
+        data.error = res.error;
+      } catch (error: any) {
+        data.error = JSON.stringify(error.response.errors);
+      }
+      
+      return data;
+    }
+
 
   /**
    * function setCurrent: set workspace current with id
@@ -285,13 +332,10 @@ export default class Workspace extends HxbAbstract {
     // handle call graphql
     try {
       const res: DtCurrentWs = await this.client.request( SET_CURRENT_WORKSPACE, {setCurrentWorkSpaceInput: setCurrentWsPl} );
-
       data.data = res.setCurrentWorkSpace;
     } catch (error: any) {
-
       data.error = JSON.stringify(error.response.errors);
     }
-
     return data;
   }
 }

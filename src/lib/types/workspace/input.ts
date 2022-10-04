@@ -115,6 +115,8 @@ export interface Redirect {
 
 export interface UserSessions {
   session_timeout_sec?: number;
+  default?: any;
+  use?: any;
 }
 
 export interface WsAdminUsers {
@@ -184,13 +186,23 @@ export interface WsFunctionsPl {
 }
 
 export interface WsUsage {
-  datastores: number;
+  datastores?: number;
 
-  items: number;
+  items?: number;
 
-  storage_size: number;
+  storage_size?: number;
 
-  users: number;
+  users?: number;
+
+  users_limit?: any;
+
+  items_limit?: any;
+
+  storage?: any;
+
+  storage_limit: any;
+
+  datastores_limit: any;
 }
 
 export interface WorkspaceSettingReq {
@@ -231,4 +243,9 @@ export interface WorkspaceSettingReq {
 
     ws_usage?: WsUsage;
   };
+}
+
+export interface ArchiveWorkspace {
+  archived: boolean;
+  w_id: string;
 }
