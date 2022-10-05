@@ -33,10 +33,10 @@ import {
 export default class Datastore extends HxbAbstract {
 
   /**
- * function CreateDatastoreFromTemplate: CREATE datastore in project
- * @params {CreateDatastoreFromSeedReq} payload is requirement
- * @returns ModelRes
- */
+   * function CreateDatastoreFromTemplate: CREATE datastore in project
+   * @params {CreateDatastoreFromSeedReq} payload is requirement
+   * @returns ModelRes
+   */
   async createDatastoreFromTemplate(payload: CreateDatastoreFromSeedReq): Promise<CreateDatastoreFromSeedRes> {
     const data: CreateDatastoreFromSeedRes = {
       datastoreId: undefined,
@@ -196,10 +196,10 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
- * function deleteDatastore: delete datastore in project
- * @params {string} datastoreId is requirement
- * @returns ModelRes
- */
+   * function deleteDatastore: delete datastore in project
+   * @params {string} datastoreId is requirement
+   * @returns ModelRes
+   */
   async deleteDatastore(datastoreId: string): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,

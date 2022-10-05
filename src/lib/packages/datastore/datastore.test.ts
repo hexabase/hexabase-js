@@ -42,7 +42,7 @@ beforeAll(async () => {
   jest.useFakeTimers('legacy');
   const application = new Application(url, tokenDs);
 
-  const { appAndDs } = await application.getProjectsAndDatastores(workspaceId);
+  const { appAndDs } = await application.get(workspaceId);
   if (
     appAndDs &&
     appAndDs[0] &&

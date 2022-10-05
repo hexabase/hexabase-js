@@ -23,17 +23,15 @@ import {
   DtUpdateNameProject,
   UpdateProjectNamePl
 } from '../../types/application';
-import { REPORT_DEFAULT } from '../../graphql/dataReport';
-import { GET_REPORTS } from '../../graphql/dataReport';
 
 export default class Application extends HxbAbstract {
 
   /**
-   * function getProjectsAndDatastores: get list application and datastore in a workspace
+   * function get: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
+  async get(workspaceId: string): Promise<AppAndDsRes> {
     const data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,
@@ -81,7 +79,7 @@ export default class Application extends HxbAbstract {
    * @params projectId string
    * @returns ReportDataRes
    */
-  async get(projectId: string): Promise<ProjectInfoRes> {
+  async getDetail(projectId: string): Promise<ProjectInfoRes> {
     const data: ProjectInfoRes = {
       project: undefined,
       error: undefined,

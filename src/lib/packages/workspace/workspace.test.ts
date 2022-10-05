@@ -1,7 +1,6 @@
 import { ArchiveWorkspace, SetWsInput, WorkspaceSettingReq, WorkspacesRes } from '../../types/workspace';
 import Workspace from '.';
 import Auth from '../auth';
-import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
  * Test with class Workspace
@@ -22,23 +21,15 @@ const createWorkSpaceInput = {
   name: 'new Workspace'
 };
 
-let updateWorkspaceSettingsInput : any = {
+const updateWorkspaceSettingsInput: any = {
   payload: {}
 };
 
-let archiveWorkspaceInput: any = {
-  payload: {
-    w_id: '',
-    archived: false,
-  }
-}
-
-
 /** run first testing  */
-beforeAll( async () => {
+beforeAll(async () => {
   if (email && password) {
     const auth = new Auth(url);
-    const {token, error} = await auth.login({email, password});
+    const { token, error } = await auth.login({ email, password });
     if (token) {
       return tokenWs = token;
     } else {
@@ -48,18 +39,16 @@ beforeAll( async () => {
 });
 
 describe('Workspace', () => {
-
   // testing get all workspaces
   describe('#create()', () => {
     it('should create workspace', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {w_id, error} = await workspace.create(createWorkSpaceInput);
+      const { w_id, error } = await workspace.create(createWorkSpaceInput);
 
       // expect response
       if (w_id) {
-
+        newWorkspaceId = w_id;
         expect(typeof w_id).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
@@ -78,7 +67,7 @@ describe('Workspace', () => {
         const setCurrentWsPl: SetWsInput = {
           workspace_id: wsps.workspaces?.current_workspace_id
         };
-        const {data, error} = await workspace.setCurrent(setCurrentWsPl);
+        const { data, error } = await workspace.setCurrent(setCurrentWsPl);
 
         // expect response
         if (data) {
@@ -91,18 +80,26 @@ describe('Workspace', () => {
     });
   });
 
+  describe('#getCurrent()', () => {
+    it('should get workspaces id current', async () => {
+      jest.useFakeTimers('legacy');
+      const workspace = new Workspace(url, tokenWs);
+      const {wsCurrent, error} = await workspace.getCurrent();
+      // expect response
+      if (wsCurrent) {
+        expect(typeof wsCurrent.workspace_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
   // testing get all workspaces
   describe('#get()', () => {
     it('should get all workspaces', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {workspaces, error} = await workspace.get();
-
-      if (workspaces && workspaces.workspaces[0] && workspaces.workspaces[0].workspace_id) {
-        newWorkspaceId = workspaces.workspaces[0].workspace_id;
-        archiveWorkspaceInput.payload.w_id = workspaces.workspaces[0].workspace_id;
-      }
+      const { workspaces, error } = await workspace.get();
 
       // expect response
       if (workspaces) {
@@ -119,20 +116,21 @@ describe('Workspace', () => {
     it('should get workspace detail by id', async () => {
       jest.useFakeTimers('legacy');
       const newWorkspace = new Workspace(url, tokenWs);
-      try{
-          const {workspace, error} = await newWorkspace.getDetail();
-          if (workspace) {
-            expect(typeof workspace.id).toBe('string');
-            expect(typeof workspace.name).toBe('string');
-            updateWorkspaceSettingsInput.payload = workspace;
-          } else {
-            throw new Error(`Error: ${error}`);
-          }
+      try {
+        const { workspace, error } = await newWorkspace.getDetail();
+        if (workspace) {
+          expect(typeof workspace.id).toBe('string');
+          expect(typeof workspace.name).toBe('string');
+          workspace.name = "new ws name";
+          updateWorkspaceSettingsInput.payload = workspace;
+        } else {
+          throw new Error(`Error: ${error}`);
+        }
       } catch (error) {
-        throw new Error(`Error: ${error}`)
+        throw new Error(`Error: ${error}`);
       }
-    })
-  })
+    });
+  });
 
   describe('#updateWorkspaceSettings', () => {
     it('should update workspace settings', async () => {
@@ -140,7 +138,7 @@ describe('Workspace', () => {
       const workspace = new Workspace(url, tokenWs);
       try {
         if (updateWorkspaceSettingsInput) {
-          const {error} = await workspace.update(updateWorkspaceSettingsInput);
+          const { error } = await workspace.update(updateWorkspaceSettingsInput);
           if (!error) {
             expect(error).toBeNull;
           } else {
@@ -150,23 +148,6 @@ describe('Workspace', () => {
       } catch (error) {
         throw new Error(`Error: ${error}`);
       }
-    })
-  })
-
-  describe('#getCurrent()', () => {
-    it('should get workspaces id current', async () => {
-      jest.useFakeTimers('legacy');
-
-      const workspace = new Workspace(url, tokenWs);
-      const {wsCurrent, error} = await workspace.getCurrent();
-
-      // expect response
-      if (wsCurrent) {
-
-        expect(typeof wsCurrent.workspace_id).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
     });
   });
 
@@ -174,9 +155,9 @@ describe('Workspace', () => {
     it('should get workspace password policy', async () => {
       jest.useFakeTimers('legacy');
       const workspace = new Workspace(url, tokenWs);
-      try { 
+      try {
         if (newWorkspaceId) {
-          const {wsPasswordPolicy, error} = await workspace.getPasswordPolicy(newWorkspaceId);
+          const { wsPasswordPolicy, error } = await workspace.getPasswordPolicy(newWorkspaceId);
           if (wsPasswordPolicy) {
             // expect response
             expect(typeof wsPasswordPolicy.expired_day).toBe('number');
@@ -187,7 +168,6 @@ describe('Workspace', () => {
         }
       } catch (error) {
         throw new Error(`Error: ${error}`);
-
       }
     });
   });
@@ -198,7 +178,7 @@ describe('Workspace', () => {
       const workspace = new Workspace(url, tokenWs);
       try {
         if (newWorkspaceId) {
-          const {wsFunctionality, error} = await workspace.getFunctionality(newWorkspaceId);
+          const { wsFunctionality, error } = await workspace.getFunctionality(newWorkspaceId);
           if (wsFunctionality) {
             // expect response
             expect(typeof wsFunctionality.w_id).toBe('string');
@@ -207,7 +187,7 @@ describe('Workspace', () => {
           }
         }
       } catch (error) {
-        throw new Error(`Error: ${error}`)
+        throw new Error(`Error: ${error}`);
       }
     });
   });
@@ -215,13 +195,10 @@ describe('Workspace', () => {
   describe('#getUsage()', () => {
     it('should get workspace usage', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {wsUsage, error} = await workspace.getUsage(workspaceId);
-
+      const { wsUsage, error } = await workspace.getUsage(workspaceId);
       // expect response
       if (wsUsage) {
-
         expect(typeof wsUsage.w_id).toBe('string');
         expect(typeof wsUsage.usage?.datastores).toBe('number');
       } else {
@@ -233,13 +210,10 @@ describe('Workspace', () => {
   describe('#getGroupChildren()', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {wsGroupChildren, error} = await workspace.getGroupChildren(workspaceId);
-
+      const { wsGroupChildren, error } = await workspace.getGroupChildren(workspaceId);
       // expect response
       if (wsGroupChildren) {
-
         expect(typeof wsGroupChildren.error).toBe('string');
         expect(typeof wsGroupChildren.count).toBe('number');
       } else {
@@ -251,13 +225,10 @@ describe('Workspace', () => {
   describe('#getTaskQueueList()', () => {
     it('should get queue list', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {taskQueueList, error} = await workspace.getTaskQueueList();
-
+      const { taskQueueList, error } = await workspace.getTaskQueueList();
       // expect response
       if (taskQueueList) {
-
         expect(typeof taskQueueList).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
@@ -265,19 +236,43 @@ describe('Workspace', () => {
     });
   });
 
-  describe('#getTaskQueueStatus()', () => {
-    it('should get task queue status', async () => {
+  // describe('#getTaskQueueStatus()', () => {
+  //   it('should get task queue status', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     const workspace = new Workspace(url, tokenWs);
+  //     try {
+  //       if (newWorkspaceId) {
+  //         const { taskQueueStatus, error } = await workspace.getTaskQueueStatus(taskId, newWorkspaceId);
+  //         // expect response
+  //         if (taskQueueStatus) {
+  //           expect(typeof taskQueueStatus.qt_id).toBe('string');
+  //           expect(typeof taskQueueStatus.category).toBe('string');
+  //           expect(typeof taskQueueStatus.created_at).toBe('string');
+  //         } else {
+  //           throw new Error(`Error: ${error}`);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       throw new Error(`Error: ${error}`);
+  //     }
+  //   });
+  // });
+
+  describe('#archiveWorkspace', () => {
+    it('should archive workspace', async () => {
       jest.useFakeTimers('legacy');
       const workspace = new Workspace(url, tokenWs);
       try {
         if (newWorkspaceId) {
-          const {taskQueueStatus, error} = await workspace.getTaskQueueStatus(taskId, newWorkspaceId);
-          // expect response
-          if (taskQueueStatus) {
-
-            expect(typeof taskQueueStatus.qt_id).toBe('string');
-            expect(typeof taskQueueStatus.category).toBe('string');
-            expect(typeof taskQueueStatus.created_at).toBe('string');
+          const archiveWorkspaceInput: ArchiveWorkspace = {
+            payload: {
+              w_id: newWorkspaceId,
+              archived: true,
+            }
+          };
+          const { error } = await workspace.archive(archiveWorkspaceInput);
+          if (!error) {
+            expect(error).toBeNull;
           } else {
             throw new Error(`Error: ${error}`);
           }
@@ -287,23 +282,4 @@ describe('Workspace', () => {
       }
     });
   });
-
-  describe('#archiveWorkspace', () => {
-    it('should archive workspace', async () => {
-      jest.useFakeTimers('legacy');
-      const workspace = new Workspace(url, tokenWs);
-      try {
-        if (newWorkspaceId) {
-          const {error} = await workspace.archive(archiveWorkspaceInput);
-          if (!error) {
-            expect(error).toBeNull;
-         } else {
-           throw new Error(`Error: ${error}`);
-         }
-        }   
-      } catch (error) {
-        throw new Error(`Error: ${error}`);
-      }
-    })
-  })
 });

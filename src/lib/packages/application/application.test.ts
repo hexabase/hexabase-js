@@ -1,8 +1,6 @@
 import { DeleteProjectPl, UpdateProjectNamePl, UpdateProjectThemePl } from '../../types/application';
 import Application from '.';
 import Auth from '../auth';
-import DataReport from '../dataReport';
-import AuthMw from '../middlware/auth';
 require('dotenv').config();
 /**
  * Test with class Application
@@ -41,16 +39,17 @@ beforeAll(async () => {
 });
 
 describe('Application', () => {
-  describe('#getProjectsAndDatastores()', () => {
+  describe('#get()', () => {
     it('should get applications info by workspace id', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
 
-      const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
+      const { appAndDs, error } = await application.get(workspaceId);
       if (appAndDs && appAndDs[0]) {
         if (appAndDs[0].application_id && appAndDs[0].display_id) {
           projectId = appAndDs[0].application_id;
           display_id = appAndDs[0].display_id;
+          newApplicationId = appAndDs[0]?.application_id;
         }
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
@@ -71,43 +70,32 @@ describe('Application', () => {
     it('should create application', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const dataReport = new DataReport(url, tokenApp);
-      const reportDt = await dataReport.getReports(projectId);
-      const reportId = reportDt.reports?.[0]?.rp_id;
+      const createProjectParams = {
+        name: {
+          en: 'EN Project',
+          ja: 'JA Project',
+        },
+      };
+      const { app, error } = await application.create(createProjectParams);
 
-      if (template) {
-        const createProjectParams = {
-          tp_id: template,
-          name: {
-            en: 'EN Project',
-            ja: 'JA Project',
-          },
-        };
-        const { app, error } = await application.create(createProjectParams);
-        if (app) {
-          newApplicationId = app?.project_id;
-          expect(typeof app.project_id).toBe('string');
-        } else {
-          const t = () => {
-            throw new Error(`Error: ${error}`);
-          };
-          expect(t).toThrow(Error(`Error: ${error}`));
-        }
+      if (app) {
+        // newApplicationId = app?.project_id;
+        expect(typeof app.project_id).toBe('string');
       } else {
         const t = () => {
-          throw new Error(`Error:can't get report with projectId`);
+          throw new Error(`Error: ${error}`);
         };
-        expect(t).toThrow(new Error(`Error:can't get report with projectId`));
+        expect(t).toThrow(Error(`Error: ${error}`));
       }
     });
   });
 
 
-  describe('#get()', () => {
+  describe('#getDetail()', () => {
     it('should get info project', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const { project, error } = await application.get(newApplicationId);
+      const { project, error } = await application.getDetail(newApplicationId);
       if (project) {
         expect(typeof project.name).toBe('string');
       } else {

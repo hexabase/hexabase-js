@@ -37,7 +37,7 @@ describe('Hexabase', () => {
       const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class application');
-      const {appAndDs, error} = await hexabase.applications.getProjectsAndDatastores(workspaceId);
+      const {appAndDs, error} = await hexabase.applications.get(workspaceId);
       if (appAndDs && appAndDs[0]) {
 
         // console.log('appAndDs', appAndDs);
