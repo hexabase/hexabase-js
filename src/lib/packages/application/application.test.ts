@@ -29,10 +29,10 @@ beforeAll(async () => {
     const { token, error } = await auth.login({ email, password });
     if (token) {
       const application = new Application(url, token);
-      const projectAndDs = await application.getProjectsAndDatastores(workspaceId);
-      if (projectAndDs && projectAndDs.appAndDs && projectAndDs.appAndDs[0].application_id) {
-        newApplicationId = projectAndDs.appAndDs[0].application_id;
-      }
+      // const projectAndDs = await application.getProjectsAndDatastores(workspaceId);
+      // if (projectAndDs && projectAndDs.appAndDs && projectAndDs.appAndDs[0].application_id) {
+      //   newApplicationId = projectAndDs.appAndDs[0].application_id;
+      // }
       return tokenApp = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -58,50 +58,49 @@ describe('Application', () => {
       }
       else {
         const t = () => {
-        throw new Error(`Error: ${error}`);
-      };
-
-      expect(t).toThrow(Error(`Error: ${error}`));
-      }
-    });
-  });
-
-// get applications info by workspace id
-describe('#create()', () => {
-  it('should create application', async () => {
-    jest.useFakeTimers('legacy');
-    const application = new Application(url, tokenApp);
-    const dataReport = new DataReport(url, tokenApp);
-    const reportDt = await dataReport.getReports(projectId);
-    const reportId = reportDt.reports?.[0]?.rp_id;
-
-    if (reportId) {
-      const createProjectParams = {
-        tp_id: reportId,
-        name: {
-          en: 'EN Project',
-          ja: 'JA Project',
-        },
-      };
-      const { app, error } = await application.create(createProjectParams);
-      if (app) {
-        expect(typeof app.project_id).toBe('string');
-      } else {
-        const t = () => {
           throw new Error(`Error: ${error}`);
         };
 
         expect(t).toThrow(Error(`Error: ${error}`));
-
       }
-    } else {
-      const t = () => {
-        throw new Error(`Error:can't get report with projectId`);
-      };
-      expect(t).toThrow(new Error(`Error:can't get report with projectId`));
-    }
+    });
   });
-});
+
+  // get applications info by workspace id
+  describe('#create()', () => {
+    it('should create application', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const dataReport = new DataReport(url, tokenApp);
+      const reportDt = await dataReport.getReports(projectId);
+      const reportId = reportDt.reports?.[0]?.rp_id;
+
+      if (template) {
+        const createProjectParams = {
+          tp_id: template,
+          name: {
+            en: 'EN Project',
+            ja: 'JA Project',
+          },
+        };
+        const { app, error } = await application.create(createProjectParams);
+        if (app) {
+          newApplicationId = app?.project_id;
+          expect(typeof app.project_id).toBe('string');
+        } else {
+          const t = () => {
+            throw new Error(`Error: ${error}`);
+          };
+          expect(t).toThrow(Error(`Error: ${error}`));
+        }
+      } else {
+        const t = () => {
+          throw new Error(`Error:can't get report with projectId`);
+        };
+        expect(t).toThrow(new Error(`Error:can't get report with projectId`));
+      }
+    });
+  });
 
 
   describe('#get()', () => {

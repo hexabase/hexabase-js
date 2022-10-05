@@ -1,8 +1,9 @@
-import { DatastoreUpdateName } from '../../types/datastore';
+import { CreateDatastoreFromSeedReq, DatastoreUpdateSetting, IsExistsDSDisplayIDExcludeOwnReq } from '../../types/datastore';
 import Datastore from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 import Application from '../application';
+import User from '../user';
 require('dotenv').config();
 /**
  * Test with class Datastore
@@ -15,13 +16,21 @@ const workspaceId = process.env.WORKSPACEID || '';
 let datastoreId = process.env.DATASTOREID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const projectID = process.env.PROJECT_ID || '';
+const templateName = process.env.TEMPLATE_NAME || '';
+let datastoreIdAfterCreate = '';
+let userId = '';
 
 beforeAll(async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
+
     if (token) {
+      const user = new User(url, token);
+      const { userInfo } = await user.get(token);
+      userInfo?.u_id ? userId = userInfo?.u_id : '';
       return (tokenDs = token);
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -141,28 +150,101 @@ describe('Datastore', () => {
     });
   });
 
-  describe('#UpdateDatastoreName()', () => {
-    it('should update datastore current without error', async () => {
+  describe('#createDatastoreFromTemplate()', () => {
+    it('should create datastore without error', async () => {
       jest.useFakeTimers('legacy');
       try {
+        const datastore = new Datastore(url, tokenDs);
+        const payload: CreateDatastoreFromSeedReq = {
+          payload: {
+            lang_cd: 'en',
+            project_id: projectID,
+            template_name: templateName,
+            workspace_id: workspaceId,
+            user_id: userId,
+          },
+        };
+        const { datastoreId } = await datastore.createDatastoreFromTemplate(payload);
+
         if (datastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const payload: DatastoreUpdateName = {
-            payload: {
-              datastore_id: datastoreId,
-              name: {
-                en: 'DSN_001',
-                ja: 'DSN_001',
-              },
-              display_id: 'display_id_001',
-            },
-          };
-          const { data } = await datastore.UpdateDatastoreName(payload);
-          if (data) expect(typeof data).toBe('object');
+          datastoreIdAfterCreate = datastoreId;
+          expect(typeof datastoreId).toBe('string');
+        } else {
+          throw new Error('Invalid datastoreId');
         }
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }
     });
   });
+
+  describe('#validateDatastoreDisplayID()', () => {
+    it('should update datastore current without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (datastoreIdAfterCreate) {
+          const datastore = new Datastore(url, tokenDs);
+          const payload: IsExistsDSDisplayIDExcludeOwnReq = {
+            payload: {
+              datastoreId: datastoreIdAfterCreate,
+              displayId: 'dsId_update_001',
+              projectId: projectID,
+            }
+          };
+          const { exits, error } = await datastore.validateDatastoreDisplayID(payload);
+          if (typeof exits === 'boolean') expect(typeof exits).toBe('boolean');
+          else throw new Error(`Error: ${error}`);
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#updateDatastore()', () => {
+    it('should update datastore current without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (datastoreIdAfterCreate) {
+          const datastore = new Datastore(url, tokenDs);
+          const payload: DatastoreUpdateSetting = {
+            payload: {
+              datastore_id: datastoreIdAfterCreate,
+              name: {
+                en: 'DSN_001',
+                ja: 'DSN_001',
+              },
+              display_id: 'dsId_update_001',
+            },
+          };
+          const { data, error } = await datastore.updateDatastoreSetting(payload);
+          if (data) expect(typeof data).toBe('object');
+          else throw new Error(`Error: ${error}`);
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#deleteDatastore()', () => {
+    it('should delete datastore current without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (datastoreIdAfterCreate) {
+          const datastore = new Datastore(url, tokenDs);
+          const { data, error } = await datastore.deleteDatastore(datastoreIdAfterCreate);
+
+          if (data) {
+            expect(typeof data).toBe('object');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
 });
