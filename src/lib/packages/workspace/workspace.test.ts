@@ -1,4 +1,4 @@
-import { SetWsInput, WorkspacesRes } from '../../types/workspace';
+import { ArchiveWorkspace, SetWsInput, WorkspaceSettingReq, WorkspacesRes } from '../../types/workspace';
 import Workspace from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
@@ -15,11 +15,23 @@ const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
+let newWorkspaceId = '';
+
 // local variable in file for testing
 const createWorkSpaceInput = {
   name: 'new Workspace'
 };
 
+let updateWorkspaceSettingsInput : any = {
+  payload: {}
+};
+
+let archiveWorkspaceInput: any = {
+  payload: {
+    w_id: '',
+    archived: false,
+  }
+}
 
 
 /** run first testing  */
@@ -87,9 +99,13 @@ describe('Workspace', () => {
       const workspace = new Workspace(url, tokenWs);
       const {workspaces, error} = await workspace.get();
 
+      if (workspaces && workspaces.workspaces[0] && workspaces.workspaces[0].workspace_id) {
+        newWorkspaceId = workspaces.workspaces[0].workspace_id;
+        archiveWorkspaceInput.payload.w_id = workspaces.workspaces[0].workspace_id;
+      }
+
       // expect response
       if (workspaces) {
-
         expect(typeof workspaces.current_workspace_id).toBe('string');
         expect(typeof workspaces.workspaces[0].workspace_name).toBe('string');
         expect(typeof workspaces.workspaces[0].workspace_id).toBe('string');
@@ -98,6 +114,44 @@ describe('Workspace', () => {
       }
     });
   });
+
+  describe('#getDetail()', () => {
+    it('should get workspace detail by id', async () => {
+      jest.useFakeTimers('legacy');
+      const newWorkspace = new Workspace(url, tokenWs);
+      try{
+          const {workspace, error} = await newWorkspace.getDetail();
+          if (workspace) {
+            expect(typeof workspace.id).toBe('string');
+            expect(typeof workspace.name).toBe('string');
+            updateWorkspaceSettingsInput.payload = workspace;
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+      } catch (error) {
+        throw new Error(`Error: ${error}`)
+      }
+    })
+  })
+
+  describe('#updateWorkspaceSettings', () => {
+    it('should update workspace settings', async () => {
+      jest.useFakeTimers('legacy');
+      const workspace = new Workspace(url, tokenWs);
+      try {
+        if (updateWorkspaceSettingsInput) {
+          const {error} = await workspace.update(updateWorkspaceSettingsInput);
+          if (!error) {
+            expect(error).toBeNull;
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (error) {
+        throw new Error(`Error: ${error}`);
+      }
+    })
+  })
 
   describe('#getCurrent()', () => {
     it('should get workspaces id current', async () => {
@@ -119,17 +173,21 @@ describe('Workspace', () => {
   describe('#getPasswordPolicy()', () => {
     it('should get workspace password policy', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {wsPasswordPolicy, error} = await workspace.getPasswordPolicy(workspaceId);
-
-      // expect response
-      if (wsPasswordPolicy) {
-
-        expect(typeof wsPasswordPolicy.expired_day).toBe('number');
-        expect(typeof wsPasswordPolicy.use_expired_day).toBe('boolean');
-      } else {
+      try { 
+        if (newWorkspaceId) {
+          const {wsPasswordPolicy, error} = await workspace.getPasswordPolicy(newWorkspaceId);
+          if (wsPasswordPolicy) {
+            // expect response
+            expect(typeof wsPasswordPolicy.expired_day).toBe('number');
+            expect(typeof wsPasswordPolicy.use_expired_day).toBe('boolean');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (error) {
         throw new Error(`Error: ${error}`);
+
       }
     });
   });
@@ -137,16 +195,19 @@ describe('Workspace', () => {
   describe('#getFunctionality()', () => {
     it('should get workspace functionlity', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {wsFunctionality, error} = await workspace.getFunctionality(workspaceId);
-
-      // expect response
-      if (wsFunctionality) {
-
-        expect(typeof wsFunctionality.w_id).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
+      try {
+        if (newWorkspaceId) {
+          const {wsFunctionality, error} = await workspace.getFunctionality(newWorkspaceId);
+          if (wsFunctionality) {
+            // expect response
+            expect(typeof wsFunctionality.w_id).toBe('string');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (error) {
+        throw new Error(`Error: ${error}`)
       }
     });
   });
@@ -207,19 +268,42 @@ describe('Workspace', () => {
   describe('#getTaskQueueStatus()', () => {
     it('should get task queue status', async () => {
       jest.useFakeTimers('legacy');
-
       const workspace = new Workspace(url, tokenWs);
-      const {taskQueueStatus, error} = await workspace.getTaskQueueStatus(taskId, workspaceId);
+      try {
+        if (newWorkspaceId) {
+          const {taskQueueStatus, error} = await workspace.getTaskQueueStatus(taskId, newWorkspaceId);
+          // expect response
+          if (taskQueueStatus) {
 
-      // expect response
-      if (taskQueueStatus) {
-
-        expect(typeof taskQueueStatus.qt_id).toBe('string');
-        expect(typeof taskQueueStatus.category).toBe('string');
-        expect(typeof taskQueueStatus.created_at).toBe('string');
-      } else {
+            expect(typeof taskQueueStatus.qt_id).toBe('string');
+            expect(typeof taskQueueStatus.category).toBe('string');
+            expect(typeof taskQueueStatus.created_at).toBe('string');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (error) {
         throw new Error(`Error: ${error}`);
       }
     });
   });
+
+  describe('#archiveWorkspace', () => {
+    it('should archive workspace', async () => {
+      jest.useFakeTimers('legacy');
+      const workspace = new Workspace(url, tokenWs);
+      try {
+        if (newWorkspaceId) {
+          const {error} = await workspace.archive(archiveWorkspaceInput);
+          if (!error) {
+            expect(error).toBeNull;
+         } else {
+           throw new Error(`Error: ${error}`);
+         }
+        }   
+      } catch (error) {
+        throw new Error(`Error: ${error}`);
+      }
+    })
+  })
 });

@@ -38,7 +38,7 @@ describe('Hexabase', () => {
 
       console.log('Test: class application');
       const {appAndDs, error} = await hexabase.applications.getProjectsAndDatastores(workspaceId);
-      if (appAndDs) {
+      if (appAndDs && appAndDs[0]) {
 
         // console.log('appAndDs', appAndDs);
         expect(typeof appAndDs[0].name).toBe('string');

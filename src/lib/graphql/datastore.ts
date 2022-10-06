@@ -96,10 +96,34 @@ export const DS_ACTION_SETTING = gql`
   }
 `;
 
+export const CREATE_DATASTORE_FROM_TEMPLATE = gql`
+  mutation CreateDatastoreFromTemplate($payload: CreateDatastoreFromSeedReq!) {
+    createDatastoreFromTemplate(payload: $payload) {
+      datastoreId
+    }
+  }
+`;
 
-export const UPDATE_DATASTORE_NAME = gql`
-  mutation UpdateDatastoreName($payload: DatastoreUpdateName!) {
-    updateDatastoreName(payload: $payload) {
+export const VALIDATE_DS_DISPLAY_ID = gql`
+  mutation ValidateDatastoreDisplayID($payload: IsExistsDSDisplayIDExcludeOwnReq!) {
+    validateDatastoreDisplayID(payload: $payload) {
+      exits
+    }
+  }
+`;
+
+export const UPDATE_DATASTORE_SETTING = gql`
+  mutation UpdateDatastoreSetting($payload: DatastoreUpdateSetting!) {
+    updateDatastoreSetting(payload: $payload) {
+      data
+      success
+    }
+  }
+`;
+
+export const DELETE_DATASTORE = gql`
+  mutation DeleteDatastore($datastoreId: String!) {
+    deleteDatastore(datastoreId: $datastoreId) {
       data
       success
     }
