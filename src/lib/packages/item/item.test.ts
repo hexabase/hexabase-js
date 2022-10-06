@@ -4,6 +4,8 @@ import AuthMw from '../middlware/auth';
 import Datastore from '../datastore/index';
 import Workspace from '../workspace';
 import Application from '../application';
+import { CreateDatastoreFromSeedReq } from '../../types/datastore';
+import User from '../user';
 
 require('dotenv').config();
 /**
@@ -11,14 +13,15 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
 
-const url = process.env.URL || '';
+let userId = '';
 let tokenDs = process.env.TOKEN || '';
-let workspaceId: any = process.env.WORKSPACEID || '';
-let applicationId: any = process.env.APPLICATIONID || '';
-// const projectId = process.env.APPLICATIONID || '';
-const datastoreId = process.env.DATASTOREID || '';
+let workspaceId = process.env.WORKSPACEID || '';
+let applicationId = process.env.APPLICATIONID || '';
+let datastoreID = process.env.datastoreID || '';
+const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const templateName = process.env.TEMPLATE_NAME || '';
 
 // local variable in file for testing
 const params = {
@@ -31,25 +34,75 @@ const historyParams = {
   'to_index': 1
 };
 
+const createWorkSpaceInput = {
+  name: 'new Workspace'
+};
+
+const createProjectParams = {
+  name: {
+    en: 'EN Project',
+    ja: 'JA Project',
+  },
+};
 
 beforeAll(async () => {
   if (email && password) {
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
     if (token) {
+      //
+      const user = new User(url, token);
+      const { userInfo } = await user.get(token);
+      userInfo?.u_id ? userId = userInfo?.u_id : '';
+      //
       const workspace = new Workspace(url, token);
-      const wss = await workspace.get()?.then(resp => workspaceId = resp?.workspaces);
-      if (wss && wss.workspaces) {
-        for (const ws of wss.workspaces) {
-          const application = new Application(url, token);
-          // if (ws && ws.workspace_id)
-          // const applications = await application.get(ws.workspace_id);
+      const { workspaces } = await workspace.get();
+
+      if (workspaces && workspaces?.workspaces && workspaces?.workspaces[0]?.workspace_id) {
+        workspaceId = workspaces?.workspaces[0]?.workspace_id;
+      } else {
+        const workspace = new Workspace(url, token);
+        const { w_id } = await workspace.create(createWorkSpaceInput);
+
+        if (w_id) {
+          workspaceId = w_id;
         }
       }
-      // for (const application of applications?.appAndDs) {
-      //   applicationId = application?.)
-      // }
-      const datastore = new Datastore(url, tokenDs);
+      //
+      const appAndDsGetApp = new Application(url, token);
+      const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+
+      if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
+        applicationId = appAndDs[0].application_id;
+      } else {
+        const application = new Application(url, token);
+        const { app } = await application.create(createProjectParams);
+
+        if (app) {
+          applicationId = app?.project_id;
+        }
+      }
+
+      //
+      if (appAndDs && appAndDs[0] && appAndDs[0]?.datastores && appAndDs[0]?.datastores[0]?.datastore_id) {
+        datastoreID = appAndDs[0]?.datastores[0]?.datastore_id;
+      } else {
+        const payload: CreateDatastoreFromSeedReq = {
+          payload: {
+            lang_cd: 'en',
+            project_id: applicationId,
+            template_name: templateName,
+            workspace_id: workspaceId,
+            user_id: userId,
+          },
+        };
+        const datastore = new Datastore(url, token);
+        const { datastoreId } = await datastore.create(payload);
+
+        if (datastoreId) {
+          datastoreID = datastoreId;
+        }
+      }
       return tokenDs = token;
     } else {
       throw Error(`Login to initialize sdk: ${error}`);
@@ -63,7 +116,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
 
-      const { dsItems, error } = await item.get(params, datastoreId, applicationId);
+      const { dsItems, error } = await item.get(params, datastoreID, applicationId);
       // expect response
       if (dsItems) {
 
@@ -74,37 +127,14 @@ describe('Item', () => {
     });
   });
 
-  describe('#getHistories()', () => {
-    it('should get items histories', async () => {
-      jest.useFakeTimers('legacy');
-      const item = new Item(url, tokenDs);
-
-      // get items list
-      const itemS = await item.get(params, datastoreId, applicationId);
-      const i = itemS.dsItems?.items?.[0];
-      const itemID = i?.i_id;
-
-      const { itemHistories, error } = await item.getHistories(applicationId, datastoreId, itemID, historyParams);
-
-      // expect response
-      if (itemHistories) {
-
-        expect(typeof itemHistories.unread).toBe('number');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
   describe('#createItemId()', () => {
     it('should create new item id', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const { item_id, error } = await item.createItemId(datastoreId);
+      const { item_id, error } = await item.createItemId(datastoreID);
 
       // expect response
       if (item_id) {
-
         expect(typeof item_id).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
@@ -117,7 +147,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       let actionCreate;
       const datastore = new Datastore(url, tokenDs);
-      const dsA = await datastore.getActions(datastoreId);
+      const dsA = await datastore.getActions(datastoreID);
       const actions = dsA?.dsActions;
       if (actions) {
         for (let i = 0; i < actions.length; i++) {
@@ -146,13 +176,30 @@ describe('Item', () => {
         }
       };
 
-      const { itemNew, error } = await item.create(applicationId, datastoreId, newItemActionParameters);
+      const { itemNew, error } = await item.create(applicationId, datastoreID, newItemActionParameters);
 
       // expect response
       if (itemNew) {
-
         expect(typeof itemNew.history_id).toBe('string');
         expect(typeof itemNew.item_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#getHistories()', () => {
+    it('should get items histories', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenDs);
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const { itemHistories, error } = await item.getHistories(applicationId, datastoreID, itemID, historyParams);
+
+      // expect response
+      if (itemHistories) {
+        expect(typeof itemHistories.unread).toBe('number');
       } else {
         throw new Error(`Error: ${error}`);
       }
@@ -165,11 +212,11 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
 
       // get items list
-      const itemS = await item.get(params, datastoreId, applicationId);
+      const itemS = await item.get(params, datastoreID, applicationId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const { itemLinked, error } = await item.getItemRelated(datastoreId, itemID, datastoreId);
+      const { itemLinked, error } = await item.getItemRelated(datastoreID, itemID, datastoreID);
 
       // expect response
       if (itemLinked) {
@@ -187,11 +234,11 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
 
       // get items list
-      const itemS = await item.get(params, datastoreId, applicationId);
+      const itemS = await item.get(params, datastoreID, applicationId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const { itemDetails, error } = await item.getItemDetail(datastoreId, itemID);
+      const { itemDetails, error } = await item.getItemDetail(datastoreID, itemID);
 
       // expect response
       if (itemDetails) {
@@ -209,11 +256,11 @@ describe('Item', () => {
       const item = new Item(url, tokenDs);
 
       // get items list
-      const itemS = await item.get(params, datastoreId, applicationId);
+      const itemS = await item.get(params, datastoreID, applicationId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const itemDetail = await item.getItemDetail(datastoreId, itemID);
+      const itemDetail = await item.getItemDetail(datastoreID, itemID);
       const { itemDetails } = itemDetail;
       let actionIdUpdate = '';
 
@@ -228,15 +275,15 @@ describe('Item', () => {
       const revNo = itemDetails?.rev_no;
       const itemActionParameters = {
         'rev_no': revNo,
-        'datastore_id': datastoreId,
+        'datastore_id': datastoreID,
         'action_id': actionIdUpdate,
         'history': {
           'comment': 'unitest update item command',
-          'datastore_id': datastoreId
+          'datastore_id': datastoreID
         }
       };
 
-      const { data, error } = await item.update(applicationId, datastoreId, itemID, itemActionParameters);
+      const { data, error } = await item.update(applicationId, datastoreID, itemID, itemActionParameters);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
@@ -250,11 +297,11 @@ describe('Item', () => {
     it('should execute action for item in datastore', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenDs);
-      const itemS = await item.get(params, datastoreId, applicationId);
+      const itemS = await item.get(params, datastoreID, applicationId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
 
-      const itemDetail = await item.getItemDetail(datastoreId, itemID);
+      const itemDetail = await item.getItemDetail(datastoreID, itemID);
       const { itemDetails } = itemDetail;
       let actionIdUpdate = '';
 
@@ -269,15 +316,15 @@ describe('Item', () => {
       const revNo = itemDetails?.rev_no;
       const itemActionParameters = {
         'rev_no': revNo,
-        'datastore_id': datastoreId,
+        'datastore_id': datastoreID,
         'action_id': actionIdUpdate,
         'history': {
           'comment': 'unitest update item command',
-          'datastore_id': datastoreId
+          'datastore_id': datastoreID
         }
       };
       const actionId = 'BackToInProgress';
-      const { data, error } = await item.execute(applicationId, datastoreId, itemID, actionId, itemActionParameters);
+      const { data, error } = await item.execute(applicationId, datastoreID, itemID, actionId, itemActionParameters);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
@@ -291,7 +338,7 @@ describe('Item', () => {
 
       let actionDelete;
       const datastore = new Datastore(url, tokenDs);
-      const dsA = await datastore.getActions(datastoreId);
+      const dsA = await datastore.getActions(datastoreID);
       const actions = dsA?.dsActions;
       if (actions) {
         for (let i = 0; i < actions.length; i++) {
@@ -305,7 +352,7 @@ describe('Item', () => {
 
       const item = new Item(url, tokenDs);
       // get items list
-      const itemS = await item.get(params, datastoreId, applicationId);
+      const itemS = await item.get(params, datastoreID, applicationId);
       const indexLastItem = itemS.dsItems?.items.length;
       const i = itemS.dsItems?.items?.[indexLastItem - 1];
       const itemID = i?.i_id;
@@ -314,7 +361,7 @@ describe('Item', () => {
         a_id: `${actionDelete}`
       };
 
-      const { data, error } = await item.delete(applicationId, datastoreId, itemID, deleteItemReq);
+      const { data, error } = await item.delete(applicationId, datastoreID, itemID, deleteItemReq);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');

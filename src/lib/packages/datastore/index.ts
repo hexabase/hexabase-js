@@ -37,7 +37,7 @@ export default class Datastore extends HxbAbstract {
    * @params {CreateDatastoreFromSeedReq} payload is requirement
    * @returns ModelRes
    */
-  async createDatastoreFromTemplate(payload: CreateDatastoreFromSeedReq): Promise<CreateDatastoreFromSeedRes> {
+  async create(payload: CreateDatastoreFromSeedReq): Promise<CreateDatastoreFromSeedRes> {
     const data: CreateDatastoreFromSeedRes = {
       datastoreId: undefined,
       error: undefined,

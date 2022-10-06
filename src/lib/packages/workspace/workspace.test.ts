@@ -9,7 +9,6 @@ require('dotenv').config();
 
 const url = process.env.URL || '';
 let tokenWs = process.env.TOKEN || '';
-const workspaceId = process.env.WORKSPACEID || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
