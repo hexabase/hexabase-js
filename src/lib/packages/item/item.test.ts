@@ -2,6 +2,8 @@ import Item from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 import Datastore from '../datastore/index';
+import Workspace from '../workspace';
+import Application from '../application';
 
 require('dotenv').config();
 /**
@@ -11,8 +13,8 @@ require('dotenv').config();
 
 const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
-const workspaceId = process.env.WORKSPACEID || '';
-const applicationId = process.env.APPLICATIONID || '';
+let workspaceId: any = process.env.WORKSPACEID || '';
+let applicationId: any = process.env.APPLICATIONID || '';
 // const projectId = process.env.APPLICATIONID || '';
 const datastoreId = process.env.DATASTOREID || '';
 const email = process.env.EMAIL || '';
@@ -35,6 +37,19 @@ beforeAll(async () => {
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
     if (token) {
+      const workspace = new Workspace(url, token);
+      const wss = await workspace.get()?.then(resp => workspaceId = resp?.workspaces);
+      if (wss && wss.workspaces) {
+        for (const ws of wss.workspaces) {
+          const application = new Application(url, token);
+          // if (ws && ws.workspace_id)
+          // const applications = await application.get(ws.workspace_id);
+        }
+      }
+      // for (const application of applications?.appAndDs) {
+      //   applicationId = application?.)
+      // }
+      const datastore = new Datastore(url, tokenDs);
       return tokenDs = token;
     } else {
       throw Error(`Login to initialize sdk: ${error}`);

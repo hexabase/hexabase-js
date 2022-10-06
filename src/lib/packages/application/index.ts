@@ -31,7 +31,7 @@ export default class Application extends HxbAbstract {
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async get(workspaceId: string): Promise<AppAndDsRes> {
+  async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
     const data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,

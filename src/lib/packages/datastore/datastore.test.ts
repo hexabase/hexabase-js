@@ -4,22 +4,22 @@ import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 import Application from '../application';
 import User from '../user';
+import Workspace from '../workspace';
 require('dotenv').config();
 /**
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
 
-const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
-const workspaceId = process.env.WORKSPACEID || '';
+let userId = '';
 let datastoreId = process.env.DATASTOREID || '';
+let workspaceId = process.env.WORKSPACEID || '';
+let projectID = process.env.PROJECT_ID || '';
+const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const projectID = process.env.PROJECT_ID || '';
 const templateName = process.env.TEMPLATE_NAME || '';
-let datastoreIdAfterCreate = '';
-let userId = '';
 
 beforeAll(async () => {
   if (email && password) {
@@ -31,25 +31,31 @@ beforeAll(async () => {
       const user = new User(url, token);
       const { userInfo } = await user.get(token);
       userInfo?.u_id ? userId = userInfo?.u_id : '';
+      //
+      const workspace = new Workspace(url, token);
+      const { workspaces } = await workspace.get();
+
+      if (workspaces && workspaces?.workspaces && workspaces?.workspaces[0]?.workspace_id) {
+        workspaceId = workspaces?.workspaces[0]?.workspace_id;
+      }
+      //
+      const appAndDsGetApp = new Application(url, token);
+      const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+
+      if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
+        projectID = dataApp?.appAndDs[0].application_id;
+      }
+      //
+      const appAndDsGetDs = new Application(url, tokenDs);
+      const dataDs = await appAndDsGetDs.getProjectsAndDatastores(workspaceId);
+
+      if (dataDs && dataDs?.appAndDs && dataDs?.appAndDs[0] && dataDs?.appAndDs[0].datastores && dataDs?.appAndDs[0].datastores[0].datastore_id) {
+        datastoreId = dataDs?.appAndDs[0].datastores[0].datastore_id;
+      }
       return (tokenDs = token);
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
     }
-  }
-});
-
-beforeAll(async () => {
-  jest.useFakeTimers('legacy');
-  const application = new Application(url, tokenDs);
-
-  const { appAndDs } = await application.get(workspaceId);
-  if (
-    appAndDs &&
-    appAndDs[0] &&
-    appAndDs[0].datastores &&
-    appAndDs[0].datastores[0].datastore_id
-  ) {
-    datastoreId = appAndDs[0].datastores[0].datastore_id;
   }
 });
 
@@ -167,7 +173,6 @@ describe('Datastore', () => {
         const { datastoreId } = await datastore.createDatastoreFromTemplate(payload);
 
         if (datastoreId) {
-          datastoreIdAfterCreate = datastoreId;
           expect(typeof datastoreId).toBe('string');
         } else {
           throw new Error('Invalid datastoreId');
@@ -179,14 +184,14 @@ describe('Datastore', () => {
   });
 
   describe('#validateDatastoreDisplayID()', () => {
-    it('should update datastore current without error', async () => {
+    it('should validate display id datastore current without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        if (datastoreIdAfterCreate) {
+        if (datastoreId) {
           const datastore = new Datastore(url, tokenDs);
           const payload: IsExistsDSDisplayIDExcludeOwnReq = {
             payload: {
-              datastoreId: datastoreIdAfterCreate,
+              datastoreId: datastoreId,
               displayId: 'dsId_update_001',
               projectId: projectID,
             }
@@ -205,17 +210,17 @@ describe('Datastore', () => {
     it('should update datastore current without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        if (datastoreIdAfterCreate) {
+        if (datastoreId) {
           const datastore = new Datastore(url, tokenDs);
           const payload: DatastoreUpdateSetting = {
             payload: {
-              datastore_id: datastoreIdAfterCreate,
+              datastore_id: "633e7ae71aa038e877b3eb0a",
+              display_id: "dsId_update_001",
               name: {
-                en: 'DSN_001',
-                ja: 'DSN_001',
+                en: "EN name update",
+                ja: "JA name update"
               },
-              display_id: 'dsId_update_001',
-            },
+            }
           };
           const { data, error } = await datastore.updateDatastoreSetting(payload);
           if (data) expect(typeof data).toBe('object');
@@ -231,9 +236,9 @@ describe('Datastore', () => {
     it('should delete datastore current without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        if (datastoreIdAfterCreate) {
+        if (datastoreId) {
           const datastore = new Datastore(url, tokenDs);
-          const { data, error } = await datastore.deleteDatastore(datastoreIdAfterCreate);
+          const { data, error } = await datastore.deleteDatastore(datastoreId);
 
           if (data) {
             expect(typeof data).toBe('object');

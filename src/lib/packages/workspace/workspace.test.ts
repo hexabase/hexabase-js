@@ -196,7 +196,7 @@ describe('Workspace', () => {
     it('should get workspace usage', async () => {
       jest.useFakeTimers('legacy');
       const workspace = new Workspace(url, tokenWs);
-      const { wsUsage, error } = await workspace.getUsage(workspaceId);
+      const { wsUsage, error } = await workspace.getUsage(newWorkspaceId);
       // expect response
       if (wsUsage) {
         expect(typeof wsUsage.w_id).toBe('string');
@@ -211,7 +211,7 @@ describe('Workspace', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
       const workspace = new Workspace(url, tokenWs);
-      const { wsGroupChildren, error } = await workspace.getGroupChildren(workspaceId);
+      const { wsGroupChildren, error } = await workspace.getGroupChildren(newWorkspaceId);
       // expect response
       if (wsGroupChildren) {
         expect(typeof wsGroupChildren.error).toBe('string');

@@ -7,30 +7,21 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/application/application.test.ts
  */
 
-const url = process.env.URL || '';
 let projectId = process.env.APPLICATIONID || '';
 let tokenApp = process.env.TOKEN || '';
+const url = process.env.URL || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const template = process.env.PROJECT_TEMPLATE || '';
-
-let display_id = '';
-let newApplicationId = '';
+const templateId = process.env.PROJECT_TEMPLATE_ID || '';
 
 // local variable in file for testing
-
 beforeAll(async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
     if (token) {
-      const application = new Application(url, token);
-      // const projectAndDs = await application.getProjectsAndDatastores(workspaceId);
-      // if (projectAndDs && projectAndDs.appAndDs && projectAndDs.appAndDs[0].application_id) {
-      //   newApplicationId = projectAndDs.appAndDs[0].application_id;
-      // }
       return tokenApp = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -43,23 +34,16 @@ describe('Application', () => {
     it('should get applications info by workspace id', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
+      const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
 
-      const { appAndDs, error } = await application.get(workspaceId);
-      if (appAndDs && appAndDs[0]) {
-        if (appAndDs[0].application_id && appAndDs[0].display_id) {
-          projectId = appAndDs[0].application_id;
-          display_id = appAndDs[0].display_id;
-          newApplicationId = appAndDs[0]?.application_id;
-        }
+      if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
+        projectId = appAndDs[0].application_id;
         expect(typeof appAndDs[0].application_id).toBe('string');
         expect(typeof appAndDs[0].name).toBe('string');
         expect(typeof appAndDs[0].display_id).toBe('string');
       }
       else {
-        const t = () => {
-          throw new Error(`Error: ${error}`);
-        };
-
+        const t = () => { throw new Error(`Error: ${error}`) };
         expect(t).toThrow(Error(`Error: ${error}`));
       }
     });
@@ -79,7 +63,6 @@ describe('Application', () => {
       const { app, error } = await application.create(createProjectParams);
 
       if (app) {
-        // newApplicationId = app?.project_id;
         expect(typeof app.project_id).toBe('string');
       } else {
         const t = () => {
@@ -95,13 +78,12 @@ describe('Application', () => {
     it('should get info project', async () => {
       jest.useFakeTimers('legacy');
       const application = new Application(url, tokenApp);
-      const { project, error } = await application.getDetail(newApplicationId);
+      const { project, error } = await application.getDetail(projectId);
       if (project) {
         expect(typeof project.name).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }
-
     });
   });
 
@@ -111,7 +93,7 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
       const payload: UpdateProjectThemePl = {
         payload: {
-          project_id: newApplicationId,
+          project_id: projectId,
           theme: 'black',
         }
       };
@@ -131,7 +113,7 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
       const payload: UpdateProjectNamePl = {
         payload: {
-          project_id: newApplicationId,
+          project_id: projectId,
           project_displayid: 'samplelogi',
           project_name: {
             en: 'test update',
@@ -155,7 +137,7 @@ describe('Application', () => {
       const application = new Application(url, tokenApp);
       const payload: DeleteProjectPl = {
         payload: {
-          project_id: newApplicationId,
+          project_id: projectId,
         }
       };
       const { data, error } = await application.delete(payload);
