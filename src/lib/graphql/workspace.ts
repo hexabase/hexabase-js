@@ -281,11 +281,11 @@ export const SET_CURRENT_WORKSPACE = gql`
 
 export const UPDATE_WORKSPACE_SETTINGS = gql`
   mutation UpdateWorkspaceSettings($payload: WorkspaceSettingReq!) {
-  updateWorkspaceSettings(payload: $payload) {
-    error
+    updateWorkspaceSettings(payload: $payload) {
+      error
+    }
   }
-} 
-`
+`;
 
 export const ARCHIVE_WORKSPACE = gql`
   mutation archiveWorkspace($payload: ArchiveWorkspace!) {
@@ -293,4 +293,4 @@ export const ARCHIVE_WORKSPACE = gql`
       error
     }
   }
-`
+`;

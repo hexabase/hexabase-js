@@ -61,7 +61,7 @@ export interface DsActionSetting {
 }
 
 export interface DatastoreId {
-  datastoreId?: string
+  datastoreId?: string;
 }
 
 /** Data response from request graphql */
@@ -117,7 +117,7 @@ export interface CreateDatastoreFromSeedRes {
 }
 
 export interface DtValidateBeforeUpdateDs {
-  exits?: boolean
+  exits?: boolean;
 }
 
 export interface DtValidateBeforeUpdateDsRes {
