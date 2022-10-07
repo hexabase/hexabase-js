@@ -69,7 +69,6 @@ describe('Application', () => {
     });
   });
 
-  // get applications info by workspace id
   describe('#create()', () => {
     it('should create application', async () => {
       jest.useFakeTimers('legacy');

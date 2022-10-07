@@ -143,7 +143,7 @@ export default class Datastore extends HxbAbstract {
 
       data.error = JSON.stringify(error.response.errors);
     }
-
+    
     return data;
   }
 

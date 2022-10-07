@@ -9,7 +9,6 @@ import {
   ITEM_DETAIL,
   ITEM_HISTORIES,
   ITEM_LINKED,
-  UPDATE_ITEM,
   EXECUTE_ITEM_ACTION,
 } from '../../graphql/item';
 import {
@@ -25,7 +24,6 @@ import {
   DtItemLinked,
   DtNewItem,
   DtUpdateItem,
-  DtUpdatedItem,
   GetHistoryPl,
   GetItemDetailPl,
   GetItemsPl,
@@ -33,10 +31,7 @@ import {
   ItemDetailRes,
   ItemHistoriesRes,
   ItemLinkedRes,
-  ItemUpdatePayload,
   NewItemRes,
-  UpdatedItemRes,
-  ItemExecuteActionPayload,
   DtUpdateItemRes,
 } from '../../types/item';
 
@@ -59,8 +54,7 @@ export default class Item extends HxbAbstract {
 
       data.dsItems = res.datastoreGetDatastoreItems;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -83,8 +77,7 @@ export default class Item extends HxbAbstract {
 
       data.itemHistories = res.getHistories;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -107,8 +100,7 @@ export default class Item extends HxbAbstract {
 
       data.item_id = res.datastoreCreateItemID.item_id;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -131,8 +123,7 @@ export default class Item extends HxbAbstract {
 
       data.itemNew = res.datastoreCreateNewItem;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -155,8 +146,7 @@ export default class Item extends HxbAbstract {
 
       data.itemLinked = res.datastoreGetLinkedItems;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -179,8 +169,7 @@ export default class Item extends HxbAbstract {
 
       data.itemDetails = res.getDatastoreItemDetails;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -197,15 +186,13 @@ export default class Item extends HxbAbstract {
       error: undefined,
     };
 
-
     // handle call graphql
     try {
       const res: DtDeleteItem = await this.client.request(DELETE_ITEM, { datastoreId, itemId, projectId, deleteItemReq });
 
       data.data = res.datastoreDeleteItem;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -222,15 +209,13 @@ export default class Item extends HxbAbstract {
       error: undefined,
     };
 
-
     // handle call graphql
     try {
       const res: DtUpdateItem = await this.client.request(DATASTORE_UPDATE_ITEM, { datastoreId, itemId, projectId, itemActionParameters });
 
       data.data = res.datastoreUpdateItem;
     } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
 
     return data;
@@ -252,7 +237,7 @@ export default class Item extends HxbAbstract {
       const res: DtUpdateItemRes = await this.client.request(EXECUTE_ITEM_ACTION, { projectId, datastoreId, itemId, actionId, itemActionParameters });
       data.data = res.item;
     } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+      data.error = JSON.stringify(error?.response?.errors);
     }
     return data;
   }
