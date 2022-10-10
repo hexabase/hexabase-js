@@ -308,9 +308,9 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
- * function getCurrent: get workspaces id current
- * @returns WorkspaceCurrentRes
- */
+   * function getCurrent: get workspaces id current
+   * @returns WorkspaceCurrentRes
+   */
   async getCurrent(): Promise<WorkspaceCurrentRes> {
     const data: WorkspaceCurrentRes = {
       wsCurrent: undefined,

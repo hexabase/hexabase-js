@@ -64,6 +64,11 @@ export interface DatastoreId {
   datastoreId?: string;
 }
 
+export class DatastoreGetFields {
+  fields: any;
+  field_layout: any;
+}
+
 /** Data response from request graphql */
 export interface DtDsFieldSettings {
   datastoreGetFieldSettings: DsFieldSettings;
@@ -85,7 +90,16 @@ export interface DtCreateDatastoreFromSeed {
   createDatastoreFromTemplate?: DatastoreId;
 }
 
+export interface DtDatastoreGetFieldsRes {
+  datastoreGetFields?: DatastoreGetFields;
+}
+
 /** export response */
+export interface DatastoreGetFieldsRes {
+  dsFields?: DatastoreGetFields;
+  error?: string;
+}
+
 export interface DsFieldSettingsRes {
   dsField?: DsFieldSettings;
   error?: string;

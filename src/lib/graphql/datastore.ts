@@ -1,5 +1,14 @@
 import { gql } from 'graphql-request';
 
+export const DS_FIELDS = gql`
+  query DatastoreGetFields($datastoreId: String!, $projectId: String) {
+    datastoreGetFields(datastoreId: $datastoreId, projectId: $projectId) {
+      field_layout
+      fields
+    }
+  }
+`;
+
 export const DS_FIELD_SETTING = gql`
   query DatastoreGetFieldSettings($fieldId: String!, $datastoreId: String!) {
     datastoreGetFieldSettings(fieldId: $fieldId, datastoreId: $datastoreId) {
@@ -94,6 +103,110 @@ export const DS_ACTION_SETTING = gql`
       }
     }
   }
+`;
+
+export const GET_DATASTORES = gql`
+	query DatastoreSetting($datastoreSettingDatastoreId2: String!) {
+		datastoreSetting(datastoreId: $datastoreSettingDatastoreId2) {
+			field_layout {
+				display_id
+			}
+		field_layout {
+				col
+				id
+				row
+				size_x
+				size_y
+			}
+			display_id
+			fields {
+				as_title
+				data_type
+				display_id
+				display_name
+				field_index
+				full_text
+				id
+				max_value
+				min_value
+				names
+				options {
+					o_id
+					_key
+				fieldID
+				}
+				show_list
+			search
+				status
+				title_order
+				unique
+			}
+			names
+		id
+			roles {
+				name
+				id
+				display_id
+			}
+			statuses {
+				names
+				display_id
+			id
+			}
+		}
+	}
+`;
+
+export const GET_DATASTORE_DETAIL = gql`
+	query DatastoreSetting($datastoreSettingDatastoreId2: String!) {
+		datastoreSetting(datastoreId: $datastoreSettingDatastoreId2) {
+			field_layout {
+				display_id
+			}
+		field_layout {
+				col
+				id
+				row
+				size_x
+				size_y
+			}
+			display_id
+			fields {
+				as_title
+				data_type
+				display_id
+				display_name
+				field_index
+				full_text
+				id
+				max_value
+				min_value
+				names
+				options {
+					o_id
+					_key
+				fieldID
+				}
+				show_list
+			search
+				status
+				title_order
+				unique
+			}
+			names
+		id
+			roles {
+				name
+				id
+				display_id
+			}
+			statuses {
+				names
+				display_id
+			id
+			}
+		}
+	}
 `;
 
 export const CREATE_DATASTORE_FROM_TEMPLATE = gql`

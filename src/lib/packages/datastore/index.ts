@@ -9,16 +9,19 @@ import {
   CREATE_DATASTORE_FROM_TEMPLATE,
   DELETE_DATASTORE,
   VALIDATE_DS_DISPLAY_ID,
+  DS_FIELDS,
 } from '../../graphql/datastore';
 import {
   CreateDatastoreFromSeedReq,
   CreateDatastoreFromSeedRes,
+  DatastoreGetFieldsRes,
   DatastoreUpdateSetting,
   DsActionRes,
   DsActionSettingRes,
   DsFieldSettingsRes,
   DsStatusRes,
   DtCreateDatastoreFromSeed,
+  DtDatastoreGetFieldsRes,
   DtDeleteDatastore,
   DtDsActions,
   DtDsActionSetting,
@@ -100,6 +103,30 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
+   * function getFields: get all field in Ds
+   * @params projectId and datastoreId are requirement
+   * @returns DatastoreGetFieldsRes
+   */
+  async getFields(datastoreId: string, projectId: string): Promise<DatastoreGetFieldsRes> {
+    const data: DatastoreGetFieldsRes = {
+      dsFields: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtDatastoreGetFieldsRes = await this.client.request(DS_FIELDS, { datastoreId, projectId });
+
+      data.dsFields = res.datastoreGetFields;
+    } catch (error: any) {
+
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
    * function getField: get field setting in Ds
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
@@ -143,7 +170,7 @@ export default class Datastore extends HxbAbstract {
 
       data.error = JSON.stringify(error.response.errors);
     }
-    
+
     return data;
   }
 
