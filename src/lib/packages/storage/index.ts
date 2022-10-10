@@ -1,24 +1,24 @@
 import { DELETE_STORAGE, GET_DOWNLOAD_FILE } from '../../graphql/storage';
 import { HxbAbstract } from '../../../HxbAbstract';
 import { ModelRes } from '../../util/type';
-import { DtStorageResp, GetDownloadFileRes } from '../../types/storage';
+import { StorageResp } from '../../types/storage';
 
 export default class Storage extends HxbAbstract {
   /**
    * function GetDownloadFile: get download file
    * @returns any
    */
-  async GetDownloadFile(getDownloadFileId: string): Promise<GetDownloadFileRes> {
-    const data: GetDownloadFileRes = {
-      getDownloadFile: undefined,
+  async GetDownloadFile(): Promise<any> {
+    const data: any = {
+      data: undefined,
       error: undefined,
     };
 
     // handle call graphql
     try {
-      const res: any = await this.client.request(GET_DOWNLOAD_FILE, { getDownloadFileId });
+      const res: any = await this.client.request(GET_DOWNLOAD_FILE);
 
-      data.getDownloadFile = res.getDownloadFile;
+      data.data = res.userPasswordExpiry;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
     }
@@ -39,7 +39,7 @@ export default class Storage extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtStorageResp = await this.client.request(DELETE_STORAGE, fileId);
+      const res: StorageResp = await this.client.request(DELETE_STORAGE, fileId);
 
       data.data = res.deleteStorage;
     } catch (error: any) {

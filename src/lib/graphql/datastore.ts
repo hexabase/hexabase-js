@@ -106,42 +106,60 @@ export const DS_ACTION_SETTING = gql`
 `;
 
 export const GET_DATASTORES = gql`
-  query Datastores($projectId: String!) {
-    datastores(projectId: $projectId) {
-      d_id
-      data_source
-      deleted
-      display_id
-      display_order
-      external_service_data
-      imported
-      invisible
-      is_external_service
-      name
-      no_status
-      p_id
-      show_display_id_to_list
-      show_in_menu
-      show_info_to_list
-      show_only_dev_mode
-      unread
-      uploading
-      use_board_view
-      use_csv_update
-      use_external_sync
-      use_grid_view
-      use_grid_view_by_default
-      use_qr_download
-      use_replace_upload
-      w_id
-      ws_name
-    }
-  }
+	query DatastoreSetting($datastoreSettingDatastoreId2: String!) {
+		datastoreSetting(datastoreId: $datastoreSettingDatastoreId2) {
+			field_layout {
+				display_id
+			}
+		field_layout {
+				col
+				id
+				row
+				size_x
+				size_y
+			}
+			display_id
+			fields {
+				as_title
+				data_type
+				display_id
+				display_name
+				field_index
+				full_text
+				id
+				max_value
+				min_value
+				names
+				options {
+					o_id
+					_key
+				fieldID
+				}
+				show_list
+			search
+				status
+				title_order
+				unique
+			}
+			names
+		id
+			roles {
+				name
+				id
+				display_id
+			}
+			statuses {
+				names
+				display_id
+			id
+			}
+		}
+	}
 `;
 
 export const GET_DATASTORE_DETAIL = gql`
-	query DatastoreSetting($datastoreId: String!) {
-		datastoreSetting(datastoreId: $datastoreId) {
+	query DatastoreSetting($datastoreSettingDatastoreId2: String!) {
+		datastoreSetting(datastoreId: $datastoreSettingDatastoreId2) {
 			field_layout {
 				display_id
 			}

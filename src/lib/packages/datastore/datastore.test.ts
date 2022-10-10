@@ -82,46 +82,6 @@ beforeAll(async () => {
 });
 
 describe('Datastore', () => {
-  describe('#get()', () => {
-    it('should get all datastore without error', async () => {
-      jest.useFakeTimers('legacy');
-      try {
-        if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const { datastores, error } = await datastore.get(projectID);
-          // expect response
-          if (datastores) {
-            expect(typeof datastores).toBe('object');
-          } else {
-            throw new Error(`Error: ${error}`);
-          }
-        }
-      } catch (e) {
-        throw new Error(`Error: ${e}`);
-      }
-    });
-  });
-
-  describe('#getDetail()', () => {
-    it('should get fields without error', async () => {
-      jest.useFakeTimers('legacy');
-      try {
-        if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const { datastoreSetting, error } = await datastore.getDetail(newDatastoreId);
-          // expect response
-          if (datastoreSetting) {
-            expect(typeof datastoreSetting).toBe('object');
-          } else {
-            throw new Error(`Error: ${error}`);
-          }
-        }
-      } catch (e) {
-        throw new Error(`Error: ${e}`);
-      }
-    });
-  });
-
   describe('#create()', () => {
     it('should create datastore without error', async () => {
       jest.useFakeTimers('legacy');
@@ -170,153 +130,150 @@ describe('Datastore', () => {
     });
   });
 
-  describe('#getField()', () => {
-    it('should get field setting in Ds', async () => {
-      jest.useFakeTimers('legacy');
-      try {
-        if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const { dsField } = await datastore.getField('', newDatastoreId);
-          // expect response
-          if (dsField) {
-            expect(typeof dsField).toBe('object');
-          }
-        }
-      } catch (e) {
-        throw new Error(`Error: ${e}`);
-      }
-    });
-  });
+  // describe('#getField()', () => {
+  //   it('should get field setting in Ds', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     try {
+  //       if (newDatastoreId) {
+  //         const datastore = new Datastore(url, tokenDs);
+  //         const { dsField } = await datastore.getField('', newDatastoreId);
+  //         // expect response
+  //         if (dsField) {
+  //           expect(typeof dsField).toBe('object');
+  //         }
+  //       }
+  //     } catch (e) {
+  //       throw new Error(`Error: ${e}`);
+  //     }
+  //   });
+  // });
 
-  describe('#getActions()', () => {
-    it('should get actions in Ds', async () => {
-      jest.useFakeTimers('legacy');
-      try {
-        if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
+  // describe('#getActions()', () => {
+  //   it('should get actions in Ds', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     try {
+  //       if (newDatastoreId) {
+  //         const datastore = new Datastore(url, tokenDs);
 
-          const { dsActions } = await datastore.getActions(newDatastoreId);
+  //         const { dsActions } = await datastore.getActions(newDatastoreId);
 
-          // expect response
-          if (
-            dsActions &&
-            dsActions[0] &&
-            dsActions[0].name &&
-            dsActions[0].workspace_id
-          ) {
-            expect(typeof dsActions[0].name).toBe('string');
-            expect(typeof dsActions[0].workspace_id).toBe('string');
-          }
-        }
-      } catch (e) {
-        throw new Error(`Error: ${e}`);
-      }
-    });
-  });
+  //         // expect response
+  //         if (
+  //           dsActions &&
+  //           dsActions[0] &&
+  //           dsActions[0].name &&
+  //           dsActions[0].workspace_id
+  //         ) {
+  //           expect(typeof dsActions[0].name).toBe('string');
+  //           expect(typeof dsActions[0].workspace_id).toBe('string');
+  //         }
+  //       }
+  //     } catch (e) {
+  //       throw new Error(`Error: ${e}`);
+  //     }
+  //   });
+  // });
 
-  describe('#getStatuses()', () => {
-    it('should get status in Ds', async () => {
-      jest.useFakeTimers('legacy');
-      const datastore = new Datastore(url, tokenDs);
-      if (newDatastoreId) {
-        const { dsStatuses, error } = await datastore.getStatuses(newDatastoreId);
-        // expect response
-        if (dsStatuses) {
-          expect(typeof dsStatuses).toBe('object');
-        } else {
-          throw new Error(`Error: ${error}`);
-        }
-      }
-    });
-  });
+  // describe('#getStatuses()', () => {
+  //   it('should get status in Ds', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     const datastore = new Datastore(url, tokenDs);
 
-  describe('#getAction()', () => {
-    it('should get action by Id in Ds', async () => {
-      jest.useFakeTimers('legacy');
+  //     const { dsStatuses, error } = await datastore.getStatuses(newDatastoreId);
 
-      let actionId;
+  //     // expect response
+  //     if (dsStatuses) {
+  //       expect(typeof dsStatuses).toBe('object');
+  //     } else {
+  //       throw new Error(`Error: ${error}`);
+  //     }
+  //   });
+  // });
 
-      const datastore = new Datastore(url, tokenDs);
-      if (newDatastoreId) {
-        const dsA = await datastore.getActions(newDatastoreId);
-        const actions = dsA?.dsActions;
-        if (actions) {
-          for (let i = 0; i < actions.length; i++) {
-            if (actions[i].operation == 'create') {
-              actionId = actions[i].action_id;
-            }
-          }
-        } else {
-          throw new Error(`Error: ${dsA.error}`);
-        }
+  // describe('#getAction()', () => {
+  //   it('should get action by Id in Ds', async () => {
+  //     jest.useFakeTimers('legacy');
 
+  //     let actionId;
 
-        if (actionId) {
-          const { dsAction, error } = await datastore.getAction(
-            newDatastoreId,
-            actionId
-          );
+  //     const datastore = new Datastore(url, tokenDs);
+  //     const dsA = await datastore.getActions(newDatastoreId);
+  //     const actions = dsA?.dsActions;
+  //     if (actions) {
+  //       for (let i = 0; i < actions.length; i++) {
+  //         if (actions[i].operation == 'create') {
+  //           actionId = actions[i].action_id;
+  //         }
+  //       }
+  //     } else {
+  //       throw new Error(`Error: ${dsA.error}`);
+  //     }
 
-          // expect response
-          if (dsAction) {
-            expect(typeof dsAction.workspace_id).toBe('string');
-            expect(typeof dsAction.name).toBe('string');
-          } else {
-            throw new Error(`Error: ${error}`);
-          }
-        }
-      }
-    });
-  });
+  //     if (actionId) {
+  //       const { dsAction, error } = await datastore.getAction(
+  //         newDatastoreId,
+  //         actionId
+  //       );
 
-  describe('#validateDatastoreDisplayID()', () => {
-    it('should validate display id datastore current without error', async () => {
-      jest.useFakeTimers('legacy');
-      try {
-        if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const payload: IsExistsDSDisplayIDExcludeOwnReq = {
-            payload: {
-              datastoreId: newDatastoreId,
-              displayId: 'dsId_update_001',
-              projectId: projectID,
-            }
-          };
-          const { exits, error } = await datastore.validateDatastoreDisplayID(payload);
-          if (typeof exits === 'boolean') expect(typeof exits).toBe('boolean');
-          else throw new Error(`Error: ${error}`);
-        }
-      } catch (e) {
-        throw new Error(`Error: ${e}`);
-      }
-    });
-  });
+  //       // expect response
+  //       if (dsAction) {
+  //         expect(typeof dsAction.workspace_id).toBe('string');
+  //         expect(typeof dsAction.name).toBe('string');
+  //       } else {
+  //         throw new Error(`Error: ${error}`);
+  //       }
+  //     }
+  //   });
+  // });
 
-  describe('#updateDatastore()', () => {
-    it('should update datastore current without error', async () => {
-      jest.useFakeTimers('legacy');
-      try {
-        if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const payload: DatastoreUpdateSetting = {
-            payload: {
-              datastore_id: newDatastoreId,
-              display_id: 'dsId_update_001',
-              name: {
-                en: 'EN name update',
-                ja: 'JA name update'
-              },
-            }
-          };
-          const { data, error } = await datastore.updateDatastoreSetting(payload);
-          if (data) expect(typeof data).toBe('object');
-          else throw new Error(`Error: ${error}`);
-        }
-      } catch (e) {
-        throw new Error(`Error: ${e}`);
-      }
-    });
-  });
+  // describe('#validateDatastoreDisplayID()', () => {
+  //   it('should validate display id datastore current without error', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     try {
+  //       if (newDatastoreId) {
+  //         const datastore = new Datastore(url, tokenDs);
+  //         const payload: IsExistsDSDisplayIDExcludeOwnReq = {
+  //           payload: {
+  //             datastoreId: newDatastoreId,
+  //             displayId: 'dsId_update_001',
+  //             projectId: projectID,
+  //           }
+  //         };
+  //         const { exits, error } = await datastore.validateDatastoreDisplayID(payload);
+  //         if (typeof exits === 'boolean') expect(typeof exits).toBe('boolean');
+  //         else throw new Error(`Error: ${error}`);
+  //       }
+  //     } catch (e) {
+  //       throw new Error(`Error: ${e}`);
+  //     }
+  //   });
+  // });
+
+  // describe('#updateDatastore()', () => {
+  //   it('should update datastore current without error', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     try {
+  //       if (newDatastoreId) {
+  //         const datastore = new Datastore(url, tokenDs);
+  //         const payload: DatastoreUpdateSetting = {
+  //           payload: {
+  //             datastore_id: newDatastoreId,
+  //             display_id: 'dsId_update_001',
+  //             name: {
+  //               en: 'EN name update',
+  //               ja: 'JA name update'
+  //             },
+  //           }
+  //         };
+  //         const { data, error } = await datastore.updateDatastoreSetting(payload);
+  //         if (data) expect(typeof data).toBe('object');
+  //         else throw new Error(`Error: ${error}`);
+  //       }
+  //     } catch (e) {
+  //       throw new Error(`Error: ${e}`);
+  //     }
+  //   });
+  // });
 
   describe('#deleteDatastore()', () => {
     it('should delete datastore current without error', async () => {

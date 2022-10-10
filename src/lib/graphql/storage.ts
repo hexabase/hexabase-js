@@ -1,9 +1,9 @@
 import { gql } from 'graphql-request';
 
 export const GET_DOWNLOAD_FILE = gql`
-	query GetDownloadFile($getDownloadFileId: String!) {
-		getDownloadFile(id: $getDownloadFileId)
-  }
+  query GetDownloadFile($id: String!) {
+    getDownloadFile(id: $id)
+	}
 `;
 
 
