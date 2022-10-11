@@ -50,6 +50,22 @@ beforeAll(async () => {
 });
 
 describe('Application', () => {
+  describe('#get()', () => {
+    it('should get applications by workspace id', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const { getApplications, error } = await application.get(workspaceId);
+
+      if (getApplications && getApplications[0]) {
+        expect(typeof getApplications[0].application_id).toBe('string');
+      }
+      else {
+        const t = () => { throw new Error(`Error: ${error}`); };
+        expect(t).toThrow(Error(`Error: ${error}`));
+      }
+    });
+  });
+
   describe('#getProjectsAndDatastores()', () => {
     it('should get applications and datastore by workspace id', async () => {
       jest.useFakeTimers('legacy');

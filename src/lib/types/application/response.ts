@@ -23,6 +23,14 @@ export interface ProjectInfo {
   display_order?: number;
 }
 
+export class Application {
+  application_id: string;
+  name: string;
+  display_id: string;
+  theme: string;
+  display_order: number;
+}
+
 /** Data response from request graphql */
 
 export interface DtAppAndDs {
@@ -34,6 +42,22 @@ export interface DtCreateApp {
 }
 export interface DtProjectInfo {
   getInfoProject: ProjectInfo;
+}
+
+export interface DtDeleteProject {
+  deleteProject: ResponseOkModel;
+}
+
+export interface DtUpdateThemeProject {
+  updateProjectTheme: ResponseOkModel;
+}
+
+export interface DtUpdateNameProject {
+  updateProjectName: ResponseOkModel;
+}
+
+export interface DtApplicationRes {
+  getApplications: Application[];
 }
 
 /** Response */
@@ -52,14 +76,7 @@ export interface ProjectInfoRes {
   error?: string;
 }
 
-export interface DtDeleteProject {
-  deleteProject: ResponseOkModel;
-}
-
-export interface DtUpdateThemeProject {
-  updateProjectTheme: ResponseOkModel;
-}
-
-export interface DtUpdateNameProject {
-  updateProjectName: ResponseOkModel;
+export interface ApplicationRes {
+  getApplications?: Application[];
+  error?: string;
 }
