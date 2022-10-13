@@ -50,6 +50,12 @@
       or
       - yarn jest src/lib/packages/datastore/datastore.test.ts
     ```
+  - Run test hexabase storage:
+    ```bash
+      - yarn run test:storage
+      or
+      - yarn jest src/lib/packages/storage/storage.test.ts
+    ```
 ### - Initialize for SDK Package
 #### - Requirement:
   - credentials must obtain from hexabase: 
@@ -63,10 +69,10 @@
   auth
     - login: login with email password
     - logout: logout user
-    - get: get information user by token
   
   workspace
     - get: get workspaces and current workspace id
+    - getDetail: get detail workspace
     - setCurrent: set workspace current with id
     - getCurrent: get workspaces id current
     - create: created workspace 
@@ -76,18 +82,34 @@
     - getGroupChildren: get workspace children in group
     - getTaskQueueList: get queue list
     - getTaskQueueStatus: get task queue status
+    - update: update workspace settings
+    - archive: archive workspace
 
+  Report
+    - getReports: get reports in project
+    - getDataReport: get data of report
+    
   application
     - getProjectsAndDatastores: get app and ds
     - create: create app
-    - getReports: get reports in project
-    - getDataReport: get data of report
+    - get: get list application in a workspace
+    - getTemplates: get templates of project
+    - getDetail: get info project
+    - delete: delete project in workspace
+    - updateProjectTheme: update project theme in workspace
+    - updateProjectName: update project name in workspace
 
   datastore
     - getField: get field setting in Ds
     - getActions: get actions in Ds
     - getStatuses: get statuses in Ds
     - getAction: get field action setting in Ds
+    - get: get all datastore in project
+    - getDetail: get detail datastore in project
+    - create: create datastore in project
+    - validateDatastoreDisplayID: validate before update datastore in project
+    - UpdateDatastoreName: update datastore setting in project
+    - deleteDatastore: delete datastore in project
 
   item
     - get: get items in datastore
@@ -96,9 +118,13 @@
     - createItemId: create Itemid
     - getItemRelated: get item related in datastore
     - update: update item
+    - getItemDetail: get item detail
+    - deleteItem: delete item in datastore
+    - execute: execute action item in datastore
 
   user
     - register: get user register info by confirmationId
     - confirm: get info user confirm by confirmationId
     - getPasswordExpire: check user password is expiry
+    - get: get information user by token
 ```

@@ -64,7 +64,7 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function get: get detail datastore in project
+   * function getDetail: get detail datastore in project
    * @params datastoreId is requirement
    * @returns DatastoreSettingRes
    */
@@ -87,7 +87,7 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function CreateDatastoreFromTemplate: CREATE datastore in project
+   * function create: create datastore in project
    * @params {CreateDatastoreFromSeedReq} payload is requirement
    * @returns CreateDatastoreFromSeedRes
    */
@@ -132,7 +132,7 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function UpdateDatastoreName: update datastore in project
+   * function updateDatastoreSetting: update datastore in project
    * @params {DatastoreUpdateSetting} payload, {DatastoreUpdateSetting} validate is requirement
    * @returns ModelRes
    */

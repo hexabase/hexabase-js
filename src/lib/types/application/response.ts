@@ -31,6 +31,17 @@ export class Application {
   display_order: number;
 }
 
+export class FieldTemplates {
+  tp_id: string;
+  name: string;
+  description: string;
+}
+
+export class Categories {
+  category: string;
+  templates: FieldTemplates;
+}
+
 /** Data response from request graphql */
 
 export interface DtAppAndDs {
@@ -60,6 +71,15 @@ export interface DtApplicationRes {
   getApplications: Application[];
 }
 
+export class Templates {
+  categories: Categories[];
+  enabled: boolean;
+}
+export class DtTemplates {
+  getTemplates: Templates;
+}
+
+
 /** Response */
 export interface AppAndDsRes {
   appAndDs?: [ApplicationAndDataStore];
@@ -78,5 +98,9 @@ export interface ProjectInfoRes {
 
 export interface ApplicationRes {
   getApplications?: Application[];
+  error?: string;
+}
+export interface TemplateRes {
+  getTemplates?: Templates;
   error?: string;
 }

@@ -26,6 +26,22 @@ export const GET_APPLICATION_AND_DATASTORE = gql`
   }
 `;
 
+export const GET_TEMPLATES = gql`
+  query GetTemplates {
+    getTemplates {
+      categories {
+        category
+        templates {
+          tp_id
+          name
+          description
+        }
+      }
+      enabled
+    }
+  }
+`;
+
 export const APPLICATION_CREATE_PROJECT = gql`
   mutation ApplicationCreateProject($createProjectParams: CreateProjectParams) {
     applicationCreateProject(createProjectParams: $createProjectParams) {
