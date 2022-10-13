@@ -2,15 +2,15 @@ import { ResponseOkModel } from '../../util/type';
 
 // export data from graphql
 export interface DtStorageResp {
-	deleteStorage: ResponseOkModel;
+  deleteStorage: ResponseOkModel;
 }
 
 export interface DtGetDownloadFile {
-	getDownloadFile?: any,
+  getDownloadFile?: any;
 }
 
 // export data SDK
 export interface GetDownloadFileRes {
-	getDownloadFile?: any,
-	error?: string,
+  getDownloadFile?: any;
+  error?: string;
 }

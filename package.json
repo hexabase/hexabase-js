@@ -12,7 +12,7 @@
     "watch-ts": "tsc -d -w",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "yarn run test:client && yarn run test:auth && yarn run test:user && yarn run test:workspace && yarn run test:application && yarn run test:datastore",
+    "test": "yarn run test:client && yarn run test:auth && yarn run test:user && yarn run test:workspace && yarn run test:application && yarn run test:datastore && yarn run test:storage",
     "test:client": "yarn jest src/hexabase.test.ts",
     "test:auth": "yarn jest src/lib/packages/auth/auth.test.ts",
     "test:data-report": "yarn jest src/lib/packages/dataReport/dataReport.test.ts",

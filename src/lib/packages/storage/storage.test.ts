@@ -6,8 +6,8 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/user/user.test.ts
  */
 
-let getDownloadFileId = process.env.FILE_ID || '';
 let tokenStr = process.env.TOKEN || '';
+const getDownloadFileId = process.env.FILE_ID || '';
 const url = process.env.URL || '';
 const confirmationId = process.env.CONFIRMATIONID || '';
 const email = process.env.EMAIL || '';
