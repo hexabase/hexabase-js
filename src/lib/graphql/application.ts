@@ -1,5 +1,17 @@
 import { gql } from 'graphql-request';
 
+export const GET_APPLICATIONS = gql`
+  query GetApplications($workspaceId: String!) {
+    getApplications(workspaceId: $workspaceId) {
+      application_id
+      name
+      display_id
+      theme
+      display_order
+    }
+  }
+`;
+
 export const GET_APPLICATION_AND_DATASTORE = gql`
   query GetApplicationAndDataStore($workspaceId: String!) {
     getApplicationAndDataStore(workspaceId: $workspaceId) {

@@ -13,7 +13,7 @@ require('dotenv').config();
 
 let tokenDs = process.env.TOKEN || '';
 let userId = '';
-let newDatastoreId = process.env.DATASTOREID || '';;
+let newDatastoreId: string | undefined = '';
 let workspaceId = process.env.WORKSPACEID || '';
 let projectID = process.env.PROJECT_ID || '';
 const url = process.env.URL || '';
@@ -70,6 +70,10 @@ beforeAll(async () => {
         }
       }
 
+      if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs && dataApp?.appAndDs[0]?.datastores && dataApp?.appAndDs[0]?.datastores[0]?.datastore_id) {
+        newDatastoreId = dataApp?.appAndDs[0]?.datastores[0]?.datastore_id;
+      }
+
       return (tokenDs = token);
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -78,6 +82,46 @@ beforeAll(async () => {
 });
 
 describe('Datastore', () => {
+  describe('#get()', () => {
+    it('should get all datastore without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (newDatastoreId) {
+          const datastore = new Datastore(url, tokenDs);
+          const { datastores, error } = await datastore.get(projectID);
+          // expect response
+          if (datastores) {
+            expect(typeof datastores).toBe('object');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#getDetail()', () => {
+    it('should get fields without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (newDatastoreId) {
+          const datastore = new Datastore(url, tokenDs);
+          const { datastoreSetting, error } = await datastore.getDetail(newDatastoreId);
+          // expect response
+          if (datastoreSetting) {
+            expect(typeof datastoreSetting).toBe('object');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
   describe('#create()', () => {
     it('should create datastore without error', async () => {
       jest.useFakeTimers('legacy');
@@ -94,11 +138,31 @@ describe('Datastore', () => {
         };
         const { datastoreId } = await datastore.create(payload);
 
+        if (!datastoreId) newDatastoreId = datastoreId;
         if (datastoreId) {
-          newDatastoreId = datastoreId;
           expect(typeof datastoreId).toBe('string');
         } else {
           throw new Error('Invalid datastoreId');
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#getFields()', () => {
+    it('should get fields in Ds', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (newDatastoreId) {
+          const datastore = new Datastore(url, tokenDs);
+          const { dsFields, error } = await datastore.getFields(newDatastoreId, projectID);
+          // expect response
+          if (dsFields) {
+            expect(typeof dsFields).toBe('object');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
         }
       } catch (e) {
         throw new Error(`Error: ${e}`);
@@ -154,14 +218,14 @@ describe('Datastore', () => {
     it('should get status in Ds', async () => {
       jest.useFakeTimers('legacy');
       const datastore = new Datastore(url, tokenDs);
-
-      const { dsStatuses, error } = await datastore.getStatuses(newDatastoreId);
-
-      // expect response
-      if (dsStatuses) {
-        expect(typeof dsStatuses).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
+      if (newDatastoreId) {
+        const { dsStatuses, error } = await datastore.getStatuses(newDatastoreId);
+        // expect response
+        if (dsStatuses) {
+          expect(typeof dsStatuses).toBe('object');
+        } else {
+          throw new Error(`Error: ${error}`);
+        }
       }
     });
   });
@@ -173,30 +237,33 @@ describe('Datastore', () => {
       let actionId;
 
       const datastore = new Datastore(url, tokenDs);
-      const dsA = await datastore.getActions(newDatastoreId);
-      const actions = dsA?.dsActions;
-      if (actions) {
-        for (let i = 0; i < actions.length; i++) {
-          if (actions[i].operation == 'create') {
-            actionId = actions[i].action_id;
+      if (newDatastoreId) {
+        const dsA = await datastore.getActions(newDatastoreId);
+        const actions = dsA?.dsActions;
+        if (actions) {
+          for (let i = 0; i < actions.length; i++) {
+            if (actions[i].operation == 'create') {
+              actionId = actions[i].action_id;
+            }
           }
-        }
-      } else {
-        throw new Error(`Error: ${dsA.error}`);
-      }
-
-      if (actionId) {
-        const { dsAction, error } = await datastore.getAction(
-          newDatastoreId,
-          actionId
-        );
-
-        // expect response
-        if (dsAction) {
-          expect(typeof dsAction.workspace_id).toBe('string');
-          expect(typeof dsAction.name).toBe('string');
         } else {
-          throw new Error(`Error: ${error}`);
+          throw new Error(`Error: ${dsA.error}`);
+        }
+
+
+        if (actionId) {
+          const { dsAction, error } = await datastore.getAction(
+            newDatastoreId,
+            actionId
+          );
+
+          // expect response
+          if (dsAction) {
+            expect(typeof dsAction.workspace_id).toBe('string');
+            expect(typeof dsAction.name).toBe('string');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
         }
       }
     });
@@ -234,10 +301,10 @@ describe('Datastore', () => {
           const payload: DatastoreUpdateSetting = {
             payload: {
               datastore_id: newDatastoreId,
-              display_id: "dsId_update_001",
+              display_id: 'dsId_update_001',
               name: {
-                en: "EN name update",
-                ja: "JA name update"
+                en: 'EN name update',
+                ja: 'JA name update'
               },
             }
           };

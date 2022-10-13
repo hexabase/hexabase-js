@@ -4,8 +4,8 @@ import User from './lib/packages/user';
 import Application from './lib/packages/application';
 import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
-import DataReport from './lib/packages/dataReport'
-export default class HexabaseClient  {
+import DataReport from './lib/packages/dataReport';
+export default class HexabaseClient {
   public auth: Auth;
   public users: User;
   public applications: Application;
@@ -104,11 +104,11 @@ export default class HexabaseClient  {
     return !!this.tokenHxb;
   }
 
-    /**
+  /**
    * Check login status
    * @returns boolean
    */
-     public _initDataReport() {
-      return new DataReport(this.urlHxb, this.tokenHxb!);
-    }
+  public _initDataReport() {
+    return new DataReport(this.urlHxb, this.tokenHxb!);
+  }
 }

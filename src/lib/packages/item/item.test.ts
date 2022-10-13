@@ -100,8 +100,8 @@ beforeAll(async () => {
         };
         const { datastoreId } = await datastore.create(payload);
         if (datastoreId) {
-          datastoreID = datastoreId
-        } else{
+          datastoreID = datastoreId;
+        } else {
           throw Error(`Dont't have datastore: ${error}`);
         }
       }
@@ -109,7 +109,7 @@ beforeAll(async () => {
         datastoreID = datastoreID;
         const { dsActions } = await datastore.getActions(datastoreID);
         actions = dsActions;
-      }        
+      }
       return tokenItem = token;
     } else {
       throw Error(`Login to initialize sdk: ${error}`);
