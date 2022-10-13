@@ -6,7 +6,8 @@ import {
   GET_INFO_PROJECT,
   DELETE_PROJECT,
   UPDATE_PROJECT_THEME,
-  UPDATE_PROJECT_NAME
+  UPDATE_PROJECT_NAME,
+  GET_APPLICATIONS
 } from '../../graphql/application';
 import {
   AppAndDsRes,
@@ -21,13 +22,37 @@ import {
   DtUpdateThemeProject,
   UpdateProjectThemePl,
   DtUpdateNameProject,
-  UpdateProjectNamePl
+  UpdateProjectNamePl,
+  ApplicationRes,
+  DtApplicationRes
 } from '../../types/application';
 
 export default class Application extends HxbAbstract {
+  /**
+ * function get: get list application in a workspace
+ * @params workspaceId
+ * @returns ApplicationRes
+ */
+  async get(workspaceId: string): Promise<ApplicationRes> {
+    const data: ApplicationRes = {
+      getApplications: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtApplicationRes = await this.client.request(GET_APPLICATIONS, { workspaceId });
+
+      data.getApplications = res.getApplications;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
 
   /**
-   * function get: get list application and datastore in a workspace
+   * function getProjectsAndDatastores: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */

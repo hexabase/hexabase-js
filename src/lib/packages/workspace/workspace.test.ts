@@ -120,7 +120,7 @@ describe('Workspace', () => {
         if (workspace) {
           expect(typeof workspace.id).toBe('string');
           expect(typeof workspace.name).toBe('string');
-          workspace.name = "new ws name";
+          workspace.name = 'new ws name';
           updateWorkspaceSettingsInput.payload = workspace;
         } else {
           throw new Error(`Error: ${error}`);
