@@ -85,6 +85,22 @@ describe('Application', () => {
     });
   });
 
+  describe('#getTemplates()', () => {
+    it('should get templates without error', async () => {
+      jest.useFakeTimers('legacy');
+      const application = new Application(url, tokenApp);
+      const { getTemplates, error } = await application.getTemplates();
+
+      if (getTemplates) {
+        expect(typeof getTemplates).toBe('object');
+      }
+      else {
+        const t = () => { throw new Error(`Error: ${error}`); };
+        expect(t).toThrow(Error(`Error: ${error}`));
+      }
+    });
+  });
+
   describe('#create()', () => {
     it('should create application', async () => {
       jest.useFakeTimers('legacy');

@@ -7,7 +7,8 @@ import {
   DELETE_PROJECT,
   UPDATE_PROJECT_THEME,
   UPDATE_PROJECT_NAME,
-  GET_APPLICATIONS
+  GET_APPLICATIONS,
+  GET_TEMPLATES
 } from '../../graphql/application';
 import {
   AppAndDsRes,
@@ -24,15 +25,17 @@ import {
   DtUpdateNameProject,
   UpdateProjectNamePl,
   ApplicationRes,
-  DtApplicationRes
+  DtApplicationRes,
+  TemplateRes,
+  DtTemplates
 } from '../../types/application';
 
 export default class Application extends HxbAbstract {
   /**
- * function get: get list application in a workspace
- * @params workspaceId
- * @returns ApplicationRes
- */
+   * function get: get list application in a workspace
+   * @params workspaceId
+   * @returns ApplicationRes
+   */
   async get(workspaceId: string): Promise<ApplicationRes> {
     const data: ApplicationRes = {
       getApplications: undefined,
@@ -76,6 +79,28 @@ export default class Application extends HxbAbstract {
   }
 
   /**
+   * function getTemplates: get templates
+   * @returns TemplateRes
+   */
+  async getTemplates(): Promise<TemplateRes> {
+    const data: TemplateRes = {
+      getTemplates: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtTemplates = await this.client.request(GET_TEMPLATES);
+
+      data.getTemplates = res.getTemplates;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
    * function create: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
@@ -100,7 +125,7 @@ export default class Application extends HxbAbstract {
   }
 
   /**
-   * function getInfoProject: get info project
+   * function getDetail: get info project
    * @params projectId string
    * @returns ReportDataRes
    */
