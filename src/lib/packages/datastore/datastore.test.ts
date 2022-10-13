@@ -1,27 +1,75 @@
-import { DatastoreUpdateName } from '../../types/datastore';
+import { CreateDatastoreFromSeedReq, DatastoreUpdateSetting, IsExistsDSDisplayIDExcludeOwnReq } from '../../types/datastore';
 import Datastore from '.';
 import Auth from '../auth';
 import AuthMw from '../middlware/auth';
 import Application from '../application';
+import User from '../user';
+import Workspace from '../workspace';
 require('dotenv').config();
 /**
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
 
-const url = process.env.URL || '';
 let tokenDs = process.env.TOKEN || '';
-const workspaceId = process.env.WORKSPACEID || '';
-let datastoreId = process.env.DATASTOREID || '';
+let userId = '';
+let newDatastoreId = process.env.DATASTOREID || '';;
+let workspaceId = process.env.WORKSPACEID || '';
+let projectID = process.env.PROJECT_ID || '';
+const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const templateName = process.env.TEMPLATE_NAME || '';
+
+const createWorkSpaceInput = {
+  name: 'new Workspace'
+};
 
 beforeAll(async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
+
     if (token) {
+      const user = new User(url, token);
+      const { userInfo } = await user.get(token);
+      userInfo?.u_id ? userId = userInfo?.u_id : '';
+      //
+      const workspace = new Workspace(url, token);
+      const { workspaces } = await workspace.get();
+
+      if (workspaces && workspaces?.workspaces && workspaces?.workspaces[0]?.workspace_id) {
+        workspaceId = workspaces?.workspaces[0]?.workspace_id;
+      } else {
+        const workspace = new Workspace(url, token);
+        const { w_id } = await workspace.create(createWorkSpaceInput);
+
+        if (w_id) {
+          workspaceId = w_id;
+        }
+      }
+      //
+      const appAndDsGetApp = new Application(url, token);
+      const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+
+      if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
+        projectID = dataApp?.appAndDs[0].application_id;
+      } else {
+        const application = new Application(url, token);
+        const createProjectParams = {
+          name: {
+            en: 'EN Project',
+            ja: 'JA Project',
+          },
+        };
+        const { app } = await application.create(createProjectParams);
+
+        if (app) {
+          projectID = app?.project_id;
+        }
+      }
+
       return (tokenDs = token);
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
@@ -29,29 +77,42 @@ beforeAll(async () => {
   }
 });
 
-beforeAll(async () => {
-  jest.useFakeTimers('legacy');
-  const application = new Application(url, tokenDs);
-
-  const { appAndDs } = await application.getProjectsAndDatastores(workspaceId);
-  if (
-    appAndDs &&
-    appAndDs[0] &&
-    appAndDs[0].datastores &&
-    appAndDs[0].datastores[0].datastore_id
-  ) {
-    datastoreId = appAndDs[0].datastores[0].datastore_id;
-  }
-});
-
 describe('Datastore', () => {
+  describe('#create()', () => {
+    it('should create datastore without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        const datastore = new Datastore(url, tokenDs);
+        const payload: CreateDatastoreFromSeedReq = {
+          payload: {
+            lang_cd: 'en',
+            project_id: projectID,
+            template_name: templateName,
+            workspace_id: workspaceId,
+            user_id: userId,
+          },
+        };
+        const { datastoreId } = await datastore.create(payload);
+
+        if (datastoreId) {
+          newDatastoreId = datastoreId;
+          expect(typeof datastoreId).toBe('string');
+        } else {
+          throw new Error('Invalid datastoreId');
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
   describe('#getField()', () => {
     it('should get field setting in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        if (datastoreId) {
+        if (newDatastoreId) {
           const datastore = new Datastore(url, tokenDs);
-          const { dsField } = await datastore.getField('', datastoreId);
+          const { dsField } = await datastore.getField('', newDatastoreId);
           // expect response
           if (dsField) {
             expect(typeof dsField).toBe('object');
@@ -67,10 +128,10 @@ describe('Datastore', () => {
     it('should get actions in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        if (datastoreId) {
+        if (newDatastoreId) {
           const datastore = new Datastore(url, tokenDs);
 
-          const { dsActions } = await datastore.getActions(datastoreId);
+          const { dsActions } = await datastore.getActions(newDatastoreId);
 
           // expect response
           if (
@@ -94,7 +155,7 @@ describe('Datastore', () => {
       jest.useFakeTimers('legacy');
       const datastore = new Datastore(url, tokenDs);
 
-      const { dsStatuses, error } = await datastore.getStatuses(datastoreId);
+      const { dsStatuses, error } = await datastore.getStatuses(newDatastoreId);
 
       // expect response
       if (dsStatuses) {
@@ -112,7 +173,7 @@ describe('Datastore', () => {
       let actionId;
 
       const datastore = new Datastore(url, tokenDs);
-      const dsA = await datastore.getActions(datastoreId);
+      const dsA = await datastore.getActions(newDatastoreId);
       const actions = dsA?.dsActions;
       if (actions) {
         for (let i = 0; i < actions.length; i++) {
@@ -126,7 +187,7 @@ describe('Datastore', () => {
 
       if (actionId) {
         const { dsAction, error } = await datastore.getAction(
-          datastoreId,
+          newDatastoreId,
           actionId
         );
 
@@ -141,28 +202,73 @@ describe('Datastore', () => {
     });
   });
 
-  describe('#UpdateDatastoreName()', () => {
-    it('should update datastore current without error', async () => {
+  describe('#validateDatastoreDisplayID()', () => {
+    it('should validate display id datastore current without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        if (datastoreId) {
+        if (newDatastoreId) {
           const datastore = new Datastore(url, tokenDs);
-          const payload: DatastoreUpdateName = {
+          const payload: IsExistsDSDisplayIDExcludeOwnReq = {
             payload: {
-              datastore_id: datastoreId,
-              name: {
-                en: 'DSN_001',
-                ja: 'DSN_001',
-              },
-              display_id: 'display_id_001',
-            },
+              datastoreId: newDatastoreId,
+              displayId: 'dsId_update_001',
+              projectId: projectID,
+            }
           };
-          const { data } = await datastore.UpdateDatastoreName(payload);
-          if (data) expect(typeof data).toBe('object');
+          const { exits, error } = await datastore.validateDatastoreDisplayID(payload);
+          if (typeof exits === 'boolean') expect(typeof exits).toBe('boolean');
+          else throw new Error(`Error: ${error}`);
         }
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }
     });
   });
+
+  describe('#updateDatastore()', () => {
+    it('should update datastore current without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (newDatastoreId) {
+          const datastore = new Datastore(url, tokenDs);
+          const payload: DatastoreUpdateSetting = {
+            payload: {
+              datastore_id: newDatastoreId,
+              display_id: "dsId_update_001",
+              name: {
+                en: "EN name update",
+                ja: "JA name update"
+              },
+            }
+          };
+          const { data, error } = await datastore.updateDatastoreSetting(payload);
+          if (data) expect(typeof data).toBe('object');
+          else throw new Error(`Error: ${error}`);
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#deleteDatastore()', () => {
+    it('should delete datastore current without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (newDatastoreId) {
+          const datastore = new Datastore(url, tokenDs);
+          const { data, error } = await datastore.deleteDatastore(newDatastoreId);
+
+          if (data) {
+            expect(typeof data).toBe('object');
+          } else {
+            throw new Error(`Error: ${error}`);
+          }
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
 });

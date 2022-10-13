@@ -33,3 +33,8 @@ export interface GenericAPIError {
   description?: string;
   reference_id?: string;
 }
+
+
+export class ResponseErrorNull {
+  error?: any;
+}

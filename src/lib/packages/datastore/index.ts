@@ -5,22 +5,99 @@ import {
   DS_FIELD_SETTING,
   DS_ACTION_SETTING,
   DS_STATUS,
-  UPDATE_DATASTORE_NAME,
+  UPDATE_DATASTORE_SETTING,
+  CREATE_DATASTORE_FROM_TEMPLATE,
+  DELETE_DATASTORE,
+  VALIDATE_DS_DISPLAY_ID,
 } from '../../graphql/datastore';
 import {
-  DatastoreUpdateName,
+  CreateDatastoreFromSeedReq,
+  CreateDatastoreFromSeedRes,
+  DatastoreUpdateSetting,
   DsActionRes,
   DsActionSettingRes,
   DsFieldSettingsRes,
   DsStatusRes,
+  DtCreateDatastoreFromSeed,
+  DtDeleteDatastore,
   DtDsActions,
   DtDsActionSetting,
   DtDsFieldSettings,
   DtDsStatus,
-  DtUpdateNameDatastore,
+  DtUpdateDatastore,
+  DtValidateBeforeUpdateDsRes,
+  ExistsDSDisplayIDExcludeOwnRes,
+  IsExistsDSDisplayIDExcludeOwnReq,
 } from '../../types/datastore';
 
 export default class Datastore extends HxbAbstract {
+
+  /**
+   * function CreateDatastoreFromTemplate: CREATE datastore in project
+   * @params {CreateDatastoreFromSeedReq} payload is requirement
+   * @returns ModelRes
+   */
+  async create(payload: CreateDatastoreFromSeedReq): Promise<CreateDatastoreFromSeedRes> {
+    const data: CreateDatastoreFromSeedRes = {
+      datastoreId: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtCreateDatastoreFromSeed = await this.client.request(CREATE_DATASTORE_FROM_TEMPLATE, payload);
+
+      data.datastoreId = res?.createDatastoreFromTemplate?.datastoreId;
+    } catch (error: any) {
+      throw new Error(JSON.stringify(error.response.errors));
+    }
+
+    return data;
+  }
+
+  /**
+   * function validateDatastoreDisplayID: validate before update datastore in project
+   * @params {IsExistsDSDisplayIDExcludeOwnReq} payload is requirement
+   * @returns ExistsDSDisplayIDExcludeOwnRes
+   */
+  async validateDatastoreDisplayID(payload: IsExistsDSDisplayIDExcludeOwnReq): Promise<ExistsDSDisplayIDExcludeOwnRes> {
+    const data: ExistsDSDisplayIDExcludeOwnRes = {
+      exits: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const resUpdate: DtValidateBeforeUpdateDsRes = await this.client.request(VALIDATE_DS_DISPLAY_ID, payload);
+      data.exits = resUpdate?.validateDatastoreDisplayID?.exits;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
+   * function UpdateDatastoreName: update datastore in project
+   * @params {DatastoreUpdateSetting} payload, {DatastoreUpdateSetting} validate is requirement
+   * @returns ModelRes
+   */
+  async updateDatastoreSetting(payload: DatastoreUpdateSetting): Promise<ModelRes> {
+    const data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const resUpdate: DtUpdateDatastore = await this.client.request(UPDATE_DATASTORE_SETTING, payload);
+      data.data = resUpdate?.updateDatastoreSetting;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
 
   /**
    * function getField: get field setting in Ds
@@ -66,7 +143,7 @@ export default class Datastore extends HxbAbstract {
 
       data.error = JSON.stringify(error.response.errors);
     }
-
+    
     return data;
   }
 
@@ -119,11 +196,11 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function UpdateDatastoreName: update datastore name in project
-   * @params {UpdateProjectNamePl} payload is requirement
+   * function deleteDatastore: delete datastore in project
+   * @params {string} datastoreId is requirement
    * @returns ModelRes
    */
-  async UpdateDatastoreName(payload: DatastoreUpdateName): Promise<ModelRes> {
+  async deleteDatastore(datastoreId: string): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
       error: undefined,
@@ -131,9 +208,8 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateNameDatastore = await this.client.request(UPDATE_DATASTORE_NAME, payload);
-
-      data.data = res.updateDatastoreName;
+      const resUpdate: DtDeleteDatastore = await this.client.request(DELETE_DATASTORE, { datastoreId });
+      data.data = resUpdate?.deleteDatastore;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
     }

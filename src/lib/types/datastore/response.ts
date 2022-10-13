@@ -60,6 +60,9 @@ export interface DsActionSetting {
   roles: FieldRoles[];
 }
 
+export interface DatastoreId {
+  datastoreId?: string;
+}
 
 /** Data response from request graphql */
 export interface DtDsFieldSettings {
@@ -76,6 +79,10 @@ export interface DtDsActionSetting {
 
 export interface DtDsStatus {
   datastoreGetStatuses: [DsStatus];
+}
+
+export interface DtCreateDatastoreFromSeed {
+  createDatastoreFromTemplate?: DatastoreId;
 }
 
 /** export response */
@@ -99,6 +106,28 @@ export interface DsActionSettingRes {
   error?: string;
 }
 
-export interface DtUpdateNameDatastore {
-  updateDatastoreName: ResponseOkModel;
+export interface ExistsDSDisplayIDExcludeOwnRes {
+  exits?: boolean;
+  error?: string;
+}
+
+export interface CreateDatastoreFromSeedRes {
+  datastoreId?: string;
+  error?: string;
+}
+
+export interface DtValidateBeforeUpdateDs {
+  exits?: boolean;
+}
+
+export interface DtValidateBeforeUpdateDsRes {
+  validateDatastoreDisplayID?: DtValidateBeforeUpdateDs;
+}
+
+export interface DtUpdateDatastore {
+  updateDatastoreSetting: ResponseOkModel;
+}
+
+export interface DtDeleteDatastore {
+  deleteDatastore: ResponseOkModel;
 }

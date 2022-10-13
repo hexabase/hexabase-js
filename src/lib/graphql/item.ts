@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 
 export const DS_ITEMS = gql`
-  mutation ApplicationCreateProject($getItemsParameters: GetItemsParameters!, $datastoreId: String!, $projectId: String) {
+  mutation DatastoreGetDatastoreItems($getItemsParameters: GetItemsParameters!, $datastoreId: String!, $projectId: String) {
     datastoreGetDatastoreItems(getItemsParameters: $getItemsParameters, datastoreId: $datastoreId, projectId: $projectId) {
       items
       totalItems
@@ -198,7 +198,7 @@ export const UPDATE_ITEM = gql`
 `;
 
 export const EXECUTE_ITEM_ACTION = gql`
-  mutation(
+  mutation DatastoreExecuteItemAction(
     $projectId: String!,
     $datastoreId: String!,
     $actionId: String!,

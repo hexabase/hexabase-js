@@ -1,4 +1,20 @@
 import { ResponseOkModel } from '../../util/type';
+import {
+  AppSettings,
+  AppTemplates,
+  CsvImport,
+  Dashboards,
+  DataReports,
+  DeveloperFunctions,
+  GroupSettings,
+  ItemView,
+  NewWorkspaces,
+  Redirect,
+  TaskQueue,
+  UserSessions,
+  WsSettings,
+  WsUsage
+} from './input';
 
 export interface WorkSpacesInfo {
   workspace_name?: string;
@@ -58,7 +74,8 @@ export interface UsageWorkSpace {
   items?: number;
   items_limit?: number;
 }
-export interface WsUsage {
+
+export interface UsageWS {
   w_id?: string;
   usage?: UsageWorkSpace;
 }
@@ -118,7 +135,7 @@ export interface DtWsFunctionality {
 }
 
 export interface DtWsUsage {
-  workspaceUsage: WsUsage;
+  workspaceUsage: UsageWS;
 }
 
 export interface DtWsGroupChildren {
@@ -147,6 +164,86 @@ export interface WorkspacesRes {
   error?: string;
 }
 
+export interface WsAdminUser {
+  user_id?: string;
+  email?: string;
+  user_name?: string;
+  access_key?: string;
+}
+
+export interface Language {
+  lang_cd?: string;
+  use?: boolean;
+  default?: boolean;
+}
+
+export interface PwdPolicy {
+  expired_day?: number;
+  lockout_count?: number;
+  lockout_time?: number;
+  min_length?: number;
+  pattern_check_type?: number;
+  same_limit?: number;
+  use_expired_day?: boolean;
+  use_lockout_count?: boolean;
+  use_lockout_time?: boolean;
+  use_min_length?: boolean;
+  use_pattern_check?: boolean;
+  use_same_limit?: boolean;
+  use_language_en?: boolean;
+  use_language_ja?: boolean;
+}
+
+export interface WsFunctionsOb {
+  ws_settings?: WsSettings;
+  group_settings?: GroupSettings;
+  developer_functions?: DeveloperFunctions;
+  task_queue?: TaskQueue;
+  new_workspaces?: NewWorkspaces;
+}
+
+export interface DatastoresBl {
+  disable_db_settings?: boolean;
+  disable_grid_view?: boolean;
+  disable_borad_view?: boolean;
+  disable_status_update?: boolean;
+  disable_query?: boolean;
+}
+export interface AppFunctionsOb {
+  app_settings?: AppSettings;
+  app_templates?: AppTemplates;
+  dashboards?: Dashboards;
+  data_reports?: DataReports;
+  datastores?: DatastoresBl;
+  csv_import?: CsvImport;
+  item_view?: ItemView;
+}
+
+export interface WorkspaceDetail {
+  id?: string;
+  w_id?: string;
+  plan_id?: string;
+  plan_name?: string;
+  ws_admin?: any;
+  ws_admin_users?: [WsAdminUser];
+  user_id?: string;
+  name?: string;
+  ws_usage?: UsageWorkSpace;
+  languages?: [Language];
+  pwd_policy?: PwdPolicy;
+  user_sessions?: UserSessions;
+  ws_functions?: WsFunctionsOb;
+  app_functions?: AppFunctionsOb;
+  redirect?: Redirect;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface WorkspaceDetailRes {
+  workspace?: WorkspaceDetail;
+  error?: string;
+}
+
 export interface WorkspaceCurrentRes {
   wsCurrent?: WorkspaceCurrent;
   error?: string;
@@ -163,7 +260,7 @@ export interface WsFunctionalityRes {
 }
 
 export interface WsUsageRes {
-  wsUsage?: WsUsage;
+  wsUsage?: UsageWS;
   error?: string;
 }
 
