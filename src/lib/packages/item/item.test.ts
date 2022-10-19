@@ -47,7 +47,7 @@ const createProjectParams = {
 };
 
 beforeAll(async () => {
-  if (email && password) {
+  if (email && password && !tokenItem) {
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
     if (token) {
@@ -57,17 +57,12 @@ beforeAll(async () => {
       userInfo?.u_id ? userId = userInfo?.u_id : '';
       //
       const workspace = new Workspace(url, token);
-      const { workspaces } = await workspace.get();
+      const { wsCurrent, error } = await workspace.getCurrent();
 
-      if (workspaces && workspaces?.workspaces && workspaces?.workspaces[0]?.workspace_id) {
-        workspaceId = workspaces?.workspaces[0]?.workspace_id;
+      if (wsCurrent && wsCurrent?.workspace_id) {
+        workspaceId = wsCurrent?.workspace_id
       } else {
-        const workspace = new Workspace(url, token);
-        const { w_id } = await workspace.create(createWorkSpaceInput);
-
-        if (w_id) {
-          workspaceId = w_id;
-        }
+        throw Error(`Errors: ${error}`);
       }
       //
       const appAndDsGetApp = new Application(url, token);
@@ -114,7 +109,64 @@ beforeAll(async () => {
     } else {
       throw Error(`Login to initialize sdk: ${error}`);
     }
+  } else if (tokenItem && !email || !password) {
+    const user = new User(url, tokenItem);
+    const { userInfo } = await user.get(tokenItem);
+    userInfo?.u_id ? userId = userInfo?.u_id : '';
+    //
+    const workspace = new Workspace(url, tokenItem);
+    const { wsCurrent, error } = await workspace.getCurrent();
+
+    if (wsCurrent && wsCurrent?.workspace_id) {
+      workspaceId = wsCurrent?.workspace_id
+    } else {
+      throw Error(`Errors: ${error}`);
+    }
+    //
+    const appAndDsGetApp = new Application(url, tokenItem);
+    const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+
+    if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
+      applicationId = appAndDs[0].application_id;
+    } else {
+      const application = new Application(url, tokenItem);
+      const { app } = await application.create(createProjectParams);
+
+      if (app) {
+        applicationId = app?.project_id;
+      }
+    }
+
+    //
+    const datastore = new Datastore(url, tokenItem);
+    if (appAndDs && appAndDs[0] && appAndDs[0]?.datastores && appAndDs[0]?.datastores[0]?.datastore_id) {
+      datastoreID = appAndDs[0]?.datastores[0]?.datastore_id;
+    } else {
+      const payload: CreateDatastoreFromSeedReq = {
+        payload: {
+          lang_cd: 'en',
+          project_id: applicationId,
+          template_name: templateName,
+          workspace_id: workspaceId,
+          user_id: userId,
+        },
+      };
+      const { datastoreId } = await datastore.create(payload);
+      if (datastoreId) {
+        datastoreID = datastoreId;
+      } else {
+        throw Error(`Dont't have datastore: ${error}`);
+      }
+    }
+    if (datastoreID) {
+      datastoreID = datastoreID;
+      const { dsActions } = await datastore.getActions(datastoreID);
+      actions = dsActions;
+    }
+  } else {
+    throw Error('Need pass token or email and password parameter');
   }
+
 });
 
 describe('Item', () => {

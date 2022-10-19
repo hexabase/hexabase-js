@@ -23,29 +23,36 @@ const createWorkSpaceInput = {
 };
 
 beforeAll(async () => {
-  if (email && password) {
+  if (email && password && !tokenApp) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
 
     if (token) {
       const workspace = new Workspace(url, token);
-      const { workspaces } = await workspace.get();
+      const { wsCurrent, error } = await workspace.getCurrent();
 
-      if (workspaces && workspaces?.workspaces && workspaces?.workspaces[0]?.workspace_id) {
-        workspaceId = workspaces?.workspaces[0]?.workspace_id;
+      if (wsCurrent && wsCurrent?.workspace_id) {
+        workspaceId = wsCurrent?.workspace_id
       } else {
-        const workspace = new Workspace(url, token);
-        const { w_id } = await workspace.create(createWorkSpaceInput);
-
-        if (w_id) {
-          workspaceId = w_id;
-        }
+        throw Error(`Errors: ${error}`);
       }
+
       return tokenApp = token;
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
     }
+  } else if (tokenApp) {
+    const workspace = new Workspace(url, tokenApp);
+    const { wsCurrent, error } = await workspace.getCurrent();
+
+    if (wsCurrent && wsCurrent?.workspace_id) {
+      workspaceId = wsCurrent?.workspace_id
+    } else {
+      throw Error(`Errors: ${error}`);
+    }
+  } else {
+    throw Error('Need pass token or email and password parameter');
   }
 });
 

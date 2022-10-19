@@ -26,7 +26,7 @@ const createWorkSpaceInput = {
 };
 
 beforeAll(async () => {
-  if (email && password) {
+  if (email && password && !tokenDs) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
@@ -37,17 +37,12 @@ beforeAll(async () => {
       userInfo?.u_id ? userId = userInfo?.u_id : '';
       //
       const workspace = new Workspace(url, token);
-      const { workspaces } = await workspace.get();
+      const { wsCurrent, error } = await workspace.getCurrent();
 
-      if (workspaces && workspaces?.workspaces && workspaces?.workspaces[0]?.workspace_id) {
-        workspaceId = workspaces?.workspaces[0]?.workspace_id;
+      if (wsCurrent && wsCurrent?.workspace_id) {
+        workspaceId = wsCurrent?.workspace_id
       } else {
-        const workspace = new Workspace(url, token);
-        const { w_id } = await workspace.create(createWorkSpaceInput);
-
-        if (w_id) {
-          workspaceId = w_id;
-        }
+        throw Error(`Errors: ${error}`);
       }
       //
       const appAndDsGetApp = new Application(url, token);
@@ -78,6 +73,46 @@ beforeAll(async () => {
     } else {
       throw Error(`Need login faild to initialize sdk: ${error}`);
     }
+  } else if (tokenDs) {
+    const user = new User(url, tokenDs);
+    const { userInfo } = await user.get(tokenDs);
+    userInfo?.u_id ? userId = userInfo?.u_id : '';
+    //
+    const workspace = new Workspace(url, tokenDs);
+    const { wsCurrent, error } = await workspace.getCurrent();
+
+    if (wsCurrent && wsCurrent?.workspace_id) {
+      workspaceId = wsCurrent?.workspace_id
+    } else {
+      throw Error(`Errors: ${error}`);
+    }
+    //
+    const appAndDsGetApp = new Application(url, tokenDs);
+    const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+
+    if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
+      projectID = dataApp?.appAndDs[0].application_id;
+    } else {
+      const application = new Application(url, tokenDs);
+      const createProjectParams = {
+        name: {
+          en: 'EN Project',
+          ja: 'JA Project',
+        },
+      };
+      const { app } = await application.create(createProjectParams);
+
+      if (app) {
+        projectID = app?.project_id;
+      }
+    }
+
+    if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs && dataApp?.appAndDs[0]?.datastores && dataApp?.appAndDs[0]?.datastores[0]?.datastore_id) {
+      newDatastoreId = dataApp?.appAndDs[0]?.datastores[0]?.datastore_id;
+    }
+
+  } else {
+    throw Error('Need pass token or email and password parameter');
   }
 });
 
