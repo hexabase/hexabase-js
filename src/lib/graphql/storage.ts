@@ -15,3 +15,34 @@ export const DELETE_STORAGE = gql`
 		}
 	}
 `;
+
+
+export const FILE_ATTACHMENT = gql`
+	mutation CreateItemFileAttachment($payload: ItemFileAttachmentPl!) {
+		createItemFileAttachment(payload: $payload) {
+			_id
+			created_at
+			d_id
+			contentType
+		datastore_id
+			deleted
+			field_id
+			display_order
+			file_id
+			filename
+			filepath
+			name
+		item_id
+		i_id
+			mediaLink
+			p_id
+			timeCreated
+		size
+		selfLink
+			temporary
+			updated
+			w_id
+		user_id
+		}
+	}
+`;
