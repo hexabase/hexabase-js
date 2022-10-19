@@ -33,7 +33,7 @@ beforeAll(async () => {
       const { wsCurrent, error } = await workspace.getCurrent();
 
       if (wsCurrent && wsCurrent?.workspace_id) {
-        workspaceId = wsCurrent?.workspace_id
+        workspaceId = wsCurrent?.workspace_id;
       } else {
         throw Error(`Errors: ${error}`);
       }
@@ -47,7 +47,7 @@ beforeAll(async () => {
     const { wsCurrent, error } = await workspace.getCurrent();
 
     if (wsCurrent && wsCurrent?.workspace_id) {
-      workspaceId = wsCurrent?.workspace_id
+      workspaceId = wsCurrent?.workspace_id;
     } else {
       throw Error(`Errors: ${error}`);
     }
