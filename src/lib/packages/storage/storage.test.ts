@@ -7,7 +7,7 @@ require('dotenv').config();
  */
 
 let tokenStr = process.env.TOKEN || '';
-const getDownloadFileId = process.env.FILE_ID || '';
+const fileID = process.env.FILE_ID || '';
 const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
@@ -45,12 +45,11 @@ beforeAll(async () => {
 });
 // testing storage
 describe('User', () => {
-  describe('#CreateFileAttachment()', () => {
+  describe('#createFile()', () => {
     it('should get download file without error', async () => {
       jest.useFakeTimers('legacy');
       const storage = new Storage(url, tokenStr);
-      const { data, error } = await storage.createFileAttachment(payload);
-      // expect response getPasswordExpire
+      const { data, error } = await storage.createFile(payload);
       if (data && data.file_id) {
         console.log('data.file_id', data.file_id);
         expect(typeof data.file_id).toBe('string');
@@ -60,14 +59,13 @@ describe('User', () => {
     });
   });
 
-  describe('#GetDownloadFile()', () => {
+  describe('#getFile()', () => {
     it('should get download file without error', async () => {
       jest.useFakeTimers('legacy');
       const storage = new Storage(url, tokenStr);
-      const { getDownloadFile, error } = await storage.GetDownloadFile(getDownloadFileId);
-      // expect response getPasswordExpire
-      if (getDownloadFile) {
-        expect(typeof getDownloadFile).toBe('string');
+      const { file, error } = await storage.getFile(fileID);
+      if (file) {
+        expect(typeof file).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }
@@ -78,8 +76,7 @@ describe('User', () => {
     it('should delete file without error', async () => {
       jest.useFakeTimers('legacy');
       const storage = new Storage(url, tokenStr);
-      const { data, error } = await storage.delete(getDownloadFileId);
-      // expect response getPasswordExpire
+      const { data, error } = await storage.delete(fileID);
       if (data) {
         expect(typeof data).toBe('object');
       } else {

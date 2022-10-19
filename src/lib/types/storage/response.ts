@@ -27,7 +27,7 @@ export class ItemFileAttachment {
 }
 
 // export data from graphql
-export interface DtStorageResp {
+export interface DtStorage {
   deleteStorage: ResponseOkModel;
 }
 
@@ -40,7 +40,7 @@ export interface DtItemFileAttachment {
 
 // export data SDK
 export interface GetDownloadFileRes {
-  getDownloadFile?: any;
+  file?: any;
   error?: string;
 }
 
