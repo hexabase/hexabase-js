@@ -1,7 +1,7 @@
-import { DELETE_STORAGE, GET_DOWNLOAD_FILE } from '../../graphql/storage';
+import { DELETE_STORAGE, FILE_ATTACHMENT, GET_DOWNLOAD_FILE } from '../../graphql/storage';
 import { HxbAbstract } from '../../../HxbAbstract';
 import { ModelRes } from '../../util/type';
-import { DtStorageResp, GetDownloadFileRes } from '../../types/storage';
+import { DtItemFileAttachment, DtStorageResp, GetDownloadFileRes, ItemFileAttachmentPl, ItemFileAttachmentRes } from '../../types/storage';
 
 export default class Storage extends HxbAbstract {
   /**
@@ -27,11 +27,33 @@ export default class Storage extends HxbAbstract {
   }
 
   /**
+   * function createFileAttachment: upload file attachment
+   * @returns any
+   */
+   async createFileAttachment(payload: ItemFileAttachmentPl): Promise<ItemFileAttachmentRes> {
+    const data: ItemFileAttachmentRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtItemFileAttachment = await this.client.request(FILE_ATTACHMENT, { payload });
+
+      data.data = res.createItemFileAttachment;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
+
+    return data;
+  }
+
+  /**
    * function deleteStorage: delete storage
    * @param fileId: string is required
    * @returns ModelRes
    */
-  async deleteStorage(fileId: string): Promise<ModelRes> {
+  async delete(fileId: string): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
       error: undefined,
