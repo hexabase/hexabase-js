@@ -1,6 +1,6 @@
 
-import { DtGetReports, DtReportData, GetReportsRes, ReportDataPayload, ReportDataRes } from '../../../../src/lib/types/dataReport';
-import { HxbAbstract } from '../../../../src/HxbAbstract';
+import { DtGetReports, DtReportData, GetReportsRes, ReportDataPayload, ReportDataRes } from '../../../lib/types/dataReport';
+import { HxbAbstract } from '../../../HxbAbstract';
 import { REPORT_DEFAULT, GET_REPORTS } from '../../graphql/dataReport';
 
 export default class DataReport extends HxbAbstract {

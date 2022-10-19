@@ -70,7 +70,7 @@
     - login: login with email password
     - logout: logout user
   
-  workspace
+  workspace:
     - get: get workspaces and current workspace id
     - getDetail: get detail workspace
     - setCurrent: set workspace current with id
@@ -85,11 +85,11 @@
     - update: update workspace settings
     - archive: archive workspace
 
-  Report
+  report:
     - getReports: get reports in project
     - getDataReport: get data of report
     
-  application
+  application:
     - getProjectsAndDatastores: get app and ds
     - create: create app
     - get: get list application in a workspace
@@ -99,7 +99,7 @@
     - updateProjectTheme: update project theme in workspace
     - updateProjectName: update project name in workspace
 
-  datastore
+  datastore:
     - getField: get field setting in Ds
     - getActions: get actions in Ds
     - getStatuses: get statuses in Ds
@@ -111,7 +111,7 @@
     - UpdateDatastoreName: update datastore setting in project
     - deleteDatastore: delete datastore in project
 
-  item
+  item:
     - get: get items in datastore
     - create: create new item
     - getHistories: get items histories
@@ -122,9 +122,14 @@
     - deleteItem: delete item in datastore
     - execute: execute action item in datastore
 
-  user
+  user:
     - register: get user register info by confirmationId
     - confirm: get info user confirm by confirmationId
     - getPasswordExpire: check user password is expiry
     - get: get information user by token
+
+  storage:
+    - getFile: get data of file which attached in item
+    - createFile: upload file to attached in item
+    - delete: delete file which attached it item
 ```
