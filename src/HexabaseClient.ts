@@ -5,6 +5,8 @@ import Application from './lib/packages/application';
 import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
 import DataReport from './lib/packages/dataReport';
+import Storage from './lib/packages/storage';
+
 export default class HexabaseClient {
   public auth: Auth;
   public users: User;
@@ -14,6 +16,7 @@ export default class HexabaseClient {
   public datastores: Datastore;
   public tokenHxb?: string;
   public dataReport?: DataReport;
+  public storage?: Storage;
 
   constructor(
     protected urlHxb: string,
@@ -38,6 +41,7 @@ export default class HexabaseClient {
     this.items = this._initItem();
     this.datastores = this._initDatastore();
     this.dataReport = this._initDataReport();
+    this.storage = this._initStorage();
   }
 
   /**
@@ -105,10 +109,18 @@ export default class HexabaseClient {
   }
 
   /**
-   * Check login status
-   * @returns boolean
+   * initialize class DataReport
+   * @returns new DataReport
    */
   public _initDataReport() {
     return new DataReport(this.urlHxb, this.tokenHxb!);
+  }
+
+  /**
+   * initialize class Storage
+   * @returns new Storage
+   */
+  public _initStorage() {
+    return new Storage(this.urlHxb, this.tokenHxb!);
   }
 }
