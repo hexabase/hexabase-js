@@ -14,9 +14,9 @@ export default class HexabaseClient {
   public workspaces: Workspace;
   public items: Item;
   public datastores: Datastore;
+  public storage: Storage;
+  public dataReport: DataReport;
   public tokenHxb?: string;
-  public dataReport?: DataReport;
-  public storage?: Storage;
 
   constructor(
     protected urlHxb: string,
