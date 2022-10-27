@@ -47,4 +47,17 @@ describe('Hexabase', () => {
       }
     });
   });
+  // describe('#getFile()', () => {
+  //   it('application: get createClient and testing', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     const hexabase = await createClient({ url, token: tokenClient });
+
+  //     console.log('Test: class storage get file');
+  //     const {file, error} = await hexabase.storage.getFile(fileId);
+  //     if (file) {
+  //       // console.log('appAndDs', appAndDs);
+  //       expect(typeof file).toBe('string');
+  //     }
+  //   });
+  // });
 });
