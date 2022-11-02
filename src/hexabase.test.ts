@@ -1,6 +1,5 @@
 import { createClient } from './index';
 import Auth from './lib/packages/auth';
-import AuthMw from './lib/packages/middlware/auth';
 require('dotenv').config();
 jest.useRealTimers();
 /**
@@ -37,7 +36,7 @@ describe('Hexabase', () => {
       const hexabase = await createClient({ url, token: tokenClient });
 
       console.log('Test: class application');
-      const {appAndDs, error} = await hexabase.applications.getProjectsAndDatastores(workspaceId);
+      const {appAndDs, error} = await hexabase.project.getProjectsAndDatastores(workspaceId);
       if (appAndDs && appAndDs[0]) {
 
         // console.log('appAndDs', appAndDs);

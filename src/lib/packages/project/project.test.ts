@@ -1,11 +1,11 @@
-import { DeleteProjectPl, UpdateProjectNamePl, UpdateProjectThemePl } from '../../types/application';
-import Application from '.';
+import { DeleteProjectPl, UpdateProjectNamePl, UpdateProjectThemePl } from '../../types/project';
+import Project from '.';
 import Auth from '../auth';
 import Workspace from '../workspace';
 require('dotenv').config();
 /**
- * Test with class Application
- * @cmdruntest yarn jest src/lib/packages/application/application.test.ts
+ * Test with class Project
+ * @cmdruntest yarn jest src/lib/packages/project/project.test.ts
  */
 
 let projectId = process.env.APPLICATIONID || '';
@@ -14,14 +14,8 @@ let workspaceId = process.env.WORKSPACEID || '';
 const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const templateId = process.env.PROJECT_TEMPLATE_ID || '';
 
 // local variable in file for testing
-
-const createWorkSpaceInput = {
-  name: 'new Workspace'
-};
-
 beforeAll(async () => {
   if (email && password && !tokenApp) {
     console.log('[email, password]: ', email, password);
@@ -56,12 +50,12 @@ beforeAll(async () => {
   }
 });
 
-describe('Application', () => {
+describe('Project', () => {
   describe('#get()', () => {
-    it('should get applications by workspace id', async () => {
+    it('should get project by workspace id', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-      const { getApplications, error } = await application.get(workspaceId);
+      const project = new Project(url, tokenApp);
+      const { getApplications, error } = await project.get(workspaceId);
 
       if (getApplications && getApplications[0]) {
         expect(typeof getApplications[0].application_id).toBe('string');
@@ -74,10 +68,10 @@ describe('Application', () => {
   });
 
   describe('#getProjectsAndDatastores()', () => {
-    it('should get applications and datastore by workspace id', async () => {
+    it('should get project and datastore by workspace id', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-      const { appAndDs, error } = await application.getProjectsAndDatastores(workspaceId);
+      const project = new Project(url, tokenApp);
+      const { appAndDs, error } = await project.getProjectsAndDatastores(workspaceId);
 
       if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
         projectId = appAndDs[0].application_id;
@@ -95,8 +89,8 @@ describe('Application', () => {
   describe('#getTemplates()', () => {
     it('should get templates without error', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-      const { getTemplates, error } = await application.getTemplates();
+      const project = new Project(url, tokenApp);
+      const { getTemplates, error } = await project.getTemplates();
 
       if (getTemplates) {
         expect(typeof getTemplates).toBe('object');
@@ -109,16 +103,16 @@ describe('Application', () => {
   });
 
   describe('#create()', () => {
-    it('should create application', async () => {
+    it('should create project', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
+      const project = new Project(url, tokenApp);
       const createProjectParams = {
         name: {
           en: 'EN Project',
           ja: 'JA Project',
         },
       };
-      const { app, error } = await application.create(createProjectParams);
+      const { app, error } = await project.create(createProjectParams);
 
       if (app) {
         expect(typeof app.project_id).toBe('string');
@@ -135,12 +129,12 @@ describe('Application', () => {
   describe('#getDetail()', () => {
     it('should get info project', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
-      const { project, error } = await application.getDetail(projectId);
-      if (project) {
-        expect(typeof project.name).toBe('string');
+      const project = new Project(url, tokenApp);
+      const projectDetail = await project.getDetail(projectId);
+      if (projectDetail.project) {
+        expect(typeof projectDetail.project.name).toBe('string');
       } else {
-        throw new Error(`Error: ${error}`);
+        throw new Error(`Error: ${projectDetail.error}`);
       }
     });
   });
@@ -148,14 +142,14 @@ describe('Application', () => {
   describe('#updateProjectTheme()', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
+      const project = new Project(url, tokenApp);
       const payload: UpdateProjectThemePl = {
         payload: {
           project_id: projectId,
           theme: 'black',
         }
       };
-      const { data, error } = await application.updateProjectTheme(payload);
+      const { data, error } = await project.updateProjectTheme(payload);
 
       if (data) {
         expect(typeof data).toBe('object');
@@ -168,7 +162,7 @@ describe('Application', () => {
   describe('#updateProjectName()', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
+      const project = new Project(url, tokenApp);
       const payload: UpdateProjectNamePl = {
         payload: {
           project_id: projectId,
@@ -179,7 +173,7 @@ describe('Application', () => {
           },
         }
       };
-      const { data, error } = await application.updateProjectName(payload);
+      const { data, error } = await project.updateProjectName(payload);
 
       if (data) {
         expect(typeof data).toBe('object');
@@ -192,13 +186,13 @@ describe('Application', () => {
   describe('#delete()', () => {
     it('should delete project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
-      const application = new Application(url, tokenApp);
+      const project = new Project(url, tokenApp);
       const payload: DeleteProjectPl = {
         payload: {
           project_id: projectId,
         }
       };
-      const { data, error } = await application.delete(payload);
+      const { data, error } = await project.delete(payload);
 
       if (data) {
         expect(typeof data).toBe('object');

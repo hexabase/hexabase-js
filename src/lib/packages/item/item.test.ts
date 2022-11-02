@@ -1,9 +1,9 @@
 import Item from '.';
 import Auth from '../auth';
-import AuthMw from '../middlware/auth';
+import AuthMw from '../middleware/auth';
 import Datastore from '../datastore/index';
 import Workspace from '../workspace';
-import Application from '../application';
+import Project from '../project';
 import { CreateDatastoreFromSeedReq, DsAction } from '../../types/datastore';
 import User from '../user';
 
@@ -65,13 +65,13 @@ beforeAll(async () => {
         throw Error(`Errors: ${error}`);
       }
       //
-      const appAndDsGetApp = new Application(url, token);
+      const appAndDsGetApp = new Project(url, token);
       const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
 
       if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
         applicationId = appAndDs[0].application_id;
       } else {
-        const application = new Application(url, token);
+        const application = new Project(url, token);
         const { app } = await application.create(createProjectParams);
 
         if (app) {
@@ -123,13 +123,13 @@ beforeAll(async () => {
       throw Error(`Errors: ${error}`);
     }
     //
-    const appAndDsGetApp = new Application(url, tokenItem);
+    const appAndDsGetApp = new Project(url, tokenItem);
     const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
 
     if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
       applicationId = appAndDs[0].application_id;
     } else {
-      const application = new Application(url, tokenItem);
+      const application = new Project(url, tokenItem);
       const { app } = await application.create(createProjectParams);
 
       if (app) {

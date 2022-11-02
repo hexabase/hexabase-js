@@ -1,5 +1,5 @@
 import Auth from '.';
-import AuthMw from '../middlware/auth';
+import AuthMw from '../middleware/auth';
 require('dotenv').config();
 /**
  * Test with class Auth
