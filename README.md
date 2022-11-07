@@ -89,7 +89,7 @@
     - getReports: get reports in project
     - getDataReport: get data of report
     
-  application:
+  project:
     - getProjectsAndDatastores: get app and ds
     - create: create app
     - get: get list application in a workspace
