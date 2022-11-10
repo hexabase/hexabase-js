@@ -3,6 +3,9 @@
   "version": "1.0.18",
   "main": "dist/index.js",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "start": "yarn run serve",
     "build": "yarn run build-ts && yarn run tslint",
