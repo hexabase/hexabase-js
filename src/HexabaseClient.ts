@@ -10,7 +10,7 @@ import Storage from './lib/packages/storage';
 export default class HexabaseClient {
   public auth: Auth;
   public user: User;
-  public project: Project;
+  public projects: Project;
   public workspace: Workspace;
   public item: Item;
   public datastore: Datastore;
@@ -36,7 +36,7 @@ export default class HexabaseClient {
    */
   public _init() {
     this.user = this._initUser();
-    this.project = this._initProject();
+    this.projects = this._initProject();
     this.workspace = this._initWorkspace();
     this.item = this._initItem();
     this.datastore = this._initDatastore();
