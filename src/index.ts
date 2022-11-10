@@ -1,6 +1,7 @@
 import HexabaseClient from './HexabaseClient';
 import Auth from './lib/packages/auth';
 require('dotenv').config();
+
 interface HexabaseConfig {
   url?: string;
   token?: string;
