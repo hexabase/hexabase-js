@@ -1,7 +1,7 @@
 import Auth from './lib/packages/auth';
 import Workspace from './lib/packages/workspace';
 import User from './lib/packages/user';
-import Application from './lib/packages/application';
+import Project from './lib/packages/project';
 import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
 import DataReport from './lib/packages/dataReport';
@@ -9,11 +9,11 @@ import Storage from './lib/packages/storage';
 
 export default class HexabaseClient {
   public auth: Auth;
-  public users: User;
-  public applications: Application;
-  public workspaces: Workspace;
-  public items: Item;
-  public datastores: Datastore;
+  public user: User;
+  public project: Project;
+  public workspace: Workspace;
+  public item: Item;
+  public datastore: Datastore;
   public storage: Storage;
   public dataReport: DataReport;
   public tokenHxb?: string;
@@ -35,11 +35,11 @@ export default class HexabaseClient {
    * initialize classes
    */
   public _init() {
-    this.users = this._initUser();
-    this.applications = this._initApplication();
-    this.workspaces = this._initWorkspace();
-    this.items = this._initItem();
-    this.datastores = this._initDatastore();
+    this.user = this._initUser();
+    this.project = this._initProject();
+    this.workspace = this._initWorkspace();
+    this.item = this._initItem();
+    this.datastore = this._initDatastore();
     this.dataReport = this._initDataReport();
     this.storage = this._initStorage();
   }
@@ -77,24 +77,24 @@ export default class HexabaseClient {
   }
 
   /**
-   * initialize class Application
-   * @returns new Application
+   * initialize class Project
+   * @returns new Project
    */
-  public _initApplication() {
-    return new Application(this.urlHxb, this.tokenHxb!);
+  public _initProject() {
+    return new Project(this.urlHxb, this.tokenHxb!);
   }
 
   /**
-   * initialize class Application
-   * @returns new Application
+   * initialize class Datastore
+   * @returns new Datastore
    */
   public _initDatastore() {
     return new Datastore(this.urlHxb, this.tokenHxb!);
   }
 
   /**
-   * initialize class Application
-   * @returns new Application
+   * initialize class Item
+   * @returns new Item
    */
   public _initItem() {
     return new Item(this.urlHxb, this.tokenHxb!);

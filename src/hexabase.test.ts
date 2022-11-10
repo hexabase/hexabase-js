@@ -1,6 +1,5 @@
 import { createClient } from './index';
 import Auth from './lib/packages/auth';
-import AuthMw from './lib/packages/middlware/auth';
 require('dotenv').config();
 jest.useRealTimers();
 /**
@@ -27,18 +26,19 @@ describe('Hexabase', () => {
         email,
         password,
       });
-      const { wsCurrent, error } = await hexabase.workspaces.getCurrent();
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
       if (wsCurrent) {
         expect(typeof wsCurrent.workspace_id).toBe('string');
       }
     });
   });
 
+
   describe('#createClient()', () => {
     it('get createClient and testing with url and token', async () => {
       jest.useFakeTimers();
       const hexabase = await createClient({ url: stagUrl, token: stagToken });
-      const { wsCurrent, error } = await hexabase.workspaces.getCurrent();
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
       if (wsCurrent) {
         expect(typeof wsCurrent.workspace_id).toBe('string');
       }
@@ -52,7 +52,7 @@ describe('Hexabase', () => {
         email: prodEmail,
         password: prodPassword,
       });
-      const { wsCurrent, error } = await hexabase.workspaces.getCurrent();
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
       if (wsCurrent) {
         expect(typeof wsCurrent.workspace_id).toBe('string');
       }
@@ -65,7 +65,7 @@ describe('Hexabase', () => {
       const hexabase = await createClient({
         token: prodToken,
       });
-      const { wsCurrent, error } = await hexabase.workspaces.getCurrent();
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
       if (wsCurrent) {
         expect(typeof wsCurrent.workspace_id).toBe('string');
       }
