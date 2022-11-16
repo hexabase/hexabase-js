@@ -224,3 +224,19 @@ export const DELETE_DATASTORE = gql`
     }
   }
 `;
+
+export const DATASTORE_GET_FIELD_AUTO_NUMBER = gql`
+  query DatastoreGetFieldAutoNumber($datastoreId: String!, $fieldId: String!, $projectId: String!, $getFieldAutoNumberQuery: GetFieldAutoNumberQuery) {
+    datastoreGetFieldAutoNumber(datastoreId: $datastoreId, fieldId: $fieldId, projectId: $projectId, getFieldAutoNumberQuery: $getFieldAutoNumberQuery) {
+      errors {
+        description
+        error
+        error_code
+        error_level
+        reference_id
+      }
+      has_error
+      result
+    }
+  }
+`;

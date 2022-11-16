@@ -1,4 +1,4 @@
-import { ModelRes } from '../../util/type';
+import { ModelRes, ResponseErrorNull } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   CREATE_ITEMID,
@@ -10,6 +10,9 @@ import {
   ITEM_HISTORIES,
   ITEM_LINKED,
   EXECUTE_ITEM_ACTION,
+  POST_NEW_ITEM_HISTORY,
+  POST_UPDATE_ITEM_HISTORY,
+  POST_DELETE_ITEM_HISTORY,
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -33,6 +36,13 @@ import {
   ItemLinkedRes,
   NewItemRes,
   DtUpdateItemRes,
+  CreateCommentItemsParameters,
+  DtDatastoreCreateCommentItem,
+  DatastoreCreateCommentItemRes,
+  UpdateCommentItemsParameters,
+  ArchiveCommentItemsParameters,
+  DtDatastoreUpdateCommentItem,
+  DtDatastoreDeleteCommentItem,
 } from '../../types/item';
 
 export default class Item extends HxbAbstract {
@@ -236,6 +246,67 @@ export default class Item extends HxbAbstract {
     try {
       const res: DtUpdateItemRes = await this.client.request(EXECUTE_ITEM_ACTION, { projectId, datastoreId, itemId, actionId, itemActionParameters });
       data.data = res.item;
+    } catch (error: any) {
+      data.error = JSON.stringify(error?.response?.errors);
+    }
+    return data;
+  }
+
+  /**
+   * function createComment: create comment item in datastore
+   * @params payload is requirement
+   * @returns DatastoreCreateCommentItemRes
+   */
+  async createComment(payload: CreateCommentItemsParameters): Promise<DatastoreCreateCommentItemRes> {
+    const data: DatastoreCreateCommentItemRes = {
+      postNewItemHistory: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtDatastoreCreateCommentItem = await this.client.request(POST_NEW_ITEM_HISTORY, { payload });
+      data.postNewItemHistory = res.postNewItemHistory;
+    } catch (error: any) {
+      data.error = JSON.stringify(error?.response?.errors);
+    }
+    return data;
+  }
+
+  /**
+   * function updateComment: update comment item in datastore
+   * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
+   * @returns ModelRes
+   */
+  async updateComment(payload: UpdateCommentItemsParameters): Promise<ResponseErrorNull> {
+    const data: ResponseErrorNull = {
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtDatastoreUpdateCommentItem = await this.client.request(POST_UPDATE_ITEM_HISTORY, { payload });
+      data.error = res.postUpdateItemHistory;
+    } catch (error: any) {
+      data.error = JSON.stringify(error?.response?.errors);
+    }
+    return data;
+  }
+
+  /**
+   * function updateComment: update comment item in datastore
+   * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
+   * @returns ModelRes
+   */
+  async deleteComment(payload: ArchiveCommentItemsParameters): Promise<ResponseErrorNull> {
+    const data: ResponseErrorNull = {
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtDatastoreDeleteCommentItem = await this.client.request(POST_DELETE_ITEM_HISTORY, { payload });
+      data.error = res.archiveItemHistory;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }

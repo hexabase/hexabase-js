@@ -12,10 +12,12 @@ import {
   DS_FIELDS,
   GET_DATASTORES,
   GET_DATASTORE_DETAIL,
+  DATASTORE_GET_FIELD_AUTO_NUMBER,
 } from '../../graphql/datastore';
 import {
   CreateDatastoreFromSeedReq,
   CreateDatastoreFromSeedRes,
+  DatastoreFieldsAutoNumRes,
   DatastoreGetFieldsRes,
   DatastoreRes,
   DatastoreSettingRes,
@@ -25,6 +27,7 @@ import {
   DsFieldSettingsRes,
   DsStatusRes,
   DtCreateDatastoreFromSeed,
+  DtDatastoreFieldsAutoNum,
   DtDatastoreGetFieldsRes,
   DtDatastoreRes,
   DtDatastoreSettingRes,
@@ -36,6 +39,7 @@ import {
   DtUpdateDatastore,
   DtValidateBeforeUpdateDsRes,
   ExistsDSDisplayIDExcludeOwnRes,
+  GetFieldAutoNumberQuery,
   IsExistsDSDisplayIDExcludeOwnReq,
 } from '../../types/datastore';
 
@@ -269,7 +273,33 @@ export default class Datastore extends HxbAbstract {
 
       data.error = JSON.stringify(error.response.errors);
     }
+    return data;
+  }
 
+  /**
+   * function datastoreGetFieldAutoNumber: get datastore Field Auto Number in Ds
+   * @params datastoreId and actionIdare requirement
+   * @returns DatastoreFieldsAutoNumRes
+   */
+  async datastoreGetFieldAutoNumber(
+    projectId: string,
+    datastoreId: string,
+    fieldId: string,
+    getFieldAutoNumberQuery?: GetFieldAutoNumberQuery,
+  ): Promise<DatastoreFieldsAutoNumRes> {
+    const data: DatastoreFieldsAutoNumRes = {
+      dsGetFieldAutoNum: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtDatastoreFieldsAutoNum = await this.client.request(DATASTORE_GET_FIELD_AUTO_NUMBER, { projectId, datastoreId, fieldId, getFieldAutoNumberQuery });
+
+      data.dsGetFieldAutoNum = res.datastoreGetFieldAutoNumber;
+    } catch (error: any) {
+      data.error = JSON.stringify(error.response.errors);
+    }
     return data;
   }
 

@@ -160,6 +160,20 @@ export interface DatastoreSetting {
   statuses: StatusSetting[];
 }
 
+export interface ErrorField {
+  description: string;
+  error: string;
+  error_code: string;
+  error_level: string;
+  reference_id: string;
+}
+
+export interface DatastoreFieldsAutoNum {
+  errors: ErrorField[];
+  has_error: boolean;
+  result: any;
+}
+
 /** Data response from request graphql */
 export interface DtDsFieldSettings {
   datastoreGetFieldSettings: DsFieldSettings;
@@ -210,6 +224,10 @@ export interface DtDatastoreSettingRes {
   datastoreSetting: DatastoreSetting;
 }
 
+export interface DtDatastoreFieldsAutoNum {
+  datastoreGetFieldAutoNumber: DatastoreFieldsAutoNum;
+}
+
 /** export response */
 export interface DatastoreGetFieldsRes {
   dsFields?: DatastoreGetFields;
@@ -248,5 +266,10 @@ export interface DatastoreRes {
 
 export interface DatastoreSettingRes {
   datastoreSetting?: DatastoreSetting;
+  error?: string;
+}
+
+export interface DatastoreFieldsAutoNumRes {
+  dsGetFieldAutoNum?: DatastoreFieldsAutoNum;
   error?: string;
 }

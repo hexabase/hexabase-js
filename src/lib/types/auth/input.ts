@@ -1,4 +1,4 @@
-import { UserInfo } from "../user";
+import { UserInfo } from '../user';
 
 export type AuthChangeEvent =
   | 'SIGNED_IN'

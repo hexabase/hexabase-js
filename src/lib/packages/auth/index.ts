@@ -76,8 +76,8 @@ export default class Auth {
    * @returns {Subscription} A subscription object which can be used to unsubscribe itself.
    */
   onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): {
-    data: Subscription | null,
-    error: ApiError | null
+    data: Subscription | undefined,
+    error: ApiError | undefined
   } {
     try {
       const id: string = uuid();
@@ -89,9 +89,9 @@ export default class Auth {
         },
       };
       this.stateChangeEmitters.set(id, subscription);
-      return { data: subscription, error: null };
+      return { data: subscription, error: undefined };
     } catch (e) {
-      return { data: null, error: e as ApiError };
+      return { data: undefined, error: e as ApiError };
     }
   }
 
