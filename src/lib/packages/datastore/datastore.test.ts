@@ -1,8 +1,8 @@
 import { CreateDatastoreFromSeedReq, DatastoreUpdateSetting, IsExistsDSDisplayIDExcludeOwnReq } from '../../types/datastore';
 import Datastore from '.';
 import Auth from '../auth';
-import AuthMw from '../middlware/auth';
-import Application from '../application';
+import AuthMw from '../middleware/auth';
+import Project from '../project';
 import User from '../user';
 import Workspace from '../workspace';
 require('dotenv').config();
@@ -48,13 +48,13 @@ beforeAll(async () => {
         throw Error(`Errors: ${error}`);
       }
       //
-      const appAndDsGetApp = new Application(url, token);
+      const appAndDsGetApp = new Project(url, token);
       const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
 
       if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
         projectID = dataApp?.appAndDs[0].application_id;
       } else {
-        const application = new Application(url, token);
+        const application = new Project(url, token);
         const createProjectParams = {
           name: {
             en: 'EN Project',
@@ -90,13 +90,13 @@ beforeAll(async () => {
       throw Error(`Errors: ${error}`);
     }
     //
-    const appAndDsGetApp = new Application(url, tokenDs);
+    const appAndDsGetApp = new Project(url, tokenDs);
     const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
 
     if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
       projectID = dataApp?.appAndDs[0].application_id;
     } else {
-      const application = new Application(url, tokenDs);
+      const application = new Project(url, tokenDs);
       const createProjectParams = {
         name: {
           en: 'EN Project',

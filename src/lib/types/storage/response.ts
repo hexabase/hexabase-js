@@ -26,13 +26,17 @@ export class ItemFileAttachment {
   user_id?: string;
 }
 
+export class FileAttachment {
+  filename?: string;
+  data?: string;
+}
 // export data from graphql
 export interface DtStorage {
   deleteStorage: ResponseOkModel;
 }
 
 export interface DtGetDownloadFile {
-  getDownloadFile?: any;
+  getDownloadFile?: FileAttachment;
 }
 export interface DtItemFileAttachment {
   createItemFileAttachment?: ItemFileAttachment;
@@ -40,7 +44,7 @@ export interface DtItemFileAttachment {
 
 // export data SDK
 export interface GetDownloadFileRes {
-  file?: any;
+  file?: FileAttachment;
   error?: string;
 }
 

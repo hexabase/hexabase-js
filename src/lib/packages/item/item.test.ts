@@ -1,9 +1,9 @@
 import Item from '.';
 import Auth from '../auth';
-import AuthMw from '../middlware/auth';
+import AuthMw from '../middleware/auth';
 import Datastore from '../datastore/index';
 import Workspace from '../workspace';
-import Application from '../application';
+import Project from '../project';
 import { CreateDatastoreFromSeedReq, DsAction } from '../../types/datastore';
 import User from '../user';
 import { ArchiveCommentItemsParameters, CreateCommentItemsParameters, UpdateCommentItemsParameters } from '../../types/item';
@@ -66,13 +66,13 @@ beforeAll(async () => {
         throw Error(`Errors: ${error}`);
       }
       //
-      const appAndDsGetApp = new Application(url, token);
+      const appAndDsGetApp = new Project(url, token);
       const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
 
       if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
         applicationId = appAndDs[0].application_id;
       } else {
-        const application = new Application(url, token);
+        const application = new Project(url, token);
         const { app } = await application.create(createProjectParams);
 
         if (app) {
@@ -124,13 +124,13 @@ beforeAll(async () => {
       throw Error(`Errors: ${error}`);
     }
     //
-    const appAndDsGetApp = new Application(url, tokenItem);
+    const appAndDsGetApp = new Project(url, tokenItem);
     const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
 
     if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
       applicationId = appAndDs[0].application_id;
     } else {
-      const application = new Application(url, tokenItem);
+      const application = new Project(url, tokenItem);
       const { app } = await application.create(createProjectParams);
 
       if (app) {
@@ -390,16 +390,16 @@ describe('Item', () => {
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
       const payload: CreateCommentItemsParameters = {
-        "item_id": itemID,
-        "workspace_id": workspaceId,
-        "project_id": applicationId,
-        "datastore_id": datastoreID,
-        "comment": "create comment",
-        "posting": true,
-        "post_mode": "ItemTimeline",
-        "is_related_post": false,
-        "is_send_item_unread": true
-      }
+        'item_id': itemID,
+        'workspace_id': workspaceId,
+        'project_id': applicationId,
+        'datastore_id': datastoreID,
+        'comment': 'create comment',
+        'posting': true,
+        'post_mode': 'ItemTimeline',
+        'is_related_post': false,
+        'is_send_item_unread': true
+      };
       const { postNewItemHistory, error } = await item.createComment(payload);
 
       // expect response
@@ -426,12 +426,12 @@ describe('Item', () => {
         historyId = itemHistories?.histories[0]?.history_id;
       }
       const payload: UpdateCommentItemsParameters = {
-        "comment": "update comment",
-        "d_id": datastoreID,
-        "h_id": historyId,
-        "i_id": itemID,
-        "p_id": applicationId,
-      }
+        'comment': 'update comment',
+        'd_id': datastoreID,
+        'h_id': historyId,
+        'i_id': itemID,
+        'p_id': applicationId,
+      };
       const { error } = await item.updateComment(payload);
 
       // expect response
@@ -456,11 +456,11 @@ describe('Item', () => {
         historyId = itemHistories?.histories[0]?.history_id;
       }
       const payload: ArchiveCommentItemsParameters = {
-        "d_id": datastoreID,
-        "h_id": historyId,
-        "i_id": itemID,
-        "p_id": applicationId,
-      }
+        'd_id': datastoreID,
+        'h_id': historyId,
+        'i_id': itemID,
+        'p_id': applicationId,
+      };
       const { error } = await item.deleteComment(payload);
 
       // expect response

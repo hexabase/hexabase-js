@@ -65,7 +65,7 @@ describe('User', () => {
       const storage = new Storage(url, tokenStr);
       const { file, error } = await storage.getFile(fileID);
       if (file) {
-        expect(typeof file).toBe('string');
+        expect(typeof file.data).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }

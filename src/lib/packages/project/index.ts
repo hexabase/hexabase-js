@@ -9,7 +9,7 @@ import {
   UPDATE_PROJECT_NAME,
   GET_APPLICATIONS,
   GET_TEMPLATES
-} from '../../graphql/application';
+} from '../../graphql/project';
 import {
   AppAndDsRes,
   DtAppAndDs,
@@ -28,11 +28,11 @@ import {
   DtApplicationRes,
   TemplateRes,
   DtTemplates
-} from '../../types/application';
+} from '../../types/project';
 
-export default class Application extends HxbAbstract {
+export default class Project extends HxbAbstract {
   /**
-   * function get: get list application in a workspace
+   * function get: get list project in a workspace
    * @params workspaceId
    * @returns ApplicationRes
    */
