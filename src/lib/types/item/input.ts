@@ -162,3 +162,13 @@ export interface ItemExecuteActionPayload {
   itemActionParameters: ItemActionParameters;
 }
 
+export interface ItemLinkRequestInput {
+  link_datastore_id: string;
+  link_item_id: string;
+}
+export interface UpdateItemLinkInput {
+  old_link_datastore_id: string;
+  old_link_item_id: string;
+  new_link_datastore_id: string;
+  new_link_item_id: string;
+}

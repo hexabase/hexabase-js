@@ -1,8 +1,16 @@
-import { gql } from 'graphql-request';
+import { gql } from "graphql-request";
 
 export const DS_ITEMS = gql`
-  mutation DatastoreGetDatastoreItems($getItemsParameters: GetItemsParameters!, $datastoreId: String!, $projectId: String) {
-    datastoreGetDatastoreItems(getItemsParameters: $getItemsParameters, datastoreId: $datastoreId, projectId: $projectId) {
+  mutation DatastoreGetDatastoreItems(
+    $getItemsParameters: GetItemsParameters!
+    $datastoreId: String!
+    $projectId: String
+  ) {
+    datastoreGetDatastoreItems(
+      getItemsParameters: $getItemsParameters
+      datastoreId: $datastoreId
+      projectId: $projectId
+    ) {
       items
       totalItems
     }
@@ -10,8 +18,18 @@ export const DS_ITEMS = gql`
 `;
 
 export const ITEM_HISTORIES = gql`
-  query GetHistories($itemId: String!, $datastoreId: String!, $projectId: String!, $getHistoryParamQueries: GetHistoryParamQueries) {
-    getHistories(itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId, getHistoryParamQueries: $getHistoryParamQueries) {
+  query GetHistories(
+    $itemId: String!
+    $datastoreId: String!
+    $projectId: String!
+    $getHistoryParamQueries: GetHistoryParamQueries
+  ) {
+    getHistories(
+      itemId: $itemId
+      datastoreId: $datastoreId
+      projectId: $projectId
+      getHistoryParamQueries: $getHistoryParamQueries
+    ) {
       unread
       histories {
         history_id
@@ -47,8 +65,16 @@ export const CREATE_ITEMID = gql`
 `;
 
 export const CREATE_NEW_ITEM = gql`
-  mutation DatastoreCreateNewItem($newItemActionParameters: NewItemActionParameters!, $datastoreId: String!, $projectId: String!) {
-    datastoreCreateNewItem(newItemActionParameters: $newItemActionParameters, datastoreId: $datastoreId, projectId: $projectId) {
+  mutation DatastoreCreateNewItem(
+    $newItemActionParameters: NewItemActionParameters!
+    $datastoreId: String!
+    $projectId: String!
+  ) {
+    datastoreCreateNewItem(
+      newItemActionParameters: $newItemActionParameters
+      datastoreId: $datastoreId
+      projectId: $projectId
+    ) {
       error
       history_id
       item
@@ -58,8 +84,18 @@ export const CREATE_NEW_ITEM = gql`
 `;
 
 export const DELETE_ITEM = gql`
-  mutation DatastoreDeleteItem($deleteItemReq: DeleteItemReq!, $itemId: String!, $datastoreId: String!, $projectId: String!) {
-    datastoreDeleteItem(deleteItemReq: $deleteItemReq, itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId) {
+  mutation DatastoreDeleteItem(
+    $deleteItemReq: DeleteItemReq!
+    $itemId: String!
+    $datastoreId: String!
+    $projectId: String!
+  ) {
+    datastoreDeleteItem(
+      deleteItemReq: $deleteItemReq
+      itemId: $itemId
+      datastoreId: $datastoreId
+      projectId: $projectId
+    ) {
       error
     }
   }
@@ -82,8 +118,16 @@ export const DATASTORE_UPDATE_ITEM = gql`
 `;
 
 export const ITEM_LINKED = gql`
-  query DatastoreGetLinkedItems($linkedDatastoreId: String!, $itemId: String!, $datastoreId: String!) {
-    datastoreGetLinkedItems(linkedDatastoreId: $linkedDatastoreId, itemId: $itemId, datastoreId: $datastoreId) {
+  query DatastoreGetLinkedItems(
+    $linkedDatastoreId: String!
+    $itemId: String!
+    $datastoreId: String!
+  ) {
+    datastoreGetLinkedItems(
+      linkedDatastoreId: $linkedDatastoreId
+      itemId: $itemId
+      datastoreId: $datastoreId
+    ) {
       items
       datastore_id
       actions {
@@ -175,9 +219,76 @@ export const ITEM_LINKED = gql`
   }
 `;
 
+export const ADD_ITEM_LINK = gql`
+  mutation AddItemLink(
+    $datastoreId: String!
+    $itemId: String!
+    $itemLinkRequestInput: ItemLinkRequestInput!
+    $projectId: String!
+  ) {
+    addItemLink(
+      datastoreId: $datastoreId
+      itemId: $itemId
+      itemLinkRequestInput: $itemLinkRequestInput
+      projectId: $projectId
+    ) {
+      data
+      success
+    }
+  }
+`;
+
+export const UPDATE_ITEM_LINK = gql`
+  mutation UpdateItemLink(
+    $datastoreId: String!
+    $itemId: String!
+    $projectId: String!
+    $updateItemLinkInput: UpdateItemLinkInput!
+  ) {
+    updateItemLink(
+      datastoreId: $datastoreId
+      itemId: $itemId
+      projectId: $projectId
+      updateItemLinkInput: $updateItemLinkInput
+    ) {
+      data
+      success
+    }
+  }
+`;
+
+export const DELETE_ITEM_LINK = gql`
+  mutation DeleteItemLink(
+    $datastoreId: String!
+    $itemId: String!
+    $itemLinkRequestInput: ItemLinkRequestInput!
+    $projectId: String!
+  ) {
+    deleteItemLink(
+      datastoreId: $datastoreId
+      itemId: $itemId
+      itemLinkRequestInput: $itemLinkRequestInput
+      projectId: $projectId
+    ) {
+      data
+      success
+    }
+  }
+`;
+
 export const ITEM_DETAIL = gql`
-  query GetDatastoreItemDetails($itemId: String!, $datastoreId: String!, $projectId: String, $datastoreItemDetailParams: DatastoreItemDetailParams) {
-    getDatastoreItemDetails(itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId, datastoreItemDetailParams: $datastoreItemDetailParams) {
+  query GetDatastoreItemDetails(
+    $itemId: String!
+    $datastoreId: String!
+    $projectId: String
+    $datastoreItemDetailParams: DatastoreItemDetailParams
+  ) {
+    getDatastoreItemDetails(
+      itemId: $itemId
+      datastoreId: $datastoreId
+      projectId: $projectId
+      datastoreItemDetailParams: $datastoreItemDetailParams
+    ) {
       title
       rev_no
       field_values
@@ -192,24 +303,34 @@ export const ITEM_DETAIL = gql`
 `;
 
 export const UPDATE_ITEM = gql`
-  mutation DatastoreUpdateItem($itemUpdatePayload: ItemUpdatePayload!, $itemId: String!, $datastoreId: String!, $projectId: String!) {
-    datastoreUpdateItem(itemUpdatePayload: $itemUpdatePayload, itemId: $itemId, datastoreId: $datastoreId, projectId: $projectId)
+  mutation DatastoreUpdateItem(
+    $itemUpdatePayload: ItemUpdatePayload!
+    $itemId: String!
+    $datastoreId: String!
+    $projectId: String!
+  ) {
+    datastoreUpdateItem(
+      itemUpdatePayload: $itemUpdatePayload
+      itemId: $itemId
+      datastoreId: $datastoreId
+      projectId: $projectId
+    )
   }
 `;
 
 export const EXECUTE_ITEM_ACTION = gql`
   mutation DatastoreExecuteItemAction(
-    $projectId: String!,
-    $datastoreId: String!,
-    $actionId: String!,
-    $itemId: String!,
+    $projectId: String!
+    $datastoreId: String!
+    $actionId: String!
+    $itemId: String!
     $itemActionParameters: ItemActionParameters!
   ) {
     datastoreExecuteItemAction(
-      projectId: $projectId,
-      datastoreId: $datastoreId,
-      actionId: $actionId,
-      itemId: $itemId,
+      projectId: $projectId
+      datastoreId: $datastoreId
+      actionId: $actionId
+      itemId: $itemId
       itemActionParameters: $itemActionParameters
     ) {
       item_id

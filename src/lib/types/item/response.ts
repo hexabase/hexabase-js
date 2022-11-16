@@ -1,5 +1,5 @@
-import { FieldNameENJP, ResponseOkModel } from '../../util/type';
-import { ItemHistory } from './input';
+import { FieldNameENJP, ResponseOkModel } from "../../util/type";
+import { ItemHistory } from "./input";
 
 export interface DsItems {
   items: any;
@@ -159,6 +159,16 @@ export interface DtUpdatedItem {
   datastoreUpdateItem: any;
 }
 
+export interface DtAddItemLink {
+  addItemLink: ResponseOkModel;
+}
+export interface DtUpdateItemLink {
+  updateItemLink: ResponseOkModel;
+}
+export interface DtDeleteItemLink {
+  updateItemLink: ResponseOkModel;
+}
+
 /** export response */
 export interface DsItemsRes {
   dsItems?: DsItems;
@@ -204,4 +214,17 @@ export interface DtUpdateItemRes {
   rev_no?: RevNo;
   history_id?: string;
   item_id?: string;
+}
+
+export interface AddItemLinkRes {
+  data?: ResponseOkModel;
+  error?: any;
+}
+export interface UpdateItemLinkRes {
+  data?: ResponseOkModel;
+  error?: any;
+}
+export interface DeleteItemLinkRes {
+  data?: ResponseOkModel;
+  error?: any;
 }
