@@ -75,24 +75,23 @@ export default class Auth {
    * Receive a notification every time an auth event happens.
    * @returns {Subscription} A subscription object which can be used to unsubscribe itself.
    */
-  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): {
-    data: Subscription | undefined,
-    error: ApiError | undefined
-  } {
-    try {
-      const id: string = uuid();
-      const subscription: Subscription = {
-        id,
-        callback,
-        unsubscribe: () => {
-          this.stateChangeEmitters.delete(id);
-        },
-      };
-      this.stateChangeEmitters.set(id, subscription);
-      return { data: subscription, error: undefined };
-    } catch (e) {
-      return { data: undefined, error: e as ApiError };
-    }
-  }
-
+  // onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): {
+  //   data: Subscription | undefined,
+  //   error: ApiError | undefined
+  // } {
+  //   try {
+  //     const id: string = uuid();
+  //     const subscription: Subscription = {
+  //       id,
+  //       callback,
+  //       unsubscribe: () => {
+  //         this.stateChangeEmitters.delete(id);
+  //       },
+  //     };
+  //     this.stateChangeEmitters.set(id, subscription);
+  //     return { data: subscription, error: undefined };
+  //   } catch (e) {
+  //     return { data: undefined, error: e as ApiError };
+  //   }
+  // }
 }
