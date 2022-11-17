@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 import Item from '.';
 import Auth from '../auth';
 import AuthMw from '../middleware/auth';
@@ -21,14 +21,14 @@ let workspaceId = process.env.WORKSPACEID || '';
 let applicationId = process.env.APPLICATIONID || '';
 let datastoreID: string = process.env.DATASTOREID || '';
 let actions: DsAction[] | undefined = [];
-const url = process.env.URL || "";
-const email = process.env.EMAIL || "";
-const password = process.env.PASSWORD || "";
-const templateName = process.env.TEMPLATE_NAME || "";
-const linkDsId = process.env.LINK_DATASTORE_ID || "";
-const linkItemId = process.env.LINK_ITEM_ID || "";
-const linkDsIdUpdate = process.env.LINK_DATASTORE_ID_UPDATE || "";
-const linkItemIdUpdate = process.env.LINK_ITEM_ID_UPDATE || "";
+const url = process.env.URL || '';
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
+const templateName = process.env.TEMPLATE_NAME || '';
+const linkDsId = process.env.LINK_DATASTORE_ID || '';
+const linkItemId = process.env.LINK_ITEM_ID || '';
+const linkDsIdUpdate = process.env.LINK_DATASTORE_ID_UPDATE || '';
+const linkItemIdUpdate = process.env.LINK_ITEM_ID_UPDATE || '';
 
 // local variable in file for testing
 const params = {
@@ -42,13 +42,13 @@ const historyParams = {
 };
 
 const createWorkSpaceInput = {
-  name: "new Workspace",
+  name: 'new Workspace',
 };
 
 const createProjectParams = {
   name: {
-    en: "EN Project",
-    ja: "JA Project",
+    en: 'EN Project',
+    ja: 'JA Project',
   },
 };
 
@@ -60,7 +60,7 @@ beforeAll(async () => {
       //
       const user = new User(url, token);
       const { userInfo } = await user.get(token);
-      userInfo?.u_id ? (userId = userInfo?.u_id) : "";
+      userInfo?.u_id ? (userId = userInfo?.u_id) : '';
       //
       const workspace = new Workspace(url, token);
       const { wsCurrent, error } = await workspace.getCurrent();
@@ -99,7 +99,7 @@ beforeAll(async () => {
       } else {
         const payload: CreateDatastoreFromSeedReq = {
           payload: {
-            lang_cd: "en",
+            lang_cd: 'en',
             project_id: applicationId,
             template_name: templateName,
             workspace_id: workspaceId,
@@ -125,7 +125,7 @@ beforeAll(async () => {
   } else if ((tokenItem && !email) || !password) {
     const user = new User(url, tokenItem);
     const { userInfo } = await user.get(tokenItem);
-    userInfo?.u_id ? (userId = userInfo?.u_id) : "";
+    userInfo?.u_id ? (userId = userInfo?.u_id) : '';
     //
     const workspace = new Workspace(url, tokenItem);
     const { wsCurrent, error } = await workspace.getCurrent();
@@ -164,7 +164,7 @@ beforeAll(async () => {
     } else {
       const payload: CreateDatastoreFromSeedReq = {
         payload: {
-          lang_cd: "en",
+          lang_cd: 'en',
           project_id: applicationId,
           template_name: templateName,
           workspace_id: workspaceId,
@@ -184,11 +184,11 @@ beforeAll(async () => {
       actions = dsActions;
     }
   } else {
-    throw Error("Need pass token or email and password parameter");
+    throw Error('Need pass token or email and password parameter');
   }
 });
 
-describe("Item", () => {
+describe('Item', () => {
   describe('#get()', () => {
     it('should get items in Ds', async () => {
       jest.useFakeTimers('legacy');
@@ -360,45 +360,45 @@ describe("Item", () => {
     });
   });
 
-  describe('#execute()', () => {
-    it('should execute action for item in datastore', async () => {
-      jest.useFakeTimers('legacy');
-      const item = new Item(url, tokenItem);
-      const itemS = await item.get(params, datastoreID, applicationId);
-      const i = itemS.dsItems?.items?.[0];
-      const itemID = i?.i_id;
-      const itemDetail = await item.getItemDetail(datastoreID, itemID);
-      const { itemDetails } = itemDetail;
-      let actionIdUpdate = '';
+  // describe('#execute()', () => {
+  //   it('should execute action for item in datastore', async () => {
+  //     jest.useFakeTimers('legacy');
+  //     const item = new Item(url, tokenItem);
+  //     const itemS = await item.get(params, datastoreID, applicationId);
+  //     const i = itemS.dsItems?.items?.[0];
+  //     const itemID = i?.i_id;
+  //     const itemDetail = await item.getItemDetail(datastoreID, itemID);
+  //     const { itemDetails } = itemDetail;
+  //     let actionIdUpdate = '';
 
-      if (itemDetails && itemDetails.item_actions) {
-        for (let i = 0; i < itemDetails.item_actions.length; i++) {
-          if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name?.trim().toLowerCase() == 'update') {
-            actionIdUpdate = itemDetails.item_actions[i].action_id;
-          }
-        }
-      }
+  //     if (itemDetails && itemDetails.item_actions) {
+  //       for (let i = 0; i < itemDetails.item_actions.length; i++) {
+  //         if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name?.trim().toLowerCase() == 'update') {
+  //           actionIdUpdate = itemDetails.item_actions[i].action_id;
+  //         }
+  //       }
+  //     }
 
-      const revNo = itemDetails?.rev_no;
-      const itemActionParameters = {
-        'rev_no': revNo,
-        'datastore_id': datastoreID,
-        'action_id': actionIdUpdate,
-        'history': {
-          'comment': 'unitest update item command',
-          'datastore_id': datastoreID
-        }
-      };
-      const actionId = 'BackToInProgress';
-      const { data, error } = await item.execute(applicationId, datastoreID, itemID, actionId, itemActionParameters);
-      // expect response
-      if (data) {
-        expect(typeof data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
+  //     const revNo = itemDetails?.rev_no;
+  //     const itemActionParameters = {
+  //       'rev_no': revNo,
+  //       'datastore_id': datastoreID,
+  //       'action_id': actionIdUpdate,
+  //       'history': {
+  //         'comment': 'unitest update item command',
+  //         'datastore_id': datastoreID
+  //       }
+  //     };
+  //     const actionId = 'BackToInProgress';
+  //     const { data, error } = await item.execute(applicationId, datastoreID, itemID, actionId, itemActionParameters);
+  //     // expect response
+  //     if (data) {
+  //       expect(typeof data).toBe('object');
+  //     } else {
+  //       throw new Error(`Error: ${error}`);
+  //     }
+  //   });
+  // });
 
   describe('#createComment()', () => {
     it('should create comment items histories', async () => {
@@ -522,11 +522,11 @@ describe("Item", () => {
     });
   });
 
-  describe("#createLink()", () => {
-    it("should create item link in datastore", async () => {
-      jest.useFakeTimers("legacy");
+  describe('#createLink()', () => {
+    it('should create item link in datastore', async () => {
+      jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
-      let itemId = "";
+      let itemId = '';
       const { dsItems, error: errorItem } = await item.get(params, datastoreID);
 
       if (dsItems) {
@@ -552,11 +552,11 @@ describe("Item", () => {
     });
   });
 
-  describe("#updateLink()", () => {
-    it("should update item link in datastore", async () => {
-      jest.useFakeTimers("legacy");
+  describe('#updateLink()', () => {
+    it('should update item link in datastore', async () => {
+      jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
-      let itemId = "";
+      let itemId = '';
       const { dsItems, error: errorItem } = await item.get(params, datastoreID);
 
       if (dsItems) {
@@ -584,11 +584,11 @@ describe("Item", () => {
     });
   });
 
-  describe("#deleteLink()", () => {
-    it("should delete item link in datastore", async () => {
-      jest.useFakeTimers("legacy");
+  describe('#deleteLink()', () => {
+    it('should delete item link in datastore', async () => {
+      jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
-      let itemId = "";
+      let itemId = '';
       const { dsItems, error: errorItem } = await item.get(params, datastoreID);
 
       if (dsItems) {
