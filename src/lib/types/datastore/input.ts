@@ -45,3 +45,9 @@ export interface ExistsDSDisplayIDExcludeOwnInput {
 export interface IsExistsDSDisplayIDExcludeOwnReq {
   payload: ExistsDSDisplayIDExcludeOwnInput;
 }
+
+export class GetFieldAutoNumberQuery {
+  linked_branch_keyp_id?: string;
+  zero_padding?: string;
+  digit?: string;
+}

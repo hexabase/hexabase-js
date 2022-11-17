@@ -339,3 +339,52 @@ export const EXECUTE_ITEM_ACTION = gql`
     }
   }
 `;
+
+export const POST_NEW_ITEM_HISTORY = gql`
+  mutation PostNewItemHistory($payload: CreateCommentItemsParameters!) {
+    postNewItemHistory(payload: $payload) {
+      history_id
+      item_history {
+        IsChanged
+        UserObjID
+        action_id
+        comment
+        created_at
+        datastore_id
+        datastore_name
+        display_order
+        email
+        history_id
+        i_id
+        is_fetchreplymail
+        is_notify
+        item_id
+        media_link
+        post_for_rel
+        post_mode
+        project_id
+        transaction_id
+        updated_at
+        user_id
+        username
+        workspace_id
+      }
+    }
+  }
+`;
+
+export const POST_UPDATE_ITEM_HISTORY = gql`
+  mutation PostUpdateItemHistory($payload: UpdateCommentItemsParameters!) {
+    postUpdateItemHistory(payload: $payload) {
+      error
+    }
+  }
+`;
+
+export const POST_DELETE_ITEM_HISTORY = gql`
+  mutation ArchiveItemHistory($payload: ArchiveCommentItemsParameters!) {
+    archiveItemHistory(payload: $payload) {
+      error
+    }
+  }
+`;

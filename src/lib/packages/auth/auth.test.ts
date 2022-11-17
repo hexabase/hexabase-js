@@ -1,4 +1,5 @@
 import Auth from '.';
+import User from '../user';
 import AuthMw from '../middleware/auth';
 require('dotenv').config();
 /**
@@ -37,6 +38,30 @@ describe('Auth', () => {
       // expect response
       if (data) {
         expect(typeof data.success).toBe('boolean');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  // Auth state change without error
+  describe('#onAuthStateChange()', () => {
+    it('should onAuthStateChange', async () => {
+      jest.useFakeTimers('legacy');
+      let sessions;
+      let userSession;
+
+      const auth = new Auth(url);
+      const user = new User(url, tokenAu);
+      const userInfo = await user?.get(tokenAu);
+      const {data: authListener, error} = auth.onAuthStateChange((event, session) => {
+        sessions = session ?? undefined;
+        userSession = session?.user ?? undefined;
+      });
+
+      // expect response
+      if (authListener) {
+        console.log(authListener, 'authListener');
       } else {
         throw new Error(`Error: ${error}`);
       }

@@ -1,23 +1,25 @@
-import Item from ".";
-import Auth from "../auth";
-import AuthMw from "../middleware/auth";
-import Datastore from "../datastore/index";
-import Workspace from "../workspace";
-import Project from "../project";
-import { CreateDatastoreFromSeedReq, DsAction } from "../../types/datastore";
-import User from "../user";
-
 require("dotenv").config();
+import Item from '.';
+import Auth from '../auth';
+import AuthMw from '../middleware/auth';
+import Datastore from '../datastore/index';
+import Workspace from '../workspace';
+import Project from '../project';
+import { CreateDatastoreFromSeedReq, DsAction } from '../../types/datastore';
+import User from '../user';
+import { ArchiveCommentItemsParameters, CreateCommentItemsParameters, UpdateCommentItemsParameters } from '../../types/item';
+
+require('dotenv').config();
 /**
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
 
-let userId = "";
-let tokenItem = process.env.TOKEN || "";
-let workspaceId = process.env.WORKSPACEID || "";
-let applicationId = process.env.APPLICATIONID || "";
-let datastoreID: string = process.env.datastoreID || "";
+let userId = '';
+let tokenItem = process.env.TOKEN || '';
+let workspaceId = process.env.WORKSPACEID || '';
+let applicationId = process.env.APPLICATIONID || '';
+let datastoreID: string = process.env.DATASTOREID || '';
 let actions: DsAction[] | undefined = [];
 const url = process.env.URL || "";
 const email = process.env.EMAIL || "";
@@ -394,6 +396,94 @@ describe("Item", () => {
         expect(typeof data).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#createComment()', () => {
+    it('should create comment items histories', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const payload: CreateCommentItemsParameters = {
+        'item_id': itemID,
+        'workspace_id': workspaceId,
+        'project_id': applicationId,
+        'datastore_id': datastoreID,
+        'comment': 'create comment',
+        'posting': true,
+        'post_mode': 'ItemTimeline',
+        'is_related_post': false,
+        'is_send_item_unread': true
+      };
+      const { postNewItemHistory, error } = await item.createComment(payload);
+
+      // expect response
+      if (postNewItemHistory) {
+        expect(typeof postNewItemHistory).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#updateComment()', () => {
+    it('should update comment items histories', async () => {
+      jest.useFakeTimers('legacy');
+      let historyId = '';
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemID = itemS.dsItems?.items?.[0]?.i_id;
+      const { error: errorHistoryItem, itemHistories } = await item.getHistories(applicationId, datastoreID, itemID);
+      if (errorHistoryItem) {
+        throw new Error(`Error: ${errorHistoryItem}`);
+      }
+      if (itemHistories) {
+        historyId = itemHistories?.histories[0]?.history_id;
+      }
+      const payload: UpdateCommentItemsParameters = {
+        'comment': 'update comment',
+        'd_id': datastoreID,
+        'h_id': historyId,
+        'i_id': itemID,
+        'p_id': applicationId,
+      };
+      const { error } = await item.updateComment(payload);
+
+      // expect response
+      if (error) {
+        return error;
+      }
+    });
+  });
+
+  describe('#deleteComment()', () => {
+    it('should delete comment items histories', async () => {
+      jest.useFakeTimers('legacy');
+      let historyId = '';
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemID = itemS.dsItems?.items?.[0]?.i_id;
+      const { error: errorHistoryItem, itemHistories } = await item.getHistories(applicationId, datastoreID, itemID);
+      if (errorHistoryItem) {
+        throw new Error(`Error: ${errorHistoryItem}`);
+      }
+      if (itemHistories) {
+        historyId = itemHistories?.histories[0]?.history_id;
+      }
+      const payload: ArchiveCommentItemsParameters = {
+        'd_id': datastoreID,
+        'h_id': historyId,
+        'i_id': itemID,
+        'p_id': applicationId,
+      };
+      const { error } = await item.deleteComment(payload);
+
+      // expect response
+      if (error) {
+        return error;
       }
     });
   });
