@@ -166,7 +166,7 @@ export interface DtUpdateItemLink {
   updateItemLink: ResponseOkModel;
 }
 export interface DtDeleteItemLink {
-  updateItemLink: ResponseOkModel;
+  deleteItemLink: ResponseOkModel;
 }
 
 /** export response */
@@ -214,17 +214,4 @@ export interface DtUpdateItemRes {
   rev_no?: RevNo;
   history_id?: string;
   item_id?: string;
-}
-
-export interface AddItemLinkRes {
-  data?: ResponseOkModel;
-  error?: any;
-}
-export interface UpdateItemLinkRes {
-  data?: ResponseOkModel;
-  error?: any;
-}
-export interface DeleteItemLinkRes {
-  data?: ResponseOkModel;
-  error?: any;
 }

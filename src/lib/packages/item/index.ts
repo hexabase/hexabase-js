@@ -37,10 +37,10 @@ import {
   NewItemRes,
   DtUpdateItemRes,
   ItemLinkRequestInput,
-  AddItemLinkRes,
   UpdateItemLinkInput,
-  UpdateItemLinkRes,
-  DeleteItemLinkRes,
+  DtAddItemLink,
+  DtUpdateItemLink,
+  DtDeleteItemLink,
 } from "../../types/item";
 
 export default class Item extends HxbAbstract {
@@ -340,13 +340,13 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: AddItemLinkRes = await this.client.request(ADD_ITEM_LINK, {
+      const res: DtAddItemLink = await this.client.request(ADD_ITEM_LINK, {
         datastoreId,
         itemId,
         itemLinkRequestInput,
         projectId,
       });
-      data.data = res.data;
+      data.data = res.addItemLink;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }
@@ -371,7 +371,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: UpdateItemLinkRes = await this.client.request(
+      const res: DtUpdateItemLink = await this.client.request(
         UPDATE_ITEM_LINK,
         {
           datastoreId,
@@ -380,7 +380,7 @@ export default class Item extends HxbAbstract {
           updateItemLinkInput,
         }
       );
-      data.data = res.data;
+      data.data = res.updateItemLink;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }
@@ -405,7 +405,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DeleteItemLinkRes = await this.client.request(
+      const res: DtDeleteItemLink = await this.client.request(
         DELETE_ITEM_LINK,
         {
           datastoreId,
@@ -414,7 +414,7 @@ export default class Item extends HxbAbstract {
           itemLinkRequestInput,
         }
       );
-      data.data = res.data;
+      data.data = res.deleteItemLink;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }

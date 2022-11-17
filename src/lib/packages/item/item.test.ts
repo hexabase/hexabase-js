@@ -23,18 +23,10 @@ const url = process.env.URL || "";
 const email = process.env.EMAIL || "";
 const password = process.env.PASSWORD || "";
 const templateName = process.env.TEMPLATE_NAME || "";
-
-const updateItemLinkInput = {
-  old_link_datastore_id: "",
-  old_link_item_id: "",
-  new_link_datastore_id: "",
-  new_link_item_id: "",
-};
-
-const itemLinkRequestInput = {
-  link_datastore_id: "",
-  link_item_id: "",
-};
+const linkDsId = process.env.LINK_DATASTORE_ID || "";
+const linkItemId = process.env.LINK_ITEM_ID || "";
+const linkDsIdUpdate = process.env.LINK_DATASTORE_ID_UPDATE || "";
+const linkItemIdUpdate = process.env.LINK_ITEM_ID_UPDATE || "";
 
 // local variable in file for testing
 const params = {
@@ -195,250 +187,250 @@ beforeAll(async () => {
 });
 
 describe("Item", () => {
-  // describe('#get()', () => {
-  //   it('should get items in Ds', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
+  describe('#get()', () => {
+    it('should get items in Ds', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
 
-  //     const { dsItems, error } = await item.get(params, datastoreID, applicationId);
-  //     // expect response
-  //     if (dsItems) {
+      const { dsItems, error } = await item.get(params, datastoreID, applicationId);
+      // expect response
+      if (dsItems) {
 
-  //       expect(typeof dsItems.totalItems).toBe('number');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof dsItems.totalItems).toBe('number');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#createItemId()', () => {
-  //   it('should create new item id', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
-  //     const { item_id, error } = await item.createItemId(datastoreID);
+  describe('#createItemId()', () => {
+    it('should create new item id', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      const { item_id, error } = await item.createItemId(datastoreID);
 
-  //     // expect response
-  //     if (item_id) {
-  //       expect(typeof item_id).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      // expect response
+      if (item_id) {
+        expect(typeof item_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#create()', () => {
-  //   it('should create new items', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     let actionCreate;
-  //     if (actions && actions.length > 0) {
-  //       for (const action of actions) {
-  //         if (action?.operation?.trim().toLowerCase() == 'new') {
-  //           actionCreate = action?.action_id;
-  //         }
-  //       }
-  //     } else {
-  //       throw new Error(`Error: actions empty`);
-  //     }
-  //     const item = new Item(url, tokenItem);
-  //     const newItemActionParameters = {
-  //       'action_id': `${actionCreate}`,
-  //       'use_display_id': true,
-  //       'return_item_result': true,
-  //       'ensure_transaction': false,
-  //       'exec_children_post_procs': true,
-  //       'access_key_updates': {
-  //         'overwrite': true,
-  //         'ignore_action_settings': true
-  //       },
-  //       'item': {
-  //         'param1': 'field_id',
-  //         'param2': 'TITLE test',
-  //         'param3': 'person in charge'
-  //       }
-  //     };
+  describe('#create()', () => {
+    it('should create new items', async () => {
+      jest.useFakeTimers('legacy');
+      let actionCreate;
+      if (actions && actions.length > 0) {
+        for (const action of actions) {
+          if (action?.operation?.trim().toLowerCase() == 'new') {
+            actionCreate = action?.action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: actions empty`);
+      }
+      const item = new Item(url, tokenItem);
+      const newItemActionParameters = {
+        'action_id': `${actionCreate}`,
+        'use_display_id': true,
+        'return_item_result': true,
+        'ensure_transaction': false,
+        'exec_children_post_procs': true,
+        'access_key_updates': {
+          'overwrite': true,
+          'ignore_action_settings': true
+        },
+        'item': {
+          'param1': 'field_id',
+          'param2': 'TITLE test',
+          'param3': 'person in charge'
+        }
+      };
 
-  //     const { itemNew, error } = await item.create(applicationId, datastoreID, newItemActionParameters);
+      const { itemNew, error } = await item.create(applicationId, datastoreID, newItemActionParameters);
 
-  //     // expect response
-  //     if (itemNew) {
-  //       expect(typeof itemNew.history_id).toBe('string');
-  //       expect(typeof itemNew.item_id).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      // expect response
+      if (itemNew) {
+        expect(typeof itemNew.history_id).toBe('string');
+        expect(typeof itemNew.item_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#getHistories()', () => {
-  //   it('should get items histories', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
-  //     const itemS = await item.get(params, datastoreID, applicationId);
-  //     const i = itemS.dsItems?.items?.[0];
-  //     const itemID = i?.i_id;
-  //     const { itemHistories, error } = await item.getHistories(applicationId, datastoreID, itemID, historyParams);
+  describe('#getHistories()', () => {
+    it('should get items histories', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const { itemHistories, error } = await item.getHistories(applicationId, datastoreID, itemID, historyParams);
 
-  //     // expect response
-  //     if (itemHistories) {
-  //       expect(typeof itemHistories.unread).toBe('number');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      // expect response
+      if (itemHistories) {
+        expect(typeof itemHistories.unread).toBe('number');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#getItemRelated()', () => {
-  //   it('should get item related in datastore', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
-  //     // get items list
-  //     const itemS = await item.get(params, datastoreID, applicationId);
-  //     const i = itemS.dsItems?.items?.[0];
-  //     const itemID = i?.i_id;
-  //     const { itemLinked, error } = await item.getItemRelated(datastoreID, itemID, datastoreID);
-  //     // expect response
-  //     if (itemLinked) {
+  describe('#getItemRelated()', () => {
+    it('should get item related in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      // get items list
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const { itemLinked, error } = await item.getItemRelated(datastoreID, itemID, datastoreID);
+      // expect response
+      if (itemLinked) {
 
-  //       expect(typeof itemLinked.datastore_id).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof itemLinked.datastore_id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#getItemDetail()', () => {
-  //   it('should get item detail', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
-  //     // get items list
-  //     const itemS = await item.get(params, datastoreID, applicationId);
-  //     const i = itemS.dsItems?.items?.[0];
-  //     const itemID = i?.i_id;
-  //     const { itemDetails, error } = await item.getItemDetail(datastoreID, itemID);
-  //     // expect response
-  //     if (itemDetails) {
+  describe('#getItemDetail()', () => {
+    it('should get item detail', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      // get items list
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const { itemDetails, error } = await item.getItemDetail(datastoreID, itemID);
+      // expect response
+      if (itemDetails) {
 
-  //       expect(typeof itemDetails.title).toBe('string');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+        expect(typeof itemDetails.title).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#update()', () => {
-  //   it('should update item in datastore', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
-  //     // get items list
-  //     const itemS = await item.get(params, datastoreID, applicationId);
-  //     const i = itemS.dsItems?.items?.[0];
-  //     const itemID = i?.i_id;
-  //     const itemDetail = await item.getItemDetail(datastoreID, itemID);
-  //     const { itemDetails } = itemDetail;
-  //     let actionIdUpdate = '';
+  describe('#update()', () => {
+    it('should update item in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      // get items list
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const itemDetail = await item.getItemDetail(datastoreID, itemID);
+      const { itemDetails } = itemDetail;
+      let actionIdUpdate = '';
 
-  //     if (itemDetails && itemDetails.item_actions) {
-  //       for (let i = 0; i < itemDetails.item_actions.length; i++) {
-  //         if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name?.trim().toLowerCase() == 'update') {
-  //           actionIdUpdate = itemDetails.item_actions[i].action_id;
-  //         }
-  //       }
-  //     }
+      if (itemDetails && itemDetails.item_actions) {
+        for (let i = 0; i < itemDetails.item_actions.length; i++) {
+          if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name?.trim().toLowerCase() == 'update') {
+            actionIdUpdate = itemDetails.item_actions[i].action_id;
+          }
+        }
+      }
 
-  //     const revNo = itemDetails?.rev_no;
-  //     const itemActionParameters = {
-  //       'rev_no': revNo,
-  //       'datastore_id': datastoreID,
-  //       'action_id': actionIdUpdate,
-  //       'history': {
-  //         'comment': 'unitest update item command',
-  //         'datastore_id': datastoreID
-  //       }
-  //     };
+      const revNo = itemDetails?.rev_no;
+      const itemActionParameters = {
+        'rev_no': revNo,
+        'datastore_id': datastoreID,
+        'action_id': actionIdUpdate,
+        'history': {
+          'comment': 'unitest update item command',
+          'datastore_id': datastoreID
+        }
+      };
 
-  //     const { data, error } = await item.update(applicationId, datastoreID, itemID, itemActionParameters);
-  //     // expect response
-  //     if (data) {
-  //       expect(typeof data).toBe('object');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      const { data, error } = await item.update(applicationId, datastoreID, itemID, itemActionParameters);
+      // expect response
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#execute()', () => {
-  //   it('should execute action for item in datastore', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     const item = new Item(url, tokenItem);
-  //     const itemS = await item.get(params, datastoreID, applicationId);
-  //     const i = itemS.dsItems?.items?.[0];
-  //     const itemID = i?.i_id;
-  //     const itemDetail = await item.getItemDetail(datastoreID, itemID);
-  //     const { itemDetails } = itemDetail;
-  //     let actionIdUpdate = '';
+  describe('#execute()', () => {
+    it('should execute action for item in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const itemDetail = await item.getItemDetail(datastoreID, itemID);
+      const { itemDetails } = itemDetail;
+      let actionIdUpdate = '';
 
-  //     if (itemDetails && itemDetails.item_actions) {
-  //       for (let i = 0; i < itemDetails.item_actions.length; i++) {
-  //         if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name?.trim().toLowerCase() == 'update') {
-  //           actionIdUpdate = itemDetails.item_actions[i].action_id;
-  //         }
-  //       }
-  //     }
+      if (itemDetails && itemDetails.item_actions) {
+        for (let i = 0; i < itemDetails.item_actions.length; i++) {
+          if (itemDetails.item_actions[i].action_name == '内容を更新する ' || itemDetails.item_actions[i].action_name?.trim().toLowerCase() == 'update') {
+            actionIdUpdate = itemDetails.item_actions[i].action_id;
+          }
+        }
+      }
 
-  //     const revNo = itemDetails?.rev_no;
-  //     const itemActionParameters = {
-  //       'rev_no': revNo,
-  //       'datastore_id': datastoreID,
-  //       'action_id': actionIdUpdate,
-  //       'history': {
-  //         'comment': 'unitest update item command',
-  //         'datastore_id': datastoreID
-  //       }
-  //     };
-  //     const actionId = 'BackToInProgress';
-  //     const { data, error } = await item.execute(applicationId, datastoreID, itemID, actionId, itemActionParameters);
-  //     // expect response
-  //     if (data) {
-  //       expect(typeof data).toBe('object');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      const revNo = itemDetails?.rev_no;
+      const itemActionParameters = {
+        'rev_no': revNo,
+        'datastore_id': datastoreID,
+        'action_id': actionIdUpdate,
+        'history': {
+          'comment': 'unitest update item command',
+          'datastore_id': datastoreID
+        }
+      };
+      const actionId = 'BackToInProgress';
+      const { data, error } = await item.execute(applicationId, datastoreID, itemID, actionId, itemActionParameters);
+      // expect response
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
-  // describe('#delete()', () => {
-  //   it('should delete item in datastore', async () => {
-  //     jest.useFakeTimers('legacy');
+  describe('#delete()', () => {
+    it('should delete item in datastore', async () => {
+      jest.useFakeTimers('legacy');
 
-  //     let actionDelete;
-  //     if (actions) {
-  //       for (const action of actions) {
-  //         if (action?.operation?.trim().toLowerCase() == 'delete') {
-  //           actionDelete = action?.action_id;
-  //         }
-  //       }
-  //     } else {
-  //       throw new Error(`Error: actions is empty`);
-  //     }
+      let actionDelete;
+      if (actions) {
+        for (const action of actions) {
+          if (action?.operation?.trim().toLowerCase() == 'delete') {
+            actionDelete = action?.action_id;
+          }
+        }
+      } else {
+        throw new Error(`Error: actions is empty`);
+      }
 
-  //     const item = new Item(url, tokenItem);
-  //     // get items list
-  //     const itemS = await item.get(params, datastoreID, applicationId);
-  //     const indexLastItem = itemS.dsItems?.items.length;
-  //     const i = itemS.dsItems?.items?.[indexLastItem - 1];
-  //     const itemID = i?.i_id;
-  //     const deleteItemReq = {
-  //       a_id: `${actionDelete}`
-  //     };
-  //     const { data, error } = await item.delete(applicationId, datastoreID, itemID, deleteItemReq);
-  //     // expect response
-  //     if (data) {
-  //       expect(typeof data).toBe('object');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      const item = new Item(url, tokenItem);
+      // get items list
+      const itemS = await item.get(params, datastoreID, applicationId);
+      const indexLastItem = itemS.dsItems?.items.length;
+      const i = itemS.dsItems?.items?.[indexLastItem - 1];
+      const itemID = i?.i_id;
+      const deleteItemReq = {
+        a_id: `${actionDelete}`
+      };
+      const { data, error } = await item.delete(applicationId, datastoreID, itemID, deleteItemReq);
+      // expect response
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
   describe("#createLink()", () => {
     it("should create item link in datastore", async () => {
@@ -449,11 +441,13 @@ describe("Item", () => {
 
       if (dsItems) {
         itemId = dsItems.items[0].i_id;
-        console.log("itemId", itemId);
       } else {
         throw new Error(`Error: ${errorItem}`);
       }
-
+      const itemLinkRequestInput = {
+        link_datastore_id: linkDsId,
+        link_item_id: linkItemId,
+      };
       const { data, error } = await item.createLink(
         datastoreID,
         itemId,
@@ -461,7 +455,7 @@ describe("Item", () => {
         applicationId
       );
       if (data) {
-        console.log(data);
+        expect(typeof data).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
       }
@@ -477,11 +471,15 @@ describe("Item", () => {
 
       if (dsItems) {
         itemId = dsItems.items[0].i_id;
-        console.log("itemId", itemId);
       } else {
         throw new Error(`Error: ${errorItem}`);
       }
-
+      const updateItemLinkInput = {
+        old_link_datastore_id: linkDsId,
+        old_link_item_id: linkItemId,
+        new_link_datastore_id: linkDsIdUpdate,
+        new_link_item_id: linkItemIdUpdate,
+      };
       const { data, error } = await item.updateLink(
         datastoreID,
         itemId,
@@ -489,7 +487,7 @@ describe("Item", () => {
         updateItemLinkInput
       );
       if (data) {
-        console.log(data);
+        expect(typeof data).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
       }
@@ -505,11 +503,13 @@ describe("Item", () => {
 
       if (dsItems) {
         itemId = dsItems.items[0].i_id;
-        console.log("itemId", itemId);
       } else {
         throw new Error(`Error: ${errorItem}`);
       }
-
+      const itemLinkRequestInput = {
+        link_datastore_id: linkDsIdUpdate,
+        link_item_id: linkItemIdUpdate,
+      };
       const { data, error } = await item.deleteLink(
         datastoreID,
         itemId,
@@ -517,7 +517,7 @@ describe("Item", () => {
         itemLinkRequestInput
       );
       if (data) {
-        console.log(data);
+        expect(typeof data).toBe('object');
       } else {
         throw new Error(`Error: ${error}`);
       }
