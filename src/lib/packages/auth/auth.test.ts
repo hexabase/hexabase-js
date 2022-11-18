@@ -45,26 +45,26 @@ describe('Auth', () => {
   });
 
   // Auth state change without error
-  // describe('#onAuthStateChange()', () => {
-  //   it('should onAuthStateChange', async () => {
-  //     jest.useFakeTimers('legacy');
-  //     let sessions;
-  //     let userSession;
+  describe('#onAuthStateChange()', () => {
+    it('should onAuthStateChange', async () => {
+      jest.useFakeTimers('legacy');
+      let sessions;
+      let userSession;
 
-  //     const auth = new Auth(url);
-  //     const user = new User(url, tokenAu);
-  //     const userInfo = await user?.get(tokenAu);
-  //     const {data: authListener, error} = auth.onAuthStateChange((event, session) => {
-  //       sessions = session ?? undefined;
-  //       userSession = session?.user ?? undefined;
-  //     });
+      const auth = new Auth(url);
+      const user = new User(url, tokenAu);
+      const userInfo = await user?.get(tokenAu);
+      const {data: authListener, error} = auth.onAuthStateChange((event, session) => {
+        sessions = session ?? undefined;
+        userSession = session?.user ?? undefined;
+      });
 
-  //     // expect response
-  //     if (authListener) {
-  //       console.log(authListener, 'authListener');
-  //     } else {
-  //       throw new Error(`Error: ${error}`);
-  //     }
-  //   });
-  // });
+      // expect response
+      if (authListener) {
+        expect(typeof authListener?.id).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 });
