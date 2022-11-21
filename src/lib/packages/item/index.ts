@@ -355,8 +355,8 @@ export default class Item extends HxbAbstract {
 
   /**
    * function updateComment: update comment item in datastore
-   * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
-   * @returns ModelRes
+   * @params payload is requirement
+   * @returns ResponseErrorNull
    */
   async updateComment(payload: UpdateCommentItemsParameters): Promise<ResponseErrorNull> {
     const data: ResponseErrorNull = {
@@ -374,9 +374,9 @@ export default class Item extends HxbAbstract {
   }
 
   /**
-   * function updateComment: update comment item in datastore
-   * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
-   * @returns ModelRes
+   * function deleteComment: delete comment item in datastore
+   * @params payload is requirement
+   * @returns ResponseErrorNull
    */
   async deleteComment(payload: ArchiveCommentItemsParameters): Promise<ResponseErrorNull> {
     const data: ResponseErrorNull = {
