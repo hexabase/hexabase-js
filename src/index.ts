@@ -1,6 +1,6 @@
 import HexabaseClient from './HexabaseClient';
 import Auth from './lib/packages/auth';
-require('dotenv').config();
+
 
 interface HexabaseConfig {
   url?: string;
@@ -8,9 +8,12 @@ interface HexabaseConfig {
   email?: string;
   password?: string;
 }
+export interface Config {
+  url_production: string;
+}
 
-const prodUrl = process.env.URL || '';
-
+const config: Config = require('./config/default.json');
+const urlPro = config.url_production || 'https://graphql.hexabase.com/graphql';
 /**
  * create client for hexabase-sdk
  */
@@ -20,10 +23,9 @@ const createClient = async ({
   email,
   password,
 }: HexabaseConfig): Promise<HexabaseClient> => {
-  const _url = url || prodUrl;
+  const _url = url || urlPro;
   const auth = new Auth(_url);
   let tokenHx = '';
-
   if (email && password && !token) {
     const { token, error } = await auth.login({ email, password });
     if (token) {
