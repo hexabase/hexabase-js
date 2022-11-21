@@ -399,10 +399,10 @@ export default class Item extends HxbAbstract {
    * @returns ModelRes
    */
   async createLink(
+    projectId: string,
     datastoreId: string,
     itemId: string,
-    itemLinkRequestInput: ItemLinkRequestInput,
-    projectId: string
+    itemLinkRequestInput: ItemLinkRequestInput
   ): Promise<ModelRes> {
     const data: ModelRes = {
       data: undefined,
@@ -412,10 +412,10 @@ export default class Item extends HxbAbstract {
     // handle call graphql
     try {
       const res: DtAddItemLink = await this.client.request(ADD_ITEM_LINK, {
+        projectId,
         datastoreId,
         itemId,
         itemLinkRequestInput,
-        projectId,
       });
       data.data = res.addItemLink;
     } catch (error: any) {
@@ -430,9 +430,9 @@ export default class Item extends HxbAbstract {
    * @returns ModelRes
    */
   async updateLink(
+    projectId: string,
     datastoreId: string,
     itemId: string,
-    projectId: string,
     updateItemLinkInput: UpdateItemLinkInput
   ): Promise<ModelRes> {
     const data: ModelRes = {
@@ -445,9 +445,9 @@ export default class Item extends HxbAbstract {
       const res: DtUpdateItemLink = await this.client.request(
         UPDATE_ITEM_LINK,
         {
+          projectId,
           datastoreId,
           itemId,
-          projectId,
           updateItemLinkInput,
         }
       );
@@ -464,9 +464,9 @@ export default class Item extends HxbAbstract {
    * @returns ModelRes
    */
   async deleteLink(
+    projectId: string,
     datastoreId: string,
     itemId: string,
-    projectId: string,
     itemLinkRequestInput: ItemLinkRequestInput
   ): Promise<ModelRes> {
     const data: ModelRes = {
@@ -479,9 +479,9 @@ export default class Item extends HxbAbstract {
       const res: DtDeleteItemLink = await this.client.request(
         DELETE_ITEM_LINK,
         {
+          projectId,
           datastoreId,
           itemId,
-          projectId,
           itemLinkRequestInput,
         }
       );

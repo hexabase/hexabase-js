@@ -505,10 +505,10 @@ describe('Item', () => {
         link_item_id: linkItemId,
       };
       const { data, error } = await item.createLink(
+        projectId,
         datastoreID,
         itemId,
-        itemLinkRequestInput,
-        projectId
+        itemLinkRequestInput
       );
       if (data) {
         expect(typeof data).toBe('object');
@@ -537,9 +537,9 @@ describe('Item', () => {
         new_link_item_id: linkItemIdUpdate,
       };
       const { data, error } = await item.updateLink(
+        projectId,
         datastoreID,
         itemId,
-        projectId,
         updateItemLinkInput
       );
       if (data) {
@@ -567,9 +567,9 @@ describe('Item', () => {
         link_item_id: linkItemIdUpdate,
       };
       const { data, error } = await item.deleteLink(
+        projectId,
         datastoreID,
         itemId,
-        projectId,
         itemLinkRequestInput
       );
       if (data) {
