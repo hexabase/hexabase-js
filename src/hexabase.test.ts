@@ -34,43 +34,43 @@ describe('Hexabase', () => {
   });
 
 
-  // describe('#createClient()', () => {
-  //   it('get createClient and testing with url and token', async () => {
-  //     jest.useFakeTimers();
-  //     const hexabase = await createClient({ url: stagUrl, token: stagToken });
-  //     const { wsCurrent, error } = await hexabase.workspace.getCurrent();
-  //     if (wsCurrent) {
-  //       expect(typeof wsCurrent.workspace_id).toBe('string');
-  //     }
-  //   });
-  // });
+  describe('#createClient()', () => {
+    it('get createClient and testing with url and token', async () => {
+      jest.useFakeTimers();
+      const hexabase = await createClient({ url: stagUrl, token: stagToken });
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
+      if (wsCurrent) {
+        expect(typeof wsCurrent.workspace_id).toBe('string');
+      }
+    });
+  });
 
-  // describe('#createClient()', () => {
-  //   it('get createClient and testing with email, password', async () => {
-  //     jest.useFakeTimers();
-  //     const hexabase = await createClient({
-  //       email: prodEmail,
-  //       password: prodPassword,
-  //     });
-  //     const { wsCurrent, error } = await hexabase.workspace.getCurrent();
-  //     if (wsCurrent) {
-  //       expect(typeof wsCurrent.workspace_id).toBe('string');
-  //     }
-  //   });
-  // });
-  // describe('#createClient()', () => {
-  //   it('get createClient and testing with just token', async () => {
-  //     jest.useFakeTimers();
-  //     // with 2 params: only user's email and password (without base url)
-  //     const hexabase = await createClient({
-  //       token: prodToken,
-  //     });
-  //     const { wsCurrent, error } = await hexabase.workspace.getCurrent();
-  //     if (wsCurrent) {
-  //       expect(typeof wsCurrent.workspace_id).toBe('string');
-  //     }
-  //   });
-  // });
+  describe('#createClient()', () => {
+    it('get createClient and testing with email, password', async () => {
+      jest.useFakeTimers();
+      const hexabase = await createClient({
+        email: prodEmail,
+        password: prodPassword,
+      });
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
+      if (wsCurrent) {
+        expect(typeof wsCurrent.workspace_id).toBe('string');
+      }
+    });
+  });
+  describe('#createClient()', () => {
+    it('get createClient and testing with just token', async () => {
+      jest.useFakeTimers();
+      // with 2 params: only user's email and password (without base url)
+      const hexabase = await createClient({
+        token: prodToken,
+      });
+      const { wsCurrent, error } = await hexabase.workspace.getCurrent();
+      if (wsCurrent) {
+        expect(typeof wsCurrent.workspace_id).toBe('string');
+      }
+    });
+  });
 
   // describe('#getFile()', () => {
   //   it('application: get createClient and testing', async () => {
