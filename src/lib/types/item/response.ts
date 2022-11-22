@@ -1,5 +1,5 @@
-import { FieldNameENJP, ResponseOkModel } from '../../util/type';
 import { ItemHistory } from './input';
+import { FieldNameENJP, ResponseErrorNull, ResponseOkModel } from '../../util/type';
 
 export interface DsItems {
   items: any;
@@ -129,6 +129,37 @@ export interface ItemDetail {
   item_action_order?: any;
 }
 
+export class ItemHistoryComment {
+  IsChanged: boolean;
+  UserObjID: string;
+  action_id: string;
+  comment: string;
+  created_at: string;
+  datastore_id: string;
+  display_order: number;
+  email: string;
+  history_id: string;
+  i_id: string;
+  is_fetchreplymail: boolean;
+  is_notify: boolean;
+  item_id: string;
+  media_link: string;
+  post_for_rel: boolean;
+  post_mode: string;
+  project_id: string;
+  transaction_id: string;
+  updated_at: string;
+  user_id: string;
+  username: string;
+  workspace_id: string;
+}
+
+export interface DatastoreCreateCommentItem {
+  history_id?: string;
+  item_history?: ItemHistoryComment;
+}
+
+
 /** Data response from request graphql */
 export interface DtDsItems {
   datastoreGetDatastoreItems: DsItems;
@@ -157,6 +188,27 @@ export interface DtItemDetail {
 
 export interface DtUpdatedItem {
   datastoreUpdateItem: any;
+}
+
+export interface DtAddItemLink {
+  addItemLink: ResponseOkModel;
+}
+export interface DtUpdateItemLink {
+  updateItemLink: ResponseOkModel;
+}
+export interface DtDeleteItemLink {
+  deleteItemLink: ResponseOkModel;
+}
+export interface DtDatastoreCreateCommentItem {
+  postNewItemHistory: DatastoreCreateCommentItem;
+}
+
+export interface DtDatastoreUpdateCommentItem {
+  postUpdateItemHistory: ResponseErrorNull;
+}
+
+export interface DtDatastoreDeleteCommentItem {
+  archiveItemHistory: ResponseErrorNull;
 }
 
 /** export response */
@@ -204,4 +256,9 @@ export interface DtUpdateItemRes {
   rev_no?: RevNo;
   history_id?: string;
   item_id?: string;
+}
+
+export interface DatastoreCreateCommentItemRes {
+  postNewItemHistory?: DatastoreCreateCommentItem;
+  error?: any;
 }

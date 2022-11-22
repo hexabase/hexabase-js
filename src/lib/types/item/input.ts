@@ -162,3 +162,39 @@ export interface ItemExecuteActionPayload {
   itemActionParameters: ItemActionParameters;
 }
 
+export interface ItemLinkRequestInput {
+  link_datastore_id: string;
+  link_item_id: string;
+}
+export interface UpdateItemLinkInput {
+  old_link_datastore_id: string;
+  old_link_item_id: string;
+  new_link_datastore_id: string;
+  new_link_item_id: string;
+}
+export interface CreateCommentItemsParameters {
+  comment: string;
+  datastore_id: string;
+  is_related_post?: boolean;
+  is_send_item_unread?: boolean;
+  item_id: string;
+  post_mode: string;
+  posting?: boolean;
+  project_id: string;
+  workspace_id: string;
+}
+
+export interface UpdateCommentItemsParameters {
+  comment: string;
+  d_id: string;
+  i_id: string;
+  h_id: string;
+  p_id: string;
+}
+
+export interface ArchiveCommentItemsParameters {
+  d_id: string;
+  i_id: string;
+  h_id: string;
+  p_id: string;
+}

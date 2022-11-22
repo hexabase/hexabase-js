@@ -142,17 +142,17 @@ export const GET_DATASTORES = gql`
 export const GET_DATASTORE_DETAIL = gql`
 	query DatastoreSetting($datastoreId: String!) {
 		datastoreSetting(datastoreId: $datastoreId) {
+      display_id
+      names
+		  id
 			field_layout {
 				display_id
-			}
-		field_layout {
 				col
 				id
 				row
 				size_x
 				size_y
 			}
-			display_id
 			fields {
 				as_title
 				data_type
@@ -167,16 +167,14 @@ export const GET_DATASTORE_DETAIL = gql`
 				options {
 					o_id
 					_key
-				fieldID
+				  fieldID
 				}
 				show_list
-			search
+			  search
 				status
 				title_order
 				unique
 			}
-			names
-		id
 			roles {
 				name
 				id
@@ -185,7 +183,7 @@ export const GET_DATASTORE_DETAIL = gql`
 			statuses {
 				names
 				display_id
-			id
+			  id
 			}
 		}
 	}
@@ -221,6 +219,22 @@ export const DELETE_DATASTORE = gql`
     deleteDatastore(datastoreId: $datastoreId) {
       data
       success
+    }
+  }
+`;
+
+export const DATASTORE_GET_FIELD_AUTO_NUMBER = gql`
+  query DatastoreGetFieldAutoNumber($datastoreId: String!, $fieldId: String!, $projectId: String!, $getFieldAutoNumberQuery: GetFieldAutoNumberQuery) {
+    datastoreGetFieldAutoNumber(datastoreId: $datastoreId, fieldId: $fieldId, projectId: $projectId, getFieldAutoNumberQuery: $getFieldAutoNumberQuery) {
+      errors {
+        description
+        error
+        error_code
+        error_level
+        reference_id
+      }
+      has_error
+      result
     }
   }
 `;

@@ -1,3 +1,4 @@
+require('dotenv').config();
 import Item from '.';
 import Auth from '../auth';
 import AuthMw from '../middleware/auth';
@@ -6,6 +7,7 @@ import Workspace from '../workspace';
 import Project from '../project';
 import { CreateDatastoreFromSeedReq, DsAction } from '../../types/datastore';
 import User from '../user';
+import { ArchiveCommentItemsParameters, CreateCommentItemsParameters, UpdateCommentItemsParameters } from '../../types/item';
 
 require('dotenv').config();
 /**
@@ -16,27 +18,31 @@ require('dotenv').config();
 let userId = '';
 let tokenItem = process.env.TOKEN || '';
 let workspaceId = process.env.WORKSPACEID || '';
-let applicationId = process.env.APPLICATIONID || '';
-let datastoreID: string = process.env.datastoreID || '';
+let projectId = process.env.projectId || '';
+let datastoreID: string = process.env.DATASTOREID || '';
 let actions: DsAction[] | undefined = [];
 const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const templateName = process.env.TEMPLATE_NAME || '';
+const linkDsId = process.env.LINK_DATASTORE_ID || '';
+const linkItemId = process.env.LINK_ITEM_ID || '';
+const linkDsIdUpdate = process.env.LINK_DATASTORE_ID_UPDATE || '';
+const linkItemIdUpdate = process.env.LINK_ITEM_ID_UPDATE || '';
 
 // local variable in file for testing
 const params = {
-  'page': 1,
-  'per_page': 0
+  page: 1,
+  per_page: 0,
 };
 
 const historyParams = {
-  'from_index': 0,
-  'to_index': 1
+  from_index: 0,
+  to_index: 1,
 };
 
 const createWorkSpaceInput = {
-  name: 'new Workspace'
+  name: 'new Workspace',
 };
 
 const createProjectParams = {
@@ -54,7 +60,7 @@ beforeAll(async () => {
       //
       const user = new User(url, token);
       const { userInfo } = await user.get(token);
-      userInfo?.u_id ? userId = userInfo?.u_id : '';
+      userInfo?.u_id ? (userId = userInfo?.u_id) : '';
       //
       const workspace = new Workspace(url, token);
       const { wsCurrent, error } = await workspace.getCurrent();
@@ -66,28 +72,35 @@ beforeAll(async () => {
       }
       //
       const appAndDsGetApp = new Project(url, token);
-      const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+      const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(
+        workspaceId
+      );
 
       if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
-        applicationId = appAndDs[0].application_id;
+        projectId = appAndDs[0].application_id;
       } else {
         const application = new Project(url, token);
         const { app } = await application.create(createProjectParams);
 
         if (app) {
-          applicationId = app?.project_id;
+          projectId = app?.project_id;
         }
       }
 
       //
       const datastore = new Datastore(url, token);
-      if (appAndDs && appAndDs[0] && appAndDs[0]?.datastores && appAndDs[0]?.datastores[0]?.datastore_id) {
+      if (
+        appAndDs &&
+        appAndDs[0] &&
+        appAndDs[0]?.datastores &&
+        appAndDs[0]?.datastores[0]?.datastore_id
+      ) {
         datastoreID = appAndDs[0]?.datastores[0]?.datastore_id;
       } else {
         const payload: CreateDatastoreFromSeedReq = {
           payload: {
             lang_cd: 'en',
-            project_id: applicationId,
+            project_id: projectId,
             template_name: templateName,
             workspace_id: workspaceId,
             user_id: userId,
@@ -105,14 +118,14 @@ beforeAll(async () => {
         const { dsActions } = await datastore.getActions(datastoreID);
         actions = dsActions;
       }
-      return tokenItem = token;
+      return (tokenItem = token);
     } else {
       throw Error(`Login to initialize sdk: ${error}`);
     }
-  } else if (tokenItem && !email || !password) {
+  } else if ((tokenItem && !email) || !password) {
     const user = new User(url, tokenItem);
     const { userInfo } = await user.get(tokenItem);
-    userInfo?.u_id ? userId = userInfo?.u_id : '';
+    userInfo?.u_id ? (userId = userInfo?.u_id) : '';
     //
     const workspace = new Workspace(url, tokenItem);
     const { wsCurrent, error } = await workspace.getCurrent();
@@ -124,28 +137,35 @@ beforeAll(async () => {
     }
     //
     const appAndDsGetApp = new Project(url, tokenItem);
-    const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+    const { appAndDs } = await appAndDsGetApp.getProjectsAndDatastores(
+      workspaceId
+    );
 
     if (appAndDs && appAndDs[0] && appAndDs[0].application_id) {
-      applicationId = appAndDs[0].application_id;
+      projectId = appAndDs[0].application_id;
     } else {
       const application = new Project(url, tokenItem);
       const { app } = await application.create(createProjectParams);
 
       if (app) {
-        applicationId = app?.project_id;
+        projectId = app?.project_id;
       }
     }
 
     //
     const datastore = new Datastore(url, tokenItem);
-    if (appAndDs && appAndDs[0] && appAndDs[0]?.datastores && appAndDs[0]?.datastores[0]?.datastore_id) {
+    if (
+      appAndDs &&
+      appAndDs[0] &&
+      appAndDs[0]?.datastores &&
+      appAndDs[0]?.datastores[0]?.datastore_id
+    ) {
       datastoreID = appAndDs[0]?.datastores[0]?.datastore_id;
     } else {
       const payload: CreateDatastoreFromSeedReq = {
         payload: {
           lang_cd: 'en',
-          project_id: applicationId,
+          project_id: projectId,
           template_name: templateName,
           workspace_id: workspaceId,
           user_id: userId,
@@ -166,7 +186,6 @@ beforeAll(async () => {
   } else {
     throw Error('Need pass token or email and password parameter');
   }
-
 });
 
 describe('Item', () => {
@@ -175,7 +194,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
 
-      const { dsItems, error } = await item.get(params, datastoreID, applicationId);
+      const { dsItems, error } = await item.get(params, datastoreID, projectId);
       // expect response
       if (dsItems) {
 
@@ -232,7 +251,7 @@ describe('Item', () => {
         }
       };
 
-      const { itemNew, error } = await item.create(applicationId, datastoreID, newItemActionParameters);
+      const { itemNew, error } = await item.create(projectId, datastoreID, newItemActionParameters);
 
       // expect response
       if (itemNew) {
@@ -248,10 +267,10 @@ describe('Item', () => {
     it('should get items histories', async () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
-      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemS = await item.get(params, datastoreID, projectId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
-      const { itemHistories, error } = await item.getHistories(applicationId, datastoreID, itemID, historyParams);
+      const { itemHistories, error } = await item.getHistories(projectId, datastoreID, itemID, historyParams);
 
       // expect response
       if (itemHistories) {
@@ -267,7 +286,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
       // get items list
-      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemS = await item.get(params, datastoreID, projectId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
       const { itemLinked, error } = await item.getItemRelated(datastoreID, itemID, datastoreID);
@@ -286,7 +305,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
       // get items list
-      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemS = await item.get(params, datastoreID, projectId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
       const { itemDetails, error } = await item.getItemDetail(datastoreID, itemID);
@@ -305,7 +324,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const item = new Item(url, tokenItem);
       // get items list
-      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemS = await item.get(params, datastoreID, projectId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
       const itemDetail = await item.getItemDetail(datastoreID, itemID);
@@ -331,7 +350,7 @@ describe('Item', () => {
         }
       };
 
-      const { data, error } = await item.update(applicationId, datastoreID, itemID, itemActionParameters);
+      const { data, error } = await item.update(projectId, datastoreID, itemID, itemActionParameters);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
@@ -345,7 +364,7 @@ describe('Item', () => {
   //   it('should execute action for item in datastore', async () => {
   //     jest.useFakeTimers('legacy');
   //     const item = new Item(url, tokenItem);
-  //     const itemS = await item.get(params, datastoreID, applicationId);
+  //     const itemS = await item.get(params, datastoreID, projectId);
   //     const i = itemS.dsItems?.items?.[0];
   //     const itemID = i?.i_id;
   //     const itemDetail = await item.getItemDetail(datastoreID, itemID);
@@ -371,7 +390,7 @@ describe('Item', () => {
   //       }
   //     };
   //     const actionId = 'BackToInProgress';
-  //     const { data, error } = await item.execute(applicationId, datastoreID, itemID, actionId, itemActionParameters);
+  //     const { data, error } = await item.execute(projectId, datastoreID, itemID, actionId, itemActionParameters);
   //     // expect response
   //     if (data) {
   //       expect(typeof data).toBe('object');
@@ -380,6 +399,186 @@ describe('Item', () => {
   //     }
   //   });
   // });
+
+  describe('#createComment()', () => {
+    it('should create comment items histories', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, projectId);
+      const i = itemS.dsItems?.items?.[0];
+      const itemID = i?.i_id;
+      const payload: CreateCommentItemsParameters = {
+        'item_id': itemID,
+        'workspace_id': workspaceId,
+        'project_id': projectId,
+        'datastore_id': datastoreID,
+        'comment': 'create comment',
+        'posting': true,
+        'post_mode': 'ItemTimeline',
+        'is_related_post': false,
+        'is_send_item_unread': true
+      };
+      const { postNewItemHistory, error } = await item.createComment(payload);
+
+      // expect response
+      if (postNewItemHistory) {
+        expect(typeof postNewItemHistory).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#updateComment()', () => {
+    it('should update comment items histories', async () => {
+      jest.useFakeTimers('legacy');
+      let historyId = '';
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, projectId);
+      const itemID = itemS.dsItems?.items?.[0]?.i_id;
+      const { error: errorHistoryItem, itemHistories } = await item.getHistories(projectId, datastoreID, itemID);
+      if (errorHistoryItem) {
+        throw new Error(`Error: ${errorHistoryItem}`);
+      }
+      if (itemHistories) {
+        historyId = itemHistories?.histories[0]?.history_id;
+      }
+      const payload: UpdateCommentItemsParameters = {
+        'comment': 'update comment',
+        'd_id': datastoreID,
+        'h_id': historyId,
+        'i_id': itemID,
+        'p_id': projectId,
+      };
+      const { error } = await item.updateComment(payload);
+
+      // expect response
+      if (error) {
+        return error;
+      }
+    });
+  });
+
+  describe('#deleteComment()', () => {
+    it('should delete comment items histories', async () => {
+      jest.useFakeTimers('legacy');
+      let historyId = '';
+      const item = new Item(url, tokenItem);
+      const itemS = await item.get(params, datastoreID, projectId);
+      const itemID = itemS.dsItems?.items?.[0]?.i_id;
+      const { error: errorHistoryItem, itemHistories } = await item.getHistories(projectId, datastoreID, itemID);
+      if (errorHistoryItem) {
+        throw new Error(`Error: ${errorHistoryItem}`);
+      }
+      if (itemHistories) {
+        historyId = itemHistories?.histories[0]?.history_id;
+      }
+      const payload: ArchiveCommentItemsParameters = {
+        'd_id': datastoreID,
+        'h_id': historyId,
+        'i_id': itemID,
+        'p_id': projectId,
+      };
+      const { error } = await item.deleteComment(payload);
+
+      // expect response
+      if (error) {
+        return error;
+      }
+    });
+  });
+
+  describe('#createLink()', () => {
+    it('should create item link in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      let itemId = '';
+      const { dsItems, error: errorItem } = await item.get(params, datastoreID);
+
+      if (dsItems) {
+        itemId = dsItems.items[0].i_id;
+      } else {
+        throw new Error(`Error: ${errorItem}`);
+      }
+      const itemLinkRequestInput = {
+        link_datastore_id: linkDsId,
+        link_item_id: linkItemId,
+      };
+      const { data, error } = await item.createLink(
+        projectId,
+        datastoreID,
+        itemId,
+        itemLinkRequestInput
+      );
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#updateLink()', () => {
+    it('should update item link in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      let itemId = '';
+      const { dsItems, error: errorItem } = await item.get(params, datastoreID);
+
+      if (dsItems) {
+        itemId = dsItems.items[0].i_id;
+      } else {
+        throw new Error(`Error: ${errorItem}`);
+      }
+      const updateItemLinkInput = {
+        old_link_datastore_id: linkDsId,
+        old_link_item_id: linkItemId,
+        new_link_datastore_id: linkDsIdUpdate,
+        new_link_item_id: linkItemIdUpdate,
+      };
+      const { data, error } = await item.updateLink(
+        projectId,
+        datastoreID,
+        itemId,
+        updateItemLinkInput
+      );
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#deleteLink()', () => {
+    it('should delete item link in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const item = new Item(url, tokenItem);
+      let itemId = '';
+      const { dsItems, error: errorItem } = await item.get(params, datastoreID);
+
+      if (dsItems) {
+        itemId = dsItems.items[0].i_id;
+      } else {
+        throw new Error(`Error: ${errorItem}`);
+      }
+      const itemLinkRequestInput = {
+        link_datastore_id: linkDsIdUpdate,
+        link_item_id: linkItemIdUpdate,
+      };
+      const { data, error } = await item.deleteLink(
+        projectId,
+        datastoreID,
+        itemId,
+        itemLinkRequestInput
+      );
+      if (data) {
+        expect(typeof data).toBe('object');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
 
   describe('#delete()', () => {
     it('should delete item in datastore', async () => {
@@ -398,14 +597,14 @@ describe('Item', () => {
 
       const item = new Item(url, tokenItem);
       // get items list
-      const itemS = await item.get(params, datastoreID, applicationId);
+      const itemS = await item.get(params, datastoreID, projectId);
       const indexLastItem = itemS.dsItems?.items.length;
       const i = itemS.dsItems?.items?.[indexLastItem - 1];
       const itemID = i?.i_id;
       const deleteItemReq = {
         a_id: `${actionDelete}`
       };
-      const { data, error } = await item.delete(applicationId, datastoreID, itemID, deleteItemReq);
+      const { data, error } = await item.delete(projectId, datastoreID, itemID, deleteItemReq);
       // expect response
       if (data) {
         expect(typeof data).toBe('object');
