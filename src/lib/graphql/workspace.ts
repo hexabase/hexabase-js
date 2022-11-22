@@ -18,10 +18,6 @@ query Workspace {
     app_functions {
       dashboards {
         disable_edit_dash_items
-      }
-    }
-  app_functions {
-      dashboards {
         disable_edit_dashboards
       }
       app_templates {
@@ -68,46 +64,46 @@ query Workspace {
     id
     languages {
       default
-    lang_cd
-    use
+      lang_cd
+      use
     }
-  name
+    name
     plan_name
-  plan_id
+    plan_id
     pwd_policy {
       expired_day
       min_length
-    lockout_time
-    lockout_count
+      lockout_time
+      lockout_count
       use_same_limit
-    use_pattern_check
-    use_min_length
-    use_lockout_time
-    use_lockout_count
-    use_language_ja
-    use_language_en
-    use_expired_day
-    same_limit
-    pattern_check_type
+      use_pattern_check
+      use_min_length
+      use_lockout_time
+      use_lockout_count
+      use_language_ja
+      use_language_en
+      use_expired_day
+      same_limit
+      pattern_check_type
     }
     redirect {
       redirect_url
       is_apply_redirect_url_for_disabled_users
     }
     updated_at
-  user_id
+    user_id
     w_id
     ws_admin
     user_sessions {
       use
       default
-    session_timeout_sec
+      session_timeout_sec
     }
     ws_admin_users {
       user_name
       access_key
-    email
-    user_id
+      email
+      user_id
     }
     ws_functions {
       ws_settings {
@@ -140,12 +136,12 @@ query Workspace {
     ws_usage {
       users_limit
       items_limit
-    storage
-    storage_limit
-    users
+      storage
+      storage_limit
+      users
       datastores
-    datastores_limit
-    items
+      datastores_limit
+      items
     }
   }
 }

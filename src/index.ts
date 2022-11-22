@@ -1,7 +1,6 @@
 import HexabaseClient from './HexabaseClient';
 import Auth from './lib/packages/auth';
 
-
 interface HexabaseConfig {
   url?: string;
   token?: string;
@@ -12,8 +11,6 @@ export interface Config {
   url_production: string;
 }
 
-const config: Config = require('./config/default.json');
-const urlPro = config.url_production || 'https://graphql.hexabase.com/graphql';
 /**
  * create client for hexabase-sdk
  */
@@ -23,7 +20,7 @@ const createClient = async ({
   email,
   password,
 }: HexabaseConfig): Promise<HexabaseClient> => {
-  const _url = url || urlPro;
+  const _url = url || 'https://graphql.hexabase.com/graphql';
   const auth = new Auth(_url);
   let tokenHx = '';
   if (email && password && !token) {
@@ -31,7 +28,7 @@ const createClient = async ({
     if (token) {
       tokenHx = token;
     } else {
-      throw Error(`Need login faild to initialize sdk: ${error}`);
+      throw Error(`Need login failed to initialize sdk: ${error}`);
     }
   } else if (!email && !password && token) {
     tokenHx = token;

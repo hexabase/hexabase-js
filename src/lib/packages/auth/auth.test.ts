@@ -1,6 +1,5 @@
 import Auth from '.';
 import User from '../user';
-import AuthMw from '../middleware/auth';
 require('dotenv').config();
 /**
  * Test with class Auth
@@ -32,9 +31,7 @@ describe('Auth', () => {
     it('should get logout user', async () => {
       jest.useFakeTimers('legacy');
       const auth = new Auth(url);
-
       const {data, error} = await auth.logout(tokenAu);
-
       // expect response
       if (data) {
         expect(typeof data.success).toBe('boolean');
