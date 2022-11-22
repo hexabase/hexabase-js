@@ -1,5 +1,5 @@
 import Auth from '.';
-import AuthMw from '../middleware/auth';
+import User from '../user';
 require('dotenv').config();
 /**
  * Test with class Auth
@@ -31,12 +31,34 @@ describe('Auth', () => {
     it('should get logout user', async () => {
       jest.useFakeTimers('legacy');
       const auth = new Auth(url);
-
       const {data, error} = await auth.logout(tokenAu);
-
       // expect response
       if (data) {
         expect(typeof data.success).toBe('boolean');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  // Auth state change without error
+  describe('#onAuthStateChange()', () => {
+    it('should onAuthStateChange', async () => {
+      jest.useFakeTimers('legacy');
+      let sessions;
+      let userSession;
+
+      const auth = new Auth(url);
+      const user = new User(url, tokenAu);
+      const userInfo = await user?.get(tokenAu);
+      const {data: authListener, error} = auth.onAuthStateChange((event, session) => {
+        sessions = session ?? undefined;
+        userSession = session?.user ?? undefined;
+      });
+
+      // expect response
+      if (authListener) {
+        expect(typeof authListener?.id).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }

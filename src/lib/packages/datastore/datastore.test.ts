@@ -13,9 +13,12 @@ require('dotenv').config();
 
 let tokenDs = process.env.TOKEN || '';
 let userId = '';
-let newDatastoreId: string | undefined = '';
+let newDatastoreId: string | undefined = process.env.DATASTOREID || '';
 let workspaceId = process.env.WORKSPACEID || '';
-let projectID = process.env.PROJECT_ID || '';
+let projectID = '';
+const datastoreId = process.env.DATASTOREID || '';
+const projectIDAutoNum = process.env.PROJECT_ID || '';
+const fieldIdAutoNum = process.env.FIELDID || '';
 const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
@@ -345,6 +348,23 @@ describe('Datastore', () => {
           };
           const { data, error } = await datastore.updateDatastoreSetting(payload);
           if (data) expect(typeof data).toBe('object');
+          else throw new Error(`Error: ${error}`);
+        }
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#datastoreGetFieldAutoNumber()', () => {
+    it('should datastore get field auto number without error', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        if (datastoreId && projectIDAutoNum && fieldIdAutoNum) {
+          const datastore = new Datastore(url, tokenDs);
+          const { dsGetFieldAutoNum, error } = await datastore.datastoreGetFieldAutoNumber(projectIDAutoNum, datastoreId, fieldIdAutoNum);
+
+          if (dsGetFieldAutoNum) expect(typeof dsGetFieldAutoNum?.result).toBe('object');
           else throw new Error(`Error: ${error}`);
         }
       } catch (e) {

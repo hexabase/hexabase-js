@@ -27,7 +27,7 @@ export const FILE_ATTACHMENT = gql`
 			created_at
 			d_id
 			contentType
-		datastore_id
+			datastore_id
 			deleted
 			field_id
 			display_order
@@ -35,17 +35,17 @@ export const FILE_ATTACHMENT = gql`
 			filename
 			filepath
 			name
-		item_id
-		i_id
+			item_id
+			i_id
 			mediaLink
 			p_id
 			timeCreated
-		size
-		selfLink
+			size
+			selfLink
 			temporary
 			updated
 			w_id
-		user_id
+			user_id
 		}
 	}
 `;
