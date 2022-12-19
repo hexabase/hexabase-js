@@ -20,7 +20,7 @@ export default class HexabaseClient {
 
   constructor(
     protected urlHxb: string,
-    tokenHxb: string
+    tokenHxb?: string
   ) {
     if (!urlHxb) throw new Error('urlHxb is required.');
 
