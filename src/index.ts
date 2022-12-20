@@ -1,4 +1,5 @@
 import HexabaseClient from './HexabaseClient';
+import Hexabase from './HexabaseClient';
 import Auth from './lib/packages/auth';
 
 interface HexabaseConfig {
@@ -38,4 +39,4 @@ const createClient = async ({
   return new HexabaseClient(_url, tokenHx);
 };
 
-export { createClient, HexabaseClient };
+export { createClient, HexabaseClient, Hexabase };

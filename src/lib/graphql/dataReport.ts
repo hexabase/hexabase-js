@@ -26,7 +26,7 @@ export const REPORT_DEFAULT = gql`
       totalItems
       item_index_from
       item_index_to
-      merge_cells{
+      merge_cells {
         colspan
         rowspan
         col
