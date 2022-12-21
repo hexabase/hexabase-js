@@ -9,5 +9,11 @@ export interface DtLogin {
 /** export response */
 export interface ConditionBuilder {
   select_fields?: string[];
-  condition?: string[] | string;
+  condition?: Array<any>;
+}
+
+export interface WhereConditionBuilder {
+  id?: string;
+  search_value?: (string | number | null)[];
+  exact_match?: boolean;
 }

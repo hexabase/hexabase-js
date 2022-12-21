@@ -2,17 +2,22 @@ import FilterBuilder from "./builder"
 import QueryBuilder from "./query"
 
 export default class QueryClient {
-  url: string
+  // url: string
   constructor(
-    url: string,
+    // url: string,
   ) {
-    this.url = url
+    // this.url = url
   }
   from(relation: string): QueryBuilder
-  from(relation: string): QueryBuilder{
+  from(relation: string): QueryBuilder {
     // const url = new URL(`${this.url}/${relation}`)
-    const url = `${this.url}/${relation}`;
-    return new QueryBuilder(url)
+    // const url = `${this.url}/${relation}`;
+    return new QueryBuilder();
   }
-  
+
+  query(): QueryBuilder
+  query(): QueryBuilder {
+    return new QueryBuilder();
+  }
+
 }
