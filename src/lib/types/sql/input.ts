@@ -11,3 +11,9 @@ export interface Session {
   token?: string;
   user?: UserInfo;
 }
+
+export type TypeOrder = 'asc' | 'desc';
+
+export interface SortOrder {
+  [k: string]: TypeOrder;
+};
