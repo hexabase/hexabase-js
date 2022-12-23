@@ -1,4 +1,4 @@
-import { ConditionBuilder } from '../types/sql'
+import { ConditionBuilder, SortFields } from '../types/sql'
 import { SortOrder } from '../types/sql/input';
 interface QueryBuilder {
   select<Fields extends T02>(columns: Fields): this;
@@ -23,30 +23,35 @@ export default class Query implements QueryBuilder {
       this.query.select_fields = columns;
     }
 
-    return this
+    return this;
   }
 
   where(...conditions: any): this {
     if (conditions) {
       this.query.conditions = [...conditions];
     }
-    return this
+
+    return this;
   }
 
   or(...conditions: any): ConditionBuilder {
     const result: ConditionBuilder = {};
+
     if (conditions) {
       result.conditions = [...conditions];
       result.use_or_condition = true;
     }
+
     return result;
   }
 
   and(...conditions: any): ConditionBuilder {
     const result: ConditionBuilder = {};
+
     if (conditions) {
       result.conditions = [...conditions];
     }
+
     return result;
   }
 
@@ -55,11 +60,16 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values) {
-      conditions.id = key;
-      conditions.search_value = values.toString().split(',');
-      conditions.exact_match = true;
+
+    if (!key || !values) {
+      throw new Error('Please input data');
     }
+
+
+    conditions.id = key;
+    conditions.search_value = values.toString().split(',');
+    conditions.exact_match = true;
+
     return conditions;
   }
 
@@ -68,12 +78,16 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values) {
-      const search: (string | number | null)[] = values.toString().split(',');
-      search.push(null);
-      conditions.id = key;
-      conditions.search_value = search;
+
+    if (!key || !values) {
+      throw new Error('Please input data');
     }
+
+    const search: (string | number | null)[] = values.toString().split(',');
+    search.push(null);
+    conditions.id = key;
+    conditions.search_value = search;
+
     return conditions;
   }
 
@@ -82,12 +96,16 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values) {
-      const search: (string | number | null)[] = values.toString().split(',');
-      search.unshift(null);
-      conditions.id = key;
-      conditions.search_value = search;
+
+    if (!key || !values) {
+      throw new Error('Please input data');
     }
+
+    const search: (string | number | null)[] = values.toString().split(',');
+    search.unshift(null);
+    conditions.id = key;
+    conditions.search_value = search;
+
     return conditions;
   }
 
@@ -96,10 +114,14 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values) {
-      conditions.id = key;
-      conditions.search_value = values.toString().split(',');
+
+    if (!key || !values) {
+      throw new Error('Please input data');
     }
+
+    conditions.id = key;
+    conditions.search_value = values.toString().split(',');
+
     return conditions;
   }
 
@@ -108,11 +130,15 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values) {
-      conditions.id = key;
-      conditions.search_value = values.toString().split(',');
-      conditions.not_match = true;
+
+    if (!key || !values) {
+      throw new Error('Please input data');
     }
+
+    conditions.id = key;
+    conditions.search_value = values.toString().split(',');
+    conditions.not_match = true;
+
     return conditions;
   }
 
@@ -121,11 +147,15 @@ export default class Query implements QueryBuilder {
     values: string[] | number[],
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values && values.length > 0) {
-      conditions.id = key;
-      conditions.search_value = values;
-      conditions.exact_match = true;
+
+    if (!key || !values || values.length === 0) {
+      throw new Error('Please input data');
     }
+
+    conditions.id = key;
+    conditions.search_value = values;
+    conditions.exact_match = true;
+
     return conditions;
   }
 
@@ -134,33 +164,75 @@ export default class Query implements QueryBuilder {
     values: string[] | number[],
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-    if (key && values && values.length > 0) {
-      conditions.id = key;
-      conditions.search_value = values;
-      conditions.exact_match = true;
-      conditions.not_match = true;
+
+    if (!key || !values || values.length === 0) {
+      throw new Error('Please input data');
     }
+
+    conditions.id = key;
+    conditions.search_value = values;
+    conditions.exact_match = true;
+    conditions.not_match = true;
+
     return conditions;
   }
 
-  // orderBy<SortOrders extends SortOrder>(...values: SortOrders[]): this {
-  //   const maps = new Map();
-  //   const sortFields: ConditionBuilder = {};
+  orderBy<SortOrders extends SortOrder>(values: SortOrders): this {
+    const sortFields: SortFields[] = [];
 
-  //   if (values && values.length > 0) {
-  //     const listKeys = Object.keys(values);
-  //     const listValues = Object.values(values);
+    if (!values) {
+      throw new Error('Please input data');
+    }
 
-  //     for (const value of values) {
-  //       for (const key of listKeys) {
-  //         maps.set(key, value[key]);
-  //       }
-  //     }
+    const entries = Object.entries(values)
+    entries.map(([key, val]) => {
+      sortFields.push({ id: key, order: val });
+    });
 
-  //     // this.query.sort_fields = maps;
-  //   }
-  //   return this;
-  // }
+    this.query.sort_fields = sortFields;
+
+    return this;
+  }
+
+  limit(value: number): this {
+    if (!value) {
+      throw new Error('Please input data');
+    }
+
+    this.query.per_page = value;
+
+    return this;
+  }
+
+  offset(value: number): this {
+    if (!value) {
+      throw new Error('Please input data');
+    }
+
+    this.query.page = value;
+
+    return this;
+  }
+
+  perPage(value: number): this {
+    if (!value) {
+      throw new Error('Please input data');
+    }
+
+    this.query.per_page = value;
+
+    return this;
+  }
+
+  page(value: number): this {
+    if (!value) {
+      throw new Error('Please input data');
+    }
+
+    this.query.page = value;
+
+    return this;
+  }
 
 }
 

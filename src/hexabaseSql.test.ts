@@ -115,21 +115,120 @@ describe('Hexabase SQL', () => {
     });
   });
 
-  // describe('Hexabase SQL', () => {
-  //   it(` //  select('*').where(
-  //     q.inArray('department', ['Marketing', 'Sales']),
-  //     q.greaterThanOrEqualTo('age', 30)
-  //   );`, async () => {
-  //     jest.useFakeTimers();
-  //     const hexabase = new Hexabase();
-  //     const q = await hexabase.datastore.query();
-  //     const query = await hexabase
-  //       .from('project.members')
-  //       .select('*')
-  //       .where(q.greaterThanOrEqualTo('age', 30))
-  //       .orderBy({ age: 'asc' });
-  //     console.log('query', query);
-  //   });
-  // });
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .orderBy({ age: 'asc' });;`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .orderBy({ age: 'asc' });
+      console.log('query', query);
+    });
+  });
+
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .orderBy({ age: 'asc' });;`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .orderBy({ age: 'desc' });
+      console.log('query', query);
+    });
+  });
+
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .orderBy({ age: 'asc' });;`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .orderBy({ age: 'desc', score: 'asc' });
+      console.log('query', query);
+    });
+  });
+
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .limit(10);`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .limit(10);
+      console.log('query', query);
+    });
+  });
+
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .limit(10)
+    .offset(200);`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .limit(10)
+        .offset(200);
+      console.log('query', query);
+    });
+  });
+
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .perPage(10);`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .perPage(10);
+      console.log('query', query);
+    });
+  });
+
+  describe('Hexabase SQL', () => {
+    it(` //  select('*')
+    .where(q.greaterThanOrEqualTo('age', 30))
+    .perPage(10)
+    .page(2);`, async () => {
+      jest.useFakeTimers();
+      const hexabase = new Hexabase();
+      const q = await hexabase.datastore.query();
+      const query = await hexabase
+        .from('project.members')
+        .select('*')
+        .where(q.greaterThanOrEqualTo('age', 30))
+        .perPage(10)
+        .page(2);
+      console.log('query', query);
+    });
+  });
 
 });

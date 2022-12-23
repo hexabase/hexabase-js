@@ -5,15 +5,21 @@ export interface DtLogin {
   login: TokenModel;
 }
 
+export interface SortFields {
+  id?: string;
+  order?: TypeOrder;
+}
+
 /** export response */
 export interface ConditionBuilder {
-  select_fields?: string[];
-  sort_fields?: SortOrder[];
-  conditions?: Array<any>;
   id?: string;
+  select_fields?: string[];
+  sort_fields?: SortFields[];
+  conditions?: Array<any>;
   search_value?: (string | number | null)[];
   exact_match?: boolean;
   use_or_condition?: boolean;
   not_match?: boolean;
-  order?: TypeOrder;
+  page?: number,
+  per_page?: number,
 }
