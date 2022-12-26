@@ -1,18 +1,38 @@
+import { createClient, HexabaseClient } from './';
 import { Hexabase } from './HexabaseSql';
 
 require('dotenv').config();
 jest.useRealTimers();
+
+let token = process.env.TOKEN || '';
+let hexabase: HexabaseClient;
+const url = process.env.URL || '';
+const taskId = process.env.TASKID || '';
+const email = process.env.EMAIL || '';
+const password = process.env.PASSWORD || '';
+
 /**
  * Test with class Hexabase
  * @cmdruntest yarn jest src/hexabase.test.ts
  */
+
+beforeAll(async () => {
+  if (email && password && !token) {
+    const hxbClient = await createClient({ url: url, token: '', email, password });
+    hexabase = hxbClient;
+  }
+  if (token && !email && !password) {
+    const hxbClient = await createClient({ url: url, token, email: '', password: '' });
+    hexabase = hxbClient;
+  }
+});
 
 describe('Hexabase SQL', () => {
 
   describe('Hexabase SQL', () => {
     it(`await hexabase.from('project.members').select('name'); // select_fields: ['name'],  `, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
+      // const hexabase = new Hexabase();
       const query = await hexabase.from('database').select('name');
       console.log('query: ', query);
     });
@@ -21,7 +41,7 @@ describe('Hexabase SQL', () => {
   describe('Hexabase SQL', () => {
     it(` //  select_fields: ['member_id', 'name', 'email']`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase()
+      // const hexabase = new Hexabase()
       const query = await hexabase.from('database').select('member_id, name, email');
       console.log('query', query);
     });
@@ -30,8 +50,8 @@ describe('Hexabase SQL', () => {
   describe('Hexabase SQL', () => {
     it(` // select(['member_id', 'name', 'email']).where(q.equalTo('member_id', 123))`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase.from('database').select(['member_id', 'name', 'email']).where(q.equalTo('member_id', 123));
       console.log('query', query);
     });
@@ -44,8 +64,8 @@ describe('Hexabase SQL', () => {
       q.lessThan('age', 40),
     )`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase.from('database').select('project.members').where(
         q.equalTo('department', 'Marketing'),
         q.greaterThanOrEqualTo('age', 30),
@@ -67,8 +87,8 @@ describe('Hexabase SQL', () => {
       )
     );`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase.from('database').select('project.members').where(
         q.or(
           q.equalTo('FieldA', 'X'),
@@ -89,8 +109,8 @@ describe('Hexabase SQL', () => {
       q.greaterThanOrEqualTo('age', 30)
     );`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase.from('project.members').select('*').where(
         q.inArray('department', ['Marketing', 'Sales']),
         q.greaterThanOrEqualTo('age', 30)
@@ -105,8 +125,8 @@ describe('Hexabase SQL', () => {
       q.greaterThanOrEqualTo('age', 30)
     );`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase.from('project.members').select('*').where(
         q.notInArray('department', ['Marketing', 'Sales']),
         q.greaterThanOrEqualTo('age', 30)
@@ -120,8 +140,8 @@ describe('Hexabase SQL', () => {
     .where(q.greaterThanOrEqualTo('age', 30))
     .orderBy({ age: 'asc' });;`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')
@@ -136,8 +156,8 @@ describe('Hexabase SQL', () => {
     .where(q.greaterThanOrEqualTo('age', 30))
     .orderBy({ age: 'asc' });;`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')
@@ -152,8 +172,8 @@ describe('Hexabase SQL', () => {
     .where(q.greaterThanOrEqualTo('age', 30))
     .orderBy({ age: 'asc' });;`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')
@@ -168,8 +188,8 @@ describe('Hexabase SQL', () => {
     .where(q.greaterThanOrEqualTo('age', 30))
     .limit(10);`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')
@@ -185,8 +205,8 @@ describe('Hexabase SQL', () => {
     .limit(10)
     .offset(200);`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')
@@ -202,8 +222,8 @@ describe('Hexabase SQL', () => {
     .where(q.greaterThanOrEqualTo('age', 30))
     .perPage(10);`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')
@@ -219,8 +239,8 @@ describe('Hexabase SQL', () => {
     .perPage(10)
     .page(2);`, async () => {
       jest.useFakeTimers();
-      const hexabase = new Hexabase();
-      const q = await hexabase.datastore.query();
+      // const hexabase = new Hexabase();
+      const q = await hexabase.query();
       const query = await hexabase
         .from('project.members')
         .select('*')

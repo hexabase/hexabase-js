@@ -61,10 +61,6 @@ export default class Query implements QueryBuilder {
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
 
-    if (!key || !values) {
-      throw new Error('Please input data');
-    }
-
 
     conditions.id = key;
     conditions.search_value = values.toString().split(',');
@@ -78,10 +74,6 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-
-    if (!key || !values) {
-      throw new Error('Please input data');
-    }
 
     const search: (string | number | null)[] = values.toString().split(',');
     search.push(null);
@@ -97,10 +89,6 @@ export default class Query implements QueryBuilder {
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
 
-    if (!key || !values) {
-      throw new Error('Please input data');
-    }
-
     const search: (string | number | null)[] = values.toString().split(',');
     search.unshift(null);
     conditions.id = key;
@@ -115,10 +103,6 @@ export default class Query implements QueryBuilder {
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
 
-    if (!key || !values) {
-      throw new Error('Please input data');
-    }
-
     conditions.id = key;
     conditions.search_value = values.toString().split(',');
 
@@ -130,10 +114,6 @@ export default class Query implements QueryBuilder {
     values: string | number,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-
-    if (!key || !values) {
-      throw new Error('Please input data');
-    }
 
     conditions.id = key;
     conditions.search_value = values.toString().split(',');
@@ -148,10 +128,6 @@ export default class Query implements QueryBuilder {
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
 
-    if (!key || !values || values.length === 0) {
-      throw new Error('Please input data');
-    }
-
     conditions.id = key;
     conditions.search_value = values;
     conditions.exact_match = true;
@@ -165,10 +141,6 @@ export default class Query implements QueryBuilder {
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
 
-    if (!key || !values || values.length === 0) {
-      throw new Error('Please input data');
-    }
-
     conditions.id = key;
     conditions.search_value = values;
     conditions.exact_match = true;
@@ -179,10 +151,6 @@ export default class Query implements QueryBuilder {
 
   orderBy<SortOrders extends SortOrder>(values: SortOrders): this {
     const sortFields: SortFields[] = [];
-
-    if (!values) {
-      throw new Error('Please input data');
-    }
 
     const entries = Object.entries(values)
     entries.map(([key, val]) => {
@@ -195,40 +163,24 @@ export default class Query implements QueryBuilder {
   }
 
   limit(value: number): this {
-    if (!value) {
-      throw new Error('Please input data');
-    }
-
     this.query.per_page = value;
 
     return this;
   }
 
   offset(value: number): this {
-    if (!value) {
-      throw new Error('Please input data');
-    }
-
     this.query.page = value;
 
     return this;
   }
 
   perPage(value: number): this {
-    if (!value) {
-      throw new Error('Please input data');
-    }
-
     this.query.per_page = value;
 
     return this;
   }
 
   page(value: number): this {
-    if (!value) {
-      throw new Error('Please input data');
-    }
-
     this.query.page = value;
 
     return this;

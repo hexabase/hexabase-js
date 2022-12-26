@@ -6,6 +6,8 @@ import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
 import DataReport from './lib/packages/dataReport';
 import Storage from './lib/packages/storage';
+import QueryClient from './lib/sql/client';
+import QueryBuilder from './lib/sql/query';
 
 export default class HexabaseClient {
   public auth: Auth;
@@ -17,6 +19,7 @@ export default class HexabaseClient {
   public storage: Storage;
   public dataReport: DataReport;
   public tokenHxb?: string;
+  protected rest: QueryClient;
 
   constructor(
     protected urlHxb: string,
@@ -29,6 +32,8 @@ export default class HexabaseClient {
 
     this.auth = this._initAuth();
     this._init();
+
+    this.rest = new QueryClient();
   }
 
   /**
@@ -122,5 +127,21 @@ export default class HexabaseClient {
    */
   public _initStorage() {
     return new Storage(this.urlHxb, this.tokenHxb!);
+  }
+
+  /**
+   * initialize from method
+   * @returns new Storage
+   */
+  public from(relation: string): QueryBuilder {
+    return this.rest.from(relation);
+  }
+
+  /**
+   * initialize query method
+   * @returns new Storage
+   */
+  public query(): QueryBuilder {
+    return this.rest.query();
   }
 }
