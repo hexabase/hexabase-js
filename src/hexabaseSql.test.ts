@@ -1,5 +1,4 @@
 import { createClient, HexabaseClient } from './';
-import { Hexabase } from './HexabaseSql';
 
 require('dotenv').config();
 jest.useRealTimers();

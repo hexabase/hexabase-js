@@ -20,6 +20,7 @@ export default class HexabaseClient {
   public dataReport: DataReport;
   public tokenHxb?: string;
   protected rest: QueryClient;
+  protected projectId: string;
 
   constructor(
     protected urlHxb: string,
@@ -143,5 +144,9 @@ export default class HexabaseClient {
    */
   public query(): QueryBuilder {
     return this.rest.query();
+  }
+
+  public setProject(value: string) {
+    // TODO
   }
 }
