@@ -335,7 +335,7 @@ export default class Item extends HxbAbstract {
 
   /**
    * function createComment: create comment item in datastore
-   * @params payload is requirement
+   * @params projectId, datastoreId, itemId and CreateCommentParameters is requirement
    * @returns DatastoreCreateCommentItemRes
    */
   async createComment(
