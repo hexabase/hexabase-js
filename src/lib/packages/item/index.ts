@@ -374,7 +374,7 @@ export default class Item extends HxbAbstract {
 
   /**
    * function updateComment: update comment item in datastore
-   * @params payload is requirement
+   * @params projectId, datastoreId, itemId , historyId and UpdateCommentParameters is requirement
    * @returns ResponseErrorNull
    */
   async updateComment(
@@ -407,12 +407,24 @@ export default class Item extends HxbAbstract {
 
   /**
    * function deleteComment: delete comment item in datastore
-   * @params payload is requirement
+   * @params projectId, datastoreId, itemId , historyId
    * @returns ResponseErrorNull
    */
-  async deleteComment(payload: ArchiveCommentItemsParameters): Promise<ResponseErrorNull> {
+  async deleteComment(
+    projectId: string,
+    datastoreId: string,
+    itemId: string,
+    historyId: string
+  ): Promise<ResponseErrorNull> {
     const data: ResponseErrorNull = {
       error: undefined,
+    };
+
+    const payload: ArchiveCommentItemsParameters = {
+      p_id: projectId,
+      d_id: datastoreId,
+      i_id: itemId,
+      h_id: historyId,
     };
 
     // handle call graphql

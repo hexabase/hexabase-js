@@ -465,13 +465,12 @@ describe('Item', () => {
       if (itemHistories) {
         historyId = itemHistories?.histories[0]?.history_id;
       }
-      const payload: ArchiveCommentItemsParameters = {
-        'd_id': datastoreID,
-        'h_id': historyId,
-        'i_id': itemID,
-        'p_id': projectId,
-      };
-      const { error } = await item.deleteComment(payload);
+      const { error } = await item.deleteComment(
+        projectId,
+        datastoreID,
+        itemID,
+        datastoreID
+      );
 
       // expect response
       if (error) {
