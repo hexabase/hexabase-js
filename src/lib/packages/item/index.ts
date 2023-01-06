@@ -44,6 +44,7 @@ import {
   DtAddItemLink,
   DtUpdateItemLink,
   DtDeleteItemLink,
+  CreateCommentOptions,
   CreateCommentItemsParameters,
   DtDatastoreCreateCommentItem,
   DatastoreCreateCommentItemRes,
@@ -337,11 +338,28 @@ export default class Item extends HxbAbstract {
    * @params payload is requirement
    * @returns DatastoreCreateCommentItemRes
    */
-  async createComment(payload: CreateCommentItemsParameters): Promise<DatastoreCreateCommentItemRes> {
+  async createComment(
+    projectId: string,
+    datastoreId: string,
+    itemId: string,
+    options: CreateCommentOptions): Promise<DatastoreCreateCommentItemRes> {
     const data: DatastoreCreateCommentItemRes = {
       postNewItemHistory: undefined,
       error: undefined,
     };
+
+    const payload: CreateCommentItemsParameters = {
+      workspace_id: '',
+      project_id: projectId,
+      datastore_id: datastoreId,
+      item_id: itemId,
+      post_mode: '',
+      comment: options.comment,
+    };
+
+    if (options.is_send_item_unread) {
+      payload.is_send_item_unread = options.is_send_item_unread;
+    }
 
     // handle call graphql
     try {

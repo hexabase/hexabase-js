@@ -407,18 +407,12 @@ describe('Item', () => {
       const itemS = await item.get(params, datastoreID, projectId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
-      const payload: CreateCommentItemsParameters = {
-        'item_id': itemID,
-        'workspace_id': workspaceId,
-        'project_id': projectId,
-        'datastore_id': datastoreID,
-        'comment': 'create comment',
-        'posting': true,
-        'post_mode': 'ItemTimeline',
-        'is_related_post': false,
-        'is_send_item_unread': true
-      };
-      const { postNewItemHistory, error } = await item.createComment(payload);
+      const { postNewItemHistory, error } = await item.createComment(
+        projectId,
+        datastoreID,
+        itemID,
+        { comment: 'create comment', is_send_item_unread: false }
+      );
 
       // expect response
       if (postNewItemHistory) {
