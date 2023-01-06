@@ -173,7 +173,7 @@ export interface UpdateItemLinkInput {
   new_link_item_id: string;
 }
 
-export interface CreateCommentOptions {
+export interface CreateCommentParameters {
   comment: string;
   is_send_item_unread?: boolean;
 }
