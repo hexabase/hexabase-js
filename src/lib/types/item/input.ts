@@ -190,6 +190,10 @@ export interface CreateCommentItemsParameters {
   workspace_id: string;
 }
 
+export interface UpdateCommentParameters {
+  comment: string;
+}
+
 export interface UpdateCommentItemsParameters {
   comment: string;
   d_id: string;

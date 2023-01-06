@@ -48,6 +48,7 @@ import {
   CreateCommentItemsParameters,
   DtDatastoreCreateCommentItem,
   DatastoreCreateCommentItemRes,
+  UpdateCommentParameters,
   UpdateCommentItemsParameters,
   ArchiveCommentItemsParameters,
   DtDatastoreUpdateCommentItem,
@@ -376,9 +377,22 @@ export default class Item extends HxbAbstract {
    * @params payload is requirement
    * @returns ResponseErrorNull
    */
-  async updateComment(payload: UpdateCommentItemsParameters): Promise<ResponseErrorNull> {
+  async updateComment(
+    projectId: string,
+    datastoreId: string,
+    itemId: string,
+    historyId: string,
+    params: UpdateCommentParameters): Promise<ResponseErrorNull> {
     const data: ResponseErrorNull = {
       error: undefined,
+    };
+
+    const payload: UpdateCommentItemsParameters = {
+      p_id: projectId,
+      d_id: datastoreId,
+      i_id: itemId,
+      h_id: historyId,
+      comment: params.comment,
     };
 
     // handle call graphql

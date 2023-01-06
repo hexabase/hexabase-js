@@ -1,7 +1,6 @@
 require('dotenv').config();
 import Item from '.';
 import Auth from '../auth';
-import AuthMw from '../middleware/auth';
 import Datastore from '../datastore/index';
 import Workspace from '../workspace';
 import Project from '../project';
@@ -437,14 +436,13 @@ describe('Item', () => {
       if (itemHistories) {
         historyId = itemHistories?.histories[0]?.history_id;
       }
-      const payload: UpdateCommentItemsParameters = {
-        'comment': 'update comment',
-        'd_id': datastoreID,
-        'h_id': historyId,
-        'i_id': itemID,
-        'p_id': projectId,
-      };
-      const { error } = await item.updateComment(payload);
+      const { error } = await item.updateComment(
+        projectId,
+        datastoreID,
+        itemID,
+        historyId,
+        { 'comment': 'update comment' }
+      );
 
       // expect response
       if (error) {
