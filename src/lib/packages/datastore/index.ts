@@ -277,15 +277,15 @@ export default class Datastore extends HxbAbstract {
   }
 
   /**
-   * function datastoreGetFieldAutoNumber: get datastore Field Auto Number in Ds
+   * function getAutoNumber: get datastore Field Auto Number in Ds
    * @params datastoreId and actionIdare requirement
    * @returns DatastoreFieldsAutoNumRes
    */
-  async datastoreGetFieldAutoNumber(
+  async getAutoNumber(
     projectId: string,
     datastoreId: string,
     fieldId: string,
-    getFieldAutoNumberQuery?: GetFieldAutoNumberQuery,
+    params?: GetFieldAutoNumberQuery,
   ): Promise<DatastoreFieldsAutoNumRes> {
     const data: DatastoreFieldsAutoNumRes = {
       dsGetFieldAutoNum: undefined,
@@ -294,7 +294,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreFieldsAutoNum = await this.client.request(DATASTORE_GET_FIELD_AUTO_NUMBER, { projectId, datastoreId, fieldId, getFieldAutoNumberQuery });
+      const res: DtDatastoreFieldsAutoNum = await this.client.request(DATASTORE_GET_FIELD_AUTO_NUMBER, { projectId, datastoreId, fieldId, params });
 
       data.dsGetFieldAutoNum = res.datastoreGetFieldAutoNumber;
     } catch (error: any) {
