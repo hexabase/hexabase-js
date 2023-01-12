@@ -47,7 +47,7 @@ export interface IsExistsDSDisplayIDExcludeOwnReq {
 }
 
 export class GetFieldAutoNumberQuery {
-  linked_branch_keyp_id?: string;
-  zero_padding?: string;
-  digit?: string;
+  branch_key?: string;
+  zero_padding?: boolean;
+  digit?: number;
 }

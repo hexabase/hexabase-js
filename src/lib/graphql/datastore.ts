@@ -224,8 +224,8 @@ export const DELETE_DATASTORE = gql`
 `;
 
 export const DATASTORE_GET_FIELD_AUTO_NUMBER = gql`
-  query DatastoreGetFieldAutoNumber($datastoreId: String!, $fieldId: String!, $projectId: String!, $getFieldAutoNumberQuery: GetFieldAutoNumberQuery) {
-    datastoreGetFieldAutoNumber(datastoreId: $datastoreId, fieldId: $fieldId, projectId: $projectId, getFieldAutoNumberQuery: $getFieldAutoNumberQuery) {
+  query DatastoreGetFieldAutoNumber($datastoreId: String!, $fieldId: String!, $projectId: String!, $params: GetFieldAutoNumberQuery) {
+    datastoreGetFieldAutoNumber(datastoreId: $datastoreId, fieldId: $fieldId, projectId: $projectId, getFieldAutoNumberQuery: $params) {
       errors {
         description
         error
