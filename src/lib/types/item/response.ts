@@ -1,5 +1,5 @@
 import { ItemHistory } from './input';
-import { FieldNameENJP, ResponseErrorNull, ResponseOkModel } from '../../util/type';
+import { FieldNameENJP, GenericAPIError, ResponseErrorNull, ResponseOkModel } from '../../util/type';
 
 export interface DsItems {
   items: any;
@@ -160,6 +160,14 @@ export interface DatastoreCreateCommentItem {
 }
 
 
+export interface ItemWithSearch {
+  errors: [GenericAPIError];
+  totalItems: number;
+  items: any;
+  fields: any;
+}
+
+
 /** Data response from request graphql */
 export interface DtDsItems {
   datastoreGetDatastoreItems: DsItems;
@@ -209,6 +217,10 @@ export interface DtDatastoreUpdateCommentItem {
 
 export interface DtDatastoreDeleteCommentItem {
   archiveItemHistory: ResponseErrorNull;
+}
+
+export interface DtItemWithSearch {
+  itemWithSearch: ItemWithSearch;
 }
 
 /** export response */
@@ -262,3 +274,9 @@ export interface DatastoreCreateCommentItemRes {
   postNewItemHistory?: DatastoreCreateCommentItem;
   error?: any;
 }
+
+export interface ItemWithSearchRes {
+  item?: ItemWithSearch;
+  error?: any;
+}
+

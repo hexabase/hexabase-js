@@ -388,3 +388,20 @@ export const POST_DELETE_ITEM_HISTORY = gql`
     }
   }
 `;
+
+export const ITEM_WITH_SEARCH = gql`
+  mutation ItemWithSearch($payload: GetItemsParameters!) {
+    itemWithSearch(getItemsParameters: $payload) {
+      fields
+      items
+      errors {
+        reference_id
+        error_level
+        error_code
+        error
+        description
+      }
+      totalItems
+    }
+  }
+`;
