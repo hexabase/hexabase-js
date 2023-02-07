@@ -502,7 +502,6 @@ export default class Item extends HxbAbstract {
    * @returns ItemWithSearchRes
    */
   async itemWithSearch(
-    // token: string,
     payload: GetItemsParameters,
   ): Promise<ItemWithSearchRes> {
     const data: ItemWithSearchRes = {
@@ -512,13 +511,14 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      console.log("this.client", this.client)
+      console.log("payload", payload)
       const res: DtItemWithSearch = await this.client.request(
         ITEM_WITH_SEARCH,
         {
           payload
         }
       );
+      
       data.item = res.itemWithSearch;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);

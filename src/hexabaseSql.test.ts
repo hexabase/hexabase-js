@@ -49,8 +49,19 @@ describe('Hexabase SQL', () => {
   describe('Hexabase SQL', () => {
     it(` //  select_fields: ['member_id', 'name', 'email']`, async () => {
       jest.useFakeTimers();
+      const q = await hexabase.query();
       // const hexabase = new Hexabase()
-      const query = await hexabase.from('database').select('*').execute()
+      console.log("hexabase", hexabase)
+      const query = await hexabase.from('database')
+      .select('*')
+      .where(
+        q.equalTo("datastore_id", "6360dffc05cc9cb016fbc560"),
+        q.equalTo("project_id", "632ad81082bd898623884d2e"),
+        q.equalTo("include_fields_data", true),
+        q.equalTo("omit_total_items", true),
+        q.equalTo("return_count_only", false),
+      )
+      .execute()
       console.log('query', query);
     });
   });

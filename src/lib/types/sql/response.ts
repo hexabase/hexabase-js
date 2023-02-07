@@ -22,4 +22,8 @@ export interface ConditionBuilder {
   not_match?: boolean;
   page?: number,
   per_page?: number,
+  workspace_id?: string,
+  project_id?: string,
+  datastore_id?: string,
+  item_id?: string,
 }
