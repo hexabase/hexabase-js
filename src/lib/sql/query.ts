@@ -10,11 +10,11 @@ interface QueryBuilder {
 }
 
 type T02 = Exclude<string | string[] | (() => void), Function>; // string | number
-export default class Query extends HxbAbstract implements QueryBuilder   {
+export default class Query extends HxbAbstract implements QueryBuilder {
   query: ConditionBuilder;
 
   constructor() {
-    super("url","token");
+    super('url', 'token');
     this.query = {};
   }
 
@@ -65,8 +65,6 @@ export default class Query extends HxbAbstract implements QueryBuilder   {
     values: any,
   ): ConditionBuilder {
     const conditions: ConditionBuilder = {};
-
-
     conditions.id = key;
     conditions.search_value = values.toString().split(',');
     conditions.exact_match = true;
@@ -136,6 +134,7 @@ export default class Query extends HxbAbstract implements QueryBuilder   {
     conditions.id = key;
     conditions.search_value = values;
     conditions.exact_match = true;
+    conditions.isArray = true;
 
     return conditions;
   }
@@ -150,6 +149,7 @@ export default class Query extends HxbAbstract implements QueryBuilder   {
     conditions.search_value = values;
     conditions.exact_match = true;
     conditions.not_match = true;
+    conditions.isArray = true;
 
     return conditions;
   }
@@ -192,35 +192,50 @@ export default class Query extends HxbAbstract implements QueryBuilder   {
   }
 
   async execute() {
-    console.log("this.query.conditions", this.query.conditions)
-    const payload: GetItemsParameters = {
-      conditions: this.query.conditions,
-      page: this.query.page ? this.query.page : 1,
-      per_page: this.query.per_page ? this.query.per_page: 100,
-      datastore_id:"6360dffc05cc9cb016fbc560",
-      include_fields_data: true,
-      omit_total_items: true, 
-      project_id: "632ad81082bd898623884d2e",
-      return_count_only: false,
+    const payload: any = {
+      page: this.query?.page ? this?.query?.page : 1,
+      per_page: this.query?.per_page ? this?.query?.per_page : 100,
     };
+    console.log('this.query.conditions', this.query.conditions)
+    this.query?.conditions?.map(v => {
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
+        payload[v?.id] = v?.search_value;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
+        payload[v?.id] = v?.search_value?.[0] === 'true';
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
+        payload[v?.id] = v?.search_value?.[0] === 'false';
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && !['true', 'false']?.includes(v?.search_value?.[0])) {
+        payload[v?.id] = v?.search_value?.[0];
+      }
+      if (v?.hasOwnProperty('exact_match')) {
+        payload['exact_match'] = v?.exact_match;
+      }
+      if (v?.hasOwnProperty('not_match')) {
+        payload['not_match'] = v?.not_match;
+      }
+    })
     const data: ItemWithSearchRes = {
       item: undefined,
       error: undefined,
     };
+    console.log('payload', payload)
     // try {
-    //   console.log("payload", payload)
+    //   console.log('payload', payload)
     //   const res: DtItemWithSearch = await this.client.request(
     //     ITEM_WITH_SEARCH,
     //     {
     //       payload
     //     }
     //   );
-      
+
     //   data.item = res.itemWithSearch;
     // } catch (error: any) {
     //   data.error = JSON.stringify(error?.response?.errors);
     // }
-    return data;
+    // return data;
   }
 }
 

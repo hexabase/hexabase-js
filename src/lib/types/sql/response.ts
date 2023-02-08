@@ -20,10 +20,7 @@ export interface ConditionBuilder {
   exact_match?: boolean;
   use_or_condition?: boolean;
   not_match?: boolean;
-  page?: number,
-  per_page?: number,
-  workspace_id?: string,
-  project_id?: string,
-  datastore_id?: string,
-  item_id?: string,
+  page?: number;
+  per_page?: number;
+  isArray?: boolean;
 }
