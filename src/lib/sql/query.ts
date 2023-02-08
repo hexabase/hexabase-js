@@ -5,20 +5,20 @@ import { DtItemWithSearch, GetItemsParameters, ItemWithSearch, ItemWithSearchRes
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { SortOrder } from '../types/sql/input';
 interface QueryBuilder {
-  select<Fields extends T02>(columns: Fields): this;
-  where<Fields extends T02>(columns: Fields): this;
+  select<Fields extends T>(columns: Fields): this;
+  where<Fields extends T>(columns: Fields): this;
 }
 
-type T02 = Exclude<string | string[] | (() => void), Function>; // string | number
+type T = Exclude<string | string[] | (() => void), Function>; // string | number
 export default class Query extends HxbAbstract implements QueryBuilder {
   query: ConditionBuilder;
 
-  constructor() {
-    super('url', 'token');
+  constructor(url?: string, token?: string) {
+    super(url ? url : "", token ? token : "");
     this.query = {};
   }
 
-  select<Fields extends T02>(
+  select<Fields extends T>(
     columns?: Fields,
   ): this {
     if (typeof columns === 'string') {
@@ -192,50 +192,60 @@ export default class Query extends HxbAbstract implements QueryBuilder {
   }
 
   async execute() {
-    const payload: any = {
+    const parameter: any = {
       page: this.query?.page ? this?.query?.page : 1,
       per_page: this.query?.per_page ? this?.query?.per_page : 100,
     };
-    console.log('this.query.conditions', this.query.conditions)
+
     this.query?.conditions?.map(v => {
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
-        payload[v?.id] = v?.search_value;
+        parameter[v?.id] = v?.search_value;
       }
-      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
-        payload[v?.id] = v?.search_value?.[0] === 'true';
-      }
-      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
-        payload[v?.id] = v?.search_value?.[0] === 'false';
-      }
+      // if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
+      //   parameter[v?.id] = v?.search_value?.[0] === 'true';
+      // }
+      // if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
+      //   parameter[v?.id] = v?.search_value?.[0] === 'false';
+      // }
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && !['true', 'false']?.includes(v?.search_value?.[0])) {
-        payload[v?.id] = v?.search_value?.[0];
+        parameter[v?.id] = v?.search_value?.[0];
       }
       if (v?.hasOwnProperty('exact_match')) {
-        payload['exact_match'] = v?.exact_match;
+        parameter['exact_match'] = v?.exact_match;
       }
       if (v?.hasOwnProperty('not_match')) {
-        payload['not_match'] = v?.not_match;
+        parameter['not_match'] = v?.not_match;
       }
     })
+
+    const payload: GetItemsParameters = {
+      page: parameter['page'],
+      per_page: parameter['per_page'],
+      datastore_id: parameter['datastore_id'],
+      project_id: parameter['project_id'],
+      include_fields_data: parameter['include_fields_data'],
+      omit_total_items: parameter['omit_total_items'],
+      return_count_only: parameter['return_count_only'],
+    }
+
     const data: ItemWithSearchRes = {
       item: undefined,
       error: undefined,
     };
-    console.log('payload', payload)
-    // try {
-    //   console.log('payload', payload)
-    //   const res: DtItemWithSearch = await this.client.request(
-    //     ITEM_WITH_SEARCH,
-    //     {
-    //       payload
-    //     }
-    //   );
 
-    //   data.item = res.itemWithSearch;
-    // } catch (error: any) {
-    //   data.error = JSON.stringify(error?.response?.errors);
-    // }
-    // return data;
+    try {
+      const res: DtItemWithSearch = await this.client.request(
+        ITEM_WITH_SEARCH,
+        {
+          payload
+        }
+      );
+      data.item = res.itemWithSearch;
+    } catch (error: any) {
+      data.error = JSON.stringify(error?.response?.errors);
+    }
+
+    return data;
   }
 }
 

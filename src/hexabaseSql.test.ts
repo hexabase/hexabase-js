@@ -47,7 +47,7 @@ describe('Hexabase SQL', () => {
   // });
 
   describe('Hexabase SQL', () => {
-    it(` //  select_fields: ['member_id', 'name', 'email']`, async () => {
+    it(`Test function execute`, async () => {
       jest.useFakeTimers();
       const q = await hexabase.query();
       // const hexabase = new Hexabase()
@@ -64,7 +64,7 @@ describe('Hexabase SQL', () => {
           q.notInArray('position', ['Test', 'Dev']),
         )
         .execute()
-      console.log('query', query);
+      console.log('query', JSON.stringify(query));
     });
   });
 
