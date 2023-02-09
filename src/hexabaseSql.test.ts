@@ -51,7 +51,7 @@ describe('Hexabase SQL', () => {
       jest.useFakeTimers();
       const q = await hexabase.query();
       // const hexabase = new Hexabase()
-      // console.log("hexabase", hexabase)
+      console.log("hexabase", hexabase)
       const query = await hexabase.from('database')
         .select('*')
         .where(

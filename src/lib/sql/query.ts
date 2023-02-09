@@ -201,21 +201,21 @@ export default class Query extends HxbAbstract implements QueryBuilder {
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
         parameter[v?.id] = v?.search_value;
       }
-      // if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
-      //   parameter[v?.id] = v?.search_value?.[0] === 'true';
-      // }
-      // if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
-      //   parameter[v?.id] = v?.search_value?.[0] === 'false';
-      // }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
+        parameter[v?.id] = true;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
+        parameter[v?.id] = false;
+      }
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && !['true', 'false']?.includes(v?.search_value?.[0])) {
         parameter[v?.id] = v?.search_value?.[0];
       }
-      if (v?.hasOwnProperty('exact_match')) {
-        parameter['exact_match'] = v?.exact_match;
-      }
-      if (v?.hasOwnProperty('not_match')) {
-        parameter['not_match'] = v?.not_match;
-      }
+      // if (v?.hasOwnProperty('exact_match')) {
+      //   parameter['exact_match'] = v?.exact_match;
+      // }
+      // if (v?.hasOwnProperty('not_match')) {
+      //   parameter['not_match'] = v?.not_match;
+      // }
     })
 
     const payload: GetItemsParameters = {
