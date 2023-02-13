@@ -172,6 +172,12 @@ export interface UpdateItemLinkInput {
   new_link_datastore_id: string;
   new_link_item_id: string;
 }
+
+export interface CreateCommentParameters {
+  comment: string;
+  is_send_item_unread?: boolean;
+}
+
 export interface CreateCommentItemsParameters {
   comment: string;
   datastore_id: string;
@@ -182,6 +188,10 @@ export interface CreateCommentItemsParameters {
   posting?: boolean;
   project_id: string;
   workspace_id: string;
+}
+
+export interface UpdateCommentParameters {
+  comment: string;
 }
 
 export interface UpdateCommentItemsParameters {
