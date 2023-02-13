@@ -17,6 +17,7 @@ import {
   PostInviteUsersResp,
   UserConfirmRes,
   UserInfoRes,
+  AddUserParams,
   UsernameExistsPl,
   UsernameExistsResp,
   UserPassExRes,
@@ -120,20 +121,38 @@ export default class User extends HxbAbstract {
   }
 
   /**
-   * function usernameExists: add user to workspace
-   * @params payload is requirement
+   * function add: add user to group
+   * @params email is requirement
    * @returns UsernameExistsResp
    */
-  async add(payload: UsernameExistsPl): Promise<UsernameExistsResp> {
+  async add(email: string, groupId: string, params: AddUserParams): Promise<UsernameExistsResp> {
     const data: UsernameExistsResp = {
       usernameExists: undefined,
       error: undefined,
     };
 
+    const payload: UsernameExistsPl = {
+      email: email,
+      group_id: groupId,
+      username: params.username,
+      tmp_password: params.tmp_password,
+      no_confirm_email: params.no_confirm_email,
+      invitor_id: params.invitor_id,
+      email_templates_id: params.email_templates_id,
+      conf_email_template_id: params.conf_email_template_id,
+      confirm_email_ack: params.confirm_email_ack,
+      send_password_to_email: params.send_password_to_email,
+      sender_address: params.sender_address,
+      hostname: params.hostname,
+      exclusive_w_id: params.exclusive_w_id,
+      workspace_key: params.workspace_key,
+      user_code: params.user_code,
+      dynamic_template_data: params.dynamic_template_data
+    };
+
     // handle call graphql
     try {
       const res: DtUsernameExistsRes = await this.client.request(USERNAME_EXITS, { payload });
-
       data.usernameExists = res?.usernameExists;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
