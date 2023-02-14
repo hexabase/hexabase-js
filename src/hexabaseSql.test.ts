@@ -60,8 +60,7 @@ describe('Hexabase SQL', () => {
           q.equalTo("return_count_only", false),
           q.inArray('department', ['Marketing', 'Sales']),
           q.notInArray('position', ['Test', 'Dev']),
-        )
-        .then((data:any) => data)
+        );
       console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
     });
   });

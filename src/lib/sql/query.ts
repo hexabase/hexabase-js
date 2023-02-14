@@ -1,3 +1,4 @@
+import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
 import { ITEM_WITH_SEARCH } from '../graphql/item';
@@ -10,7 +11,7 @@ interface QueryBuilder {
 }
 
 type T = Exclude<string | string[] | (() => void), Function>; // string | number
-export default class Query extends HxbAbstract implements QueryBuilder {
+export default class Query extends HxbAbstract implements QueryBuilder, PromiseLike<any> {
   query: ConditionBuilder;
 
   constructor(url?: string, token?: string) {
@@ -191,7 +192,10 @@ export default class Query extends HxbAbstract implements QueryBuilder {
     return this;
   }
 
-  async then(response: any): Promise<any> {
+  then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+  ): PromiseLike<TResult1 | TResult2> {
     const parameter: any = {
       page: this.query?.page ? this?.query?.page : 1,
       per_page: this.query?.per_page ? this?.query?.per_page : 100,
@@ -226,20 +230,33 @@ export default class Query extends HxbAbstract implements QueryBuilder {
       item: undefined,
       error: undefined,
     };
-
-    try {
-      const res: DtItemWithSearch = await this.client.request(
-        ITEM_WITH_SEARCH,
+    
+    const _fetch = fetch;
+    let res = _fetch(
+        this.urlGraphql,
         {
-          payload
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.tokenHxb}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({query: ITEM_WITH_SEARCH, variables: {payload: payload}})
         }
-      );
-      data.item = res.itemWithSearch;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    response = data
-    return response;
+      ).then(async (res) => {
+        let body = null
+        let error = null
+
+        if (res.ok) {
+          const body = await res.json();
+          data.item = body.data.itemWithSearch;
+        } else {
+          const error = await res.json();
+          data.error = error;
+        }
+        return data;
+    });
+    
+    return res.then(onfulfilled, onrejected);
   }
 }
 
