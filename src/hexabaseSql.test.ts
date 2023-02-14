@@ -49,10 +49,8 @@ describe('Hexabase SQL', () => {
   describe('Hexabase SQL', () => {
     it(`Test function execute`, async () => {
       jest.useFakeTimers();
-      const q = await hexabase.query();
-      // const hexabase = new Hexabase()
-      console.log("hexabase", hexabase)
-      const query = await hexabase.from('database')
+      const q = hexabase.query();
+      const dataItemWithSearch = await hexabase.from('database')
         .select('*')
         .where(
           q.equalTo("datastore_id", "6360dffc05cc9cb016fbc560"),
@@ -63,8 +61,8 @@ describe('Hexabase SQL', () => {
           q.inArray('department', ['Marketing', 'Sales']),
           q.notInArray('position', ['Test', 'Dev']),
         )
-        .execute()
-      console.log('query', JSON.stringify(query));
+        .then((data:any) => data)
+      console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
     });
   });
 

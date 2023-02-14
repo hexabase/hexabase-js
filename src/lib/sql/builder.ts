@@ -1,6 +1,6 @@
 import { DtItemWithSearch, GetItemsParameters } from "../types/item";
 
-export default class FilterBuilder  {
+export default class HexabaseBuilder  {
   url: URL;
   constructor(
     url: URL,
@@ -11,7 +11,7 @@ export default class FilterBuilder  {
   }
 
 
-  // async execute() {
+  // async then() {
   //   const parameter: any = {
   //     page: this.query?.page ? this?.query?.page : 1,
   //     per_page: this.query?.per_page ? this?.query?.per_page : 100,

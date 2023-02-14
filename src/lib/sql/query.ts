@@ -191,7 +191,7 @@ export default class Query extends HxbAbstract implements QueryBuilder {
     return this;
   }
 
-  async execute() {
+  async then(response: any): Promise<any> {
     const parameter: any = {
       page: this.query?.page ? this?.query?.page : 1,
       per_page: this.query?.per_page ? this?.query?.per_page : 100,
@@ -238,8 +238,8 @@ export default class Query extends HxbAbstract implements QueryBuilder {
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }
-
-    return data;
+    response = data
+    return response;
   }
 }
 
