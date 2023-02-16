@@ -1,10 +1,11 @@
 import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
-import { ITEM_WITH_SEARCH } from '../graphql/item';
-import { DtItemWithSearch, GetItemsParameters, ItemWithSearch, ItemWithSearchRes } from '../types/item';
+import { DELETE_ITEM, ITEM_WITH_SEARCH } from '../graphql/item';
+import { DeleteItem, DtItemWithSearch, GetItemsParameters, ItemWithSearch, ItemWithSearchRes } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { SortOrder } from '../types/sql/input';
+import { ModelRes } from '../util/type';
 interface QueryBuilder {
   select<Fields extends T>(columns: Fields): this;
   where<Fields extends T>(columns: Fields): this;
@@ -257,6 +258,62 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     });
     
     return res.then(onfulfilled, onrejected);
+  }
+
+  deleteOne(id: string, params?: any) : any {
+    const parameter: any = {};
+    this.query?.conditions?.map(v => {
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
+        parameter[v?.id] = v?.search_value;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
+        parameter[v?.id] = true;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
+        parameter[v?.id] = false;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && !['true', 'false']?.includes(v?.search_value?.[0])) {
+        parameter[v?.id] = v?.search_value?.[0];
+      }
+    })
+
+    const data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+    
+    const payload: DeleteItem = {
+      datastoreId: parameter['datastore_id'],
+      projectId: parameter['project_id'],
+      itemId: id,
+      deleteItemReq: parameter['deleteItemReq'],
+    }
+
+    const _fetch = fetch;
+    let res = _fetch(
+        this.urlGraphql,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.tokenHxb}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({query: DELETE_ITEM, variables: {payload: payload}})
+        }
+      ).then(async (res) => {
+        let body = null
+        let error = null
+        console.log('res.json();', res.json());
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body.data.data;
+        } else {
+          const error = await res.json();
+          data.error = error;
+        }
+        return data;
+    });
+    
   }
 }
 

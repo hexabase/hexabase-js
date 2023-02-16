@@ -76,6 +76,14 @@ export interface DeleteItemReq {
   delete_linked_items?: boolean;
   target_datastores?: any;
 }
+
+export interface DeleteItem {
+  projectId: string,
+  datastoreId: string,
+  itemId: string,
+  deleteItemReq: DeleteItemReq
+}
+
 export interface GetItemDetailPl {
   include_lookups: boolean;
   use_display_id: boolean;

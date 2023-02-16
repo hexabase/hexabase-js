@@ -65,6 +65,25 @@ describe('Hexabase SQL', () => {
     });
   });
 
+  describe('Hexabase SQL', () => {
+    it(`Test function execute`, async () => {
+      jest.useFakeTimers();
+      const q = hexabase.query();
+      const dataItemWithSearch = await hexabase.from('database')
+        .select('*')
+        .where(
+          q.equalTo("datastore_id", "6360dffc05cc9cb016fbc560"),
+          q.equalTo("project_id", "632ad81082bd898623884d2e"),
+          q.equalTo("include_fields_data", true),
+          q.equalTo("omit_total_items", true),
+          q.equalTo("return_count_only", false),
+          q.inArray('department', ['Marketing', 'Sales']),
+          q.notInArray('position', ['Test', 'Dev']),
+        );
+      console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
+    });
+  });
+
   // describe('Hexabase SQL', () => {
   //   it(` // select(['member_id', 'name', 'email']).where(q.equalTo('member_id', 123))`, async () => {
   //     jest.useFakeTimers();
