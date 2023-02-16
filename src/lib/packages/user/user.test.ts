@@ -1,17 +1,20 @@
+import { PostInviteUsersPl, UsernameExists, UsernameExistsPl } from '../../types/user';
 import User from '.';
 import Auth from '../auth';
-import AuthMw from '../middleware/auth';
 require('dotenv').config();
 /**
  * Test with class User
  * @cmdruntest yarn jest src/lib/packages/user/user.test.ts
  */
 
+let userNameExistsResp: any;
 const url = process.env.URL || '';
 let tokenUs = process.env.TOKEN || '';
 const confirmationId = process.env.CONFIRMATIONID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const workspaceId = process.env.WORKSPACEID || '';
+const groupId = process.env.GROUP_ID || '';
 
 beforeAll(async () => {
   if (email && password) {
@@ -33,7 +36,7 @@ describe('User', () => {
       const user = new User(url, tokenUs);
 
       /** check user register */
-      const { userRegister, error } = await user.register(confirmationId);
+      const { userRegister, error } = await user.confirm(confirmationId);
 
       // expect response respUserRegister
       if (userRegister) {
@@ -97,6 +100,55 @@ describe('User', () => {
         expect(typeof userInfo.u_id).toBe('string');
         expect(typeof userInfo.current_workspace_id).toBe('string');
         expect(typeof userInfo.is_ws_admin).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#usernameExists()', () => {
+    it('should add user to workspace without error', async () => {
+      jest.useFakeTimers('legacy');
+      const user = new User(url, tokenUs);
+      const payload: UsernameExistsPl = {
+        current_workspace_id: workspaceId,
+        email: 'abc@gmail.com',
+        user_code: 'test add user',
+        username: 'abc',
+        group_id: groupId,
+      }
+      const { usernameExists, error } = await user.add(payload);
+
+      // expect response getPasswordExpire
+      if (usernameExists) {
+        userNameExistsResp = usernameExists;
+        expect(typeof usernameExists?.user_profile?.email).toBe('string');
+      } else {
+        throw new Error(`Error: ${error}`);
+      }
+    });
+  });
+
+  describe('#postInviteUsers()', () => {
+    it('should add user to workspace without error', async () => {
+      jest.useFakeTimers('legacy');
+      const user = new User(url, tokenUs);
+      const payload: PostInviteUsersPl = {
+        domain: 'test.hexabase.com',
+        users: [
+          {
+            ...userNameExistsResp?.user_profile,
+            current_workspace_id: workspaceId,
+            group_id: groupId,
+            status: 3,
+          }
+        ]
+      }
+      const { postInviteUsers, error } = await user.invite(payload);
+
+      // expect response getPasswordExpire
+      if (postInviteUsers) {
+        expect(typeof postInviteUsers?.[0]?.email).toBe('string');
       } else {
         throw new Error(`Error: ${error}`);
       }

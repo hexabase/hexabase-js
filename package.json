@@ -24,7 +24,8 @@
     "test:project": "yarn jest src/lib/packages/project/project.test.ts",
     "test:datastore": "yarn jest src/lib/packages/datastore/datastore.test.ts",
     "test:item": "yarn jest src/lib/packages/item/item.test.ts",
-    "test:storage": "yarn jest src/lib/packages/storage/storage.test.ts"
+    "test:storage": "yarn jest src/lib/packages/storage/storage.test.ts",
+    "test:sql": "yarn jest src/HexabaseSql.test.ts"
   },
   "dependencies": {
     "dotenv": "^16.0.0",

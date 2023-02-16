@@ -16,6 +16,7 @@ import {
   POST_NEW_ITEM_HISTORY,
   POST_UPDATE_ITEM_HISTORY,
   POST_DELETE_ITEM_HISTORY,
+  ITEM_WITH_SEARCH,
 } from '../../graphql/item';
 import {
   CreatedItemIdRes,
@@ -53,6 +54,9 @@ import {
   ArchiveCommentItemsParameters,
   DtDatastoreUpdateCommentItem,
   DtDatastoreDeleteCommentItem,
+  ItemWithSearchRes,
+  DtItemWithSearch,
+  GetItemsParameters,
 } from '../../types/item';
 
 export default class Item extends HxbAbstract {
@@ -530,6 +534,36 @@ export default class Item extends HxbAbstract {
         }
       );
       data.data = res.deleteItemLink;
+    } catch (error: any) {
+      data.error = JSON.stringify(error?.response?.errors);
+    }
+    return data;
+  }
+
+  /**
+   * function itemWithSearch: get item search
+   * @params payload
+   * @returns ItemWithSearchRes
+   */
+  async itemWithSearch(
+    payload: GetItemsParameters,
+  ): Promise<ItemWithSearchRes> {
+    const data: ItemWithSearchRes = {
+      item: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      console.log("payload", payload)
+      const res: DtItemWithSearch = await this.client.request(
+        ITEM_WITH_SEARCH,
+        {
+          payload
+        }
+      );
+      
+      data.item = res.itemWithSearch;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }
