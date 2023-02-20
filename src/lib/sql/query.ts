@@ -14,6 +14,8 @@ interface QueryBuilder {
 type T = Exclude<string | string[] | (() => void), Function>; // string | number
 export default class Query extends HxbAbstract implements QueryBuilder, PromiseLike<any> {
   query: ConditionBuilder;
+  projectId: string;
+  datastoreId: string;
 
   constructor(url?: string, token?: string) {
     super(url ? url : "", token ? token : "");
@@ -193,6 +195,18 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     return this;
   }
 
+  useProject(projectId: string) {
+    this.projectId = projectId;
+
+    return this;
+  }
+
+  useDatastore(datastoreId: string) {
+    this.projectId = datastoreId;
+
+    return this;
+  }
+
   then<TResult1 = any, TResult2 = never>(
     onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | undefined | null,
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
@@ -260,7 +274,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     return res.then(onfulfilled, onrejected);
   }
 
-  deleteOne(id: string, params?: any) : any {
+  deleteOne<TResult1 = any, TResult2 = never>(id: string, params?: any) : PromiseLike<TResult1 | TResult2> {
     const parameter: any = {};
     this.query?.conditions?.map(v => {
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
@@ -283,10 +297,10 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     };
     
     const payload: DeleteItem = {
-      datastoreId: parameter['datastore_id'],
-      projectId: parameter['project_id'],
+      datastoreId: this.datastoreId ? this.datastoreId : parameter['datastore_id'],
+      projectId: this.projectId ? this.projectId : parameter['project_id'],
       itemId: id,
-      deleteItemReq: parameter['deleteItemReq'],
+      deleteItemReq: parameter['deleteItemReq'] ? parameter['deleteItemReq'] : {},
     }
 
     const _fetch = fetch;
@@ -298,22 +312,20 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
             'Authorization': `Bearer ${this.tokenHxb}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({query: DELETE_ITEM, variables: {payload: payload}})
+          body: JSON.stringify({query: DELETE_ITEM, variables: {...payload}})
         }
       ).then(async (res) => {
-        let body = null
-        let error = null
-        console.log('res.json();', res.json());
         if (res.ok) {
           const body = await res.json();
-          data.data = body.data.data;
+          data.data = body.data.datastoreDeleteItem;
         } else {
-          const error = await res.json();
+          const error =  await res.json();
           data.error = error;
         }
         return data;
     });
+
+    return res.then();
     
   }
 }
-
