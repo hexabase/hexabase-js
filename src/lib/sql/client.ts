@@ -7,8 +7,8 @@ export default class QueryClient {
     this.url = url;
     this.token = token;
   }
-  from(relation: string): QueryBuilder;
-  from(relation: string): QueryBuilder {
+  from(datastore: string, useDisplayID?: string): QueryBuilder;
+  from(datastore: string, useDisplayID?: string): QueryBuilder {
 
     return new QueryBuilder(this.url, this.token);
   }

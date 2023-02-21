@@ -17,8 +17,9 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   projectId: string;
   datastoreId: string;
 
-  constructor(url?: string, token?: string) {
+  constructor(url?: string, token?: string, datastoreId?: string) {
     super(url ? url : "", token ? token : "");
+    this.datastoreId = datastoreId ? datastoreId : "";
     this.query = {};
   }
 

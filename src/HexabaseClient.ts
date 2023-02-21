@@ -145,8 +145,8 @@ export default class HexabaseClient {
    * initialize from method
    * @returns new Storage
    */
-  public from(relation: string): QueryBuilder {
-    return this.rest.from(relation);
+  public from(datastore: string, useDisplayID?: string): QueryBuilder {
+    return this.rest.from(datastore, useDisplayID);
   }
 
   /**
