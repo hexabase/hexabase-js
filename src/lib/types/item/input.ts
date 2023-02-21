@@ -84,6 +84,12 @@ export interface DeleteItem {
   deleteItemReq: DeleteItemReq
 }
 
+export interface DeleteItemParameter {
+  deleteLinkedItems?: boolean,
+  targetDatastores?: any,
+  useDisplayId?: boolean,
+}
+
 export interface GetItemDetailPl {
   include_lookups: boolean;
   use_display_id: boolean;

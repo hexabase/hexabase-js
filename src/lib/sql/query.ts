@@ -2,9 +2,9 @@ import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
 import { DELETE_ITEM, ITEM_WITH_SEARCH } from '../graphql/item';
-import { DeleteItem, DtItemWithSearch, GetItemsParameters, ItemWithSearch, ItemWithSearchRes } from '../types/item';
+import { DeleteItem, DeleteItemParameter, DtItemWithSearch, GetItemsParameters, ItemWithSearch, ItemWithSearchRes } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
-import { SortOrder } from '../types/sql/input';
+import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
 interface QueryBuilder {
   select<Fields extends T>(columns: Fields): this;
@@ -14,12 +14,17 @@ interface QueryBuilder {
 type T = Exclude<string | string[] | (() => void), Function>; // string | number
 export default class Query extends HxbAbstract implements QueryBuilder, PromiseLike<any> {
   query: ConditionBuilder;
-  projectId: string;
-  datastoreId: string;
+  projectId?: string;
+  datastoreId?: string;
 
-  constructor(url?: string, token?: string, datastoreId?: string) {
-    super(url ? url : "", token ? token : "");
-    this.datastoreId = datastoreId ? datastoreId : "";
+  constructor(params: QueryParameter) {
+    super(params.url ? params.url : "", params.token ? params.token : "");
+    this.datastoreId = this.datastoreId ? this.datastoreId
+                        : params.datastoreId ? params.datastoreId
+                        : undefined;
+    this.projectId = this.projectId ? this.projectId
+                      : params.projectId ? params.projectId
+                      : undefined;
     this.query = {};
   }
 
@@ -275,7 +280,10 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     return res.then(onfulfilled, onrejected);
   }
 
-  deleteOne<TResult1 = any, TResult2 = never>(id: string, params?: any) : PromiseLike<TResult1 | TResult2> {
+  deleteOne<
+  TResult1 = any,
+  TResult2 = never,
+  >(id: string, params?: DeleteItemParameter) : PromiseLike<TResult1 | TResult2> {
     const parameter: any = {};
     this.query?.conditions?.map(v => {
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
@@ -296,12 +304,22 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       data: undefined,
       error: undefined,
     };
-    
+
     const payload: DeleteItem = {
-      datastoreId: this.datastoreId ? this.datastoreId : parameter['datastore_id'],
-      projectId: this.projectId ? this.projectId : parameter['project_id'],
+      datastoreId: this.datastoreId ? this.datastoreId
+                  : parameter['datastore_id'] ? parameter['datastore_id']
+                  : "",
+      projectId: this.projectId ? this.projectId 
+                : parameter['project_id'] ? parameter['project_id']
+                : "",
       itemId: id,
-      deleteItemReq: parameter['deleteItemReq'] ? parameter['deleteItemReq'] : {},
+      deleteItemReq: params ? {
+                        use_display_id: params?.useDisplayId,
+                        delete_linked_items: params?.deleteLinkedItems,
+                        target_datastores: params?.targetDatastores,
+                      } 
+                    : parameter['deleteItemReq'] ? parameter['deleteItemReq'] 
+                    : {} ,
     }
 
     const _fetch = fetch;
