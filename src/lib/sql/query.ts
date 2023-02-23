@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
-import { DELETE_ITEM, ITEM_WITH_SEARCH } from '../graphql/item';
-import { DeleteItem, DeleteItemParameter, DtItemWithSearch, GetItemsParameters, ItemWithSearch, ItemWithSearchRes } from '../types/item';
+import { DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
+import { DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
@@ -247,11 +247,12 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       return_count_only: parameter['return_count_only'],
     }
 
+    
     const data: ItemWithSearchRes = {
       item: undefined,
       error: undefined,
     };
-    
+
     const _fetch = fetch;
     let res = _fetch(
         this.urlGraphql,
@@ -276,13 +277,13 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
         }
         return data;
     });
-    
+
     return res.then(onfulfilled, onrejected);
   }
 
   deleteOne<
-  TResult1 = any,
-  TResult2 = never,
+    TResult1 = any,
+    TResult2 = never,
   >(id: string, params?: DeleteItemParameter) : PromiseLike<TResult1 | TResult2> {
     const parameter: any = {};
     this.query?.conditions?.map(v => {
@@ -332,6 +333,71 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({query: DELETE_ITEM, variables: {...payload}})
+        }
+      ).then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body.data.datastoreDeleteItem;
+        } else {
+          const error =  await res.json();
+          data.error = error;
+        }
+        return data;
+    });
+
+    return res.then();
+  }
+
+  deleteMany<
+    TResult1 = any,
+    TResult2 = never,
+  >(params?: DeleteItemsParameter) : PromiseLike<TResult1 | TResult2> {
+
+    const parameter: any = {};
+    this.query?.conditions?.map(v => {
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
+        parameter[v?.id] = v?.search_value;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
+        parameter[v?.id] = true;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
+        parameter[v?.id] = false;
+      }
+      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && !['true', 'false']?.includes(v?.search_value?.[0])) {
+        parameter[v?.id] = v?.search_value?.[0];
+      }
+    })
+
+    const data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+    const payload: DeleteItemsParameters = {
+      datastoreId: this.datastoreId ? this.datastoreId
+                  : parameter['datastore_id'] ? parameter['datastore_id']
+                  : "",
+      projectId: this.projectId ? this.projectId 
+                : parameter['project_id'] ? parameter['project_id']
+                : "",
+      payload: params ? {
+                        use_display_id: params?.use_display_id,
+                        conditions: params?.conditions
+                      }
+                    : {} ,
+    }
+
+    const _fetch = fetch;
+    let res = _fetch(
+        this.urlGraphql,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.tokenHxb}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({query: DELETE_ITEMS, variables: {...payload}})
         }
       ).then(async (res) => {
         if (res.ok) {

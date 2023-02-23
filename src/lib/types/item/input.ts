@@ -90,6 +90,21 @@ export interface DeleteItemParameter {
   useDisplayId?: boolean,
 }
 
+export interface ConditionDeleteItems {
+  search_value?: any;
+  data_type?: string;
+}
+export interface DeleteItemsParameter {
+  conditions?: [ConditionDeleteItems],
+  use_display_id?: boolean,
+}
+
+export interface DeleteItemsParameters {
+  datastoreId: string,
+  projectId: string,
+  payload?: DeleteItemsParameter,
+}
+
 export interface GetItemDetailPl {
   include_lookups: boolean;
   use_display_id: boolean;

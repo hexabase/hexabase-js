@@ -46,52 +46,52 @@ describe('Hexabase SQL', () => {
   //   });
   // });
 
-  // describe('Hexabase SQL', () => {
-  //   it(`Test function execute`, async () => {
-  //     jest.useFakeTimers();
-  //     const q = hexabase.query();
-  //     const dataItemWithSearch = await hexabase.from('database')
-  //       .select('*')
-  //       .where(
-  //         q.equalTo("datastore_id", "6360dffc05cc9cb016fbc560"),
-  //         q.equalTo("project_id", "632ad81082bd898623884d2e"),
-  //         q.equalTo("include_fields_data", true),
-  //         q.equalTo("omit_total_items", true),
-  //         q.equalTo("return_count_only", false),
-  //       );
-  //     console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
-  //   });
-  // });
-
   describe('Hexabase SQL', () => {
     it(`Test function execute`, async () => {
       jest.useFakeTimers();
       const q = hexabase.query();
-      const dataDeleteItem = await hexabase.from('6360deb505cc9cb016fbc53f')
+      const dataItemWithSearch = await hexabase.from('database')
         .select('*')
         .where(
           q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
-          q.equalTo("project_id", "632ad81082bd898623884d2e")
-        ).deleteOne("63f31714a417d97eb502380d")
-      console.log('delete Item', JSON.stringify(dataDeleteItem));
+          q.equalTo("project_id", "632ad81082bd898623884d2e"),
+          q.equalTo("include_fields_data", true),
+          q.equalTo("omit_total_items", true),
+          q.equalTo("return_count_only", false),
+        );
+      console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
     });
   });
 
-  describe('Hexabase SQL', () => {
-    it(`Test function execute delete use display id`, async () => {
-      jest.useFakeTimers();
-      const q = hexabase.query();
-      hexabase.useProject("632ad81082bd898623884d2e")
-      const dataDeleteItem = await hexabase.from('Db-EPIPmEac')
-        .select('*')
-        .where()
-        .deleteOne("63f465f1a432e29f253d9ecb", {
-          deleteLinkedItems: true,
-          useDisplayId: true,
-        })
-      console.log('delete Item', JSON.stringify(dataDeleteItem));
-    });
-  });
+  // describe('Hexabase SQL', () => {
+  //   it(`Test function execute`, async () => {
+  //     jest.useFakeTimers();
+  //     const q = hexabase.query();
+  //     const dataDeleteItem = await hexabase.from('6360deb505cc9cb016fbc53f')
+  //       .select('*')
+  //       .where(
+  //         q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
+  //         q.equalTo("project_id", "632ad81082bd898623884d2e")
+  //       ).deleteOne("63f31714a417d97eb502380d")
+  //     console.log('delete Item', JSON.stringify(dataDeleteItem));
+  //   });
+  // });
+
+  // describe('Hexabase SQL', () => {
+  //   it(`Test function execute delete use display id`, async () => {
+  //     jest.useFakeTimers();
+  //     const q = hexabase.query();
+  //     hexabase.useProject("632ad81082bd898623884d2e")
+  //     const dataDeleteItem = await hexabase.from('Db-EPIPmEac')
+  //       .select('*')
+  //       .where()
+  //       .deleteOne("63f465f1a432e29f253d9ecb", {
+  //         deleteLinkedItems: true,
+  //         useDisplayId: true,
+  //       })
+  //     console.log('delete Item', JSON.stringify(dataDeleteItem));
+  //   });
+  // });
 
   // describe('Hexabase SQL', () => {
   //   it(` // select(['member_id', 'name', 'email']).where(q.equalTo('member_id', 123))`, async () => {

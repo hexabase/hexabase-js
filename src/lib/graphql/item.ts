@@ -405,3 +405,12 @@ export const ITEM_WITH_SEARCH = gql`
     }
   }
 `;
+
+export const DELETE_ITEMS = gql`
+  mutation DatastoreDeleteDatastoreItems($datastoreId: String!, $projectId: String, $payload: DeleteItemsParameters) {
+    datastoreDeleteDatastoreItems(datastoreId: $datastoreId, projectId: $projectId, deleteItemsParameters: $payload) {
+      data
+      success
+    }
+  }
+`
