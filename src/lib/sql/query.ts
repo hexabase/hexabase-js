@@ -402,7 +402,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       ).then(async (res) => {
         if (res.ok) {
           const body = await res.json();
-          data.data = body.data.datastoreDeleteItem;
+          data.data = body.data.datastoreDeleteDatastoreItems;
         } else {
           const error =  await res.json();
           data.error = error;
