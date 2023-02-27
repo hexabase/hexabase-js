@@ -2,7 +2,7 @@ import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
 import { CREATE_NEW_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
-import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes } from '../types/item';
+import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
@@ -413,7 +413,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   >(params?: any) : PromiseLike<TResult1 | TResult2> {
     
     const parameter = this.getParameter();
-    const data: ModelRes = {
+    const data: NewItem = {
       data: undefined,
       error: undefined,
     };
@@ -455,5 +455,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
 
     return res.then();
   }
+
+
 }
 
