@@ -30,6 +30,7 @@ export interface GetItemsPl {
   include_lookups?: boolean;
   return_number_value?: boolean;
   format?: string;
+ 
   return_count_only?: boolean;
   omit_fields_data?: boolean;
   omit_total_items?: boolean;
@@ -56,6 +57,7 @@ export interface FieldAccessKeyUpdates {
   users_to_publish?: any;
 }
 
+
 export interface CreateNewItemPl {
   action_id?: string;
   item: any;
@@ -67,6 +69,11 @@ export interface CreateNewItemPl {
   as_params?: any;
   related_ds_items?: any;
   access_key_updates?: FieldAccessKeyUpdates;
+}
+export interface CreateNewItem {
+  projectId: string;
+  datastoreId: string;
+  payload: CreateNewItemPl;
 }
 
 export interface DeleteItemReq {

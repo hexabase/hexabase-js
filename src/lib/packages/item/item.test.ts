@@ -233,7 +233,7 @@ describe('Item', () => {
         throw new Error(`Error: actions empty`);
       }
       const item = new Item(url, tokenItem);
-      const newItemActionParameters = {
+      const payload = {
         'action_id': `${actionCreate}`,
         'use_display_id': true,
         'return_item_result': true,
@@ -250,7 +250,7 @@ describe('Item', () => {
         }
       };
 
-      const { itemNew, error } = await item.create(projectId, datastoreID, newItemActionParameters);
+      const { itemNew, error } = await item.create(projectId, datastoreID, payload);
 
       // expect response
       if (itemNew) {

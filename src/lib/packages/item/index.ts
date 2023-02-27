@@ -169,7 +169,7 @@ export default class Item extends HxbAbstract {
       const res: DtNewItem = await this.client.request(CREATE_NEW_ITEM, {
         projectId,
         datastoreId,
-        newItemActionParameters: newItemPl,
+        payload: newItemPl,
       });
 
       data.itemNew = res.datastoreCreateNewItem;

@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
-import { DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
-import { DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes } from '../types/item';
+import { CREATE_NEW_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
+import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
@@ -281,10 +281,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     return res.then(onfulfilled, onrejected);
   }
 
-  deleteOne<
-    TResult1 = any,
-    TResult2 = never,
-  >(id: string, params?: DeleteItemParameter) : PromiseLike<TResult1 | TResult2> {
+  getParameter() {
     const parameter: any = {};
     this.query?.conditions?.map(v => {
       if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
@@ -301,6 +298,15 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       }
     })
 
+    return parameter;
+  }
+
+  deleteOne<
+    TResult1 = any,
+    TResult2 = never,
+  >(id: string, params?: DeleteItemParameter) : PromiseLike<TResult1 | TResult2> {
+    
+    const parameter = this.getParameter();
     const data: ModelRes = {
       data: undefined,
       error: undefined,
@@ -353,21 +359,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     TResult2 = never,
   >(params?: DeleteItemsParameter) : PromiseLike<TResult1 | TResult2> {
 
-    const parameter: any = {};
-    this.query?.conditions?.map(v => {
-      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && v?.hasOwnProperty('isArray') && v?.isArray === true) {
-        parameter[v?.id] = v?.search_value;
-      }
-      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'true') {
-        parameter[v?.id] = true;
-      }
-      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && v?.search_value?.[0] === 'false') {
-        parameter[v?.id] = false;
-      }
-      if (v?.hasOwnProperty('id') && v?.hasOwnProperty('search_value') && !v?.hasOwnProperty('isArray') && !['true', 'false']?.includes(v?.search_value?.[0])) {
-        parameter[v?.id] = v?.search_value?.[0];
-      }
-    })
+    const parameter = this.getParameter();
 
     const data: ModelRes = {
       data: undefined,
@@ -411,6 +403,57 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     });
 
     return res.then();
+
+  }
+
+
+  insertOne<
+    TResult1 = any,
+    TResult2 = never,
+  >(params?: any) : PromiseLike<TResult1 | TResult2> {
     
+    const parameter = this.getParameter();
+    const data: ModelRes = {
+      data: undefined,
+      error: undefined,
+    };
+
+    const payload: CreateNewItem = {
+      datastoreId: this.datastoreId ? this.datastoreId
+                  : parameter['datastore_id'] ? parameter['datastore_id']
+                  : "",
+      projectId: this.projectId ? this.projectId 
+                : parameter['project_id'] ? parameter['project_id']
+                : "",
+      payload: {
+        item: params,
+        return_item_result: true
+      }
+    }
+
+    const _fetch = fetch;
+    let res = _fetch(
+        this.urlGraphql,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.tokenHxb}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({query: CREATE_NEW_ITEM, variables: {...payload}})
+        }
+      ).then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body.data.datastoreCreateNewItem;
+        } else {
+          const error =  await res.json();
+          data.error = error;
+        }
+        return data;
+    });
+
+    return res.then();
   }
 }
+

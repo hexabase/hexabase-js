@@ -46,20 +46,37 @@ describe('Hexabase SQL', () => {
   //   });
   // });
 
+  // describe('Hexabase SQL', () => {
+  //   it(`Test function execute`, async () => {
+  //     jest.useFakeTimers();
+  //     const q = hexabase.query();
+  //     const dataItemWithSearch = await hexabase.from('database')
+  //       .select('*')
+  //       .where(
+  //         q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
+  //         q.equalTo("project_id", "632ad81082bd898623884d2e"),
+  //         q.equalTo("include_fields_data", true),
+  //         q.equalTo("omit_total_items", true),
+  //         q.equalTo("return_count_only", false),
+  //       );
+  //     console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
+  //   });
+  // });
+
+
   describe('Hexabase SQL', () => {
-    it(`Test function execute`, async () => {
+    it(`Test function execute insert item`, async () => {
       jest.useFakeTimers();
       const q = hexabase.query();
-      const dataItemWithSearch = await hexabase.from('database')
-        .select('*')
-        .where(
-          q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
-          q.equalTo("project_id", "632ad81082bd898623884d2e"),
-          q.equalTo("include_fields_data", true),
-          q.equalTo("omit_total_items", true),
-          q.equalTo("return_count_only", false),
-        );
-      console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
+      hexabase.useProject("632ad81082bd898623884d2e")
+      const itemInserted = await hexabase.from('6360deb505cc9cb016fbc53f')
+        .insertOne({
+          "636343dbeb4e1e3bd91c4a72": [],
+          "63633c6feb4e1e3bd918b5a4": "nguyen",
+          "6360deb5990afe5d523ba6b7": "nguyen title"
+        })
+
+      console.log('itemInserted', JSON.stringify(itemInserted));
     });
   });
 

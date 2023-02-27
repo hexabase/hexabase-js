@@ -66,12 +66,12 @@ export const CREATE_ITEMID = gql`
 
 export const CREATE_NEW_ITEM = gql`
   mutation DatastoreCreateNewItem(
-    $newItemActionParameters: NewItemActionParameters!
+    $payload: NewItemActionParameters!
     $datastoreId: String!
     $projectId: String!
   ) {
     datastoreCreateNewItem(
-      newItemActionParameters: $newItemActionParameters
+      newItemActionParameters: $payload
       datastoreId: $datastoreId
       projectId: $projectId
     ) {
