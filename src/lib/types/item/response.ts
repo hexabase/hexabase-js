@@ -247,8 +247,8 @@ export interface NewItem {
 }
 
 export interface NewItems {
-  data?: [NewItem]
-  error?: string;
+  data?: NewItem[]
+  error?: string[];
 }
 
 export interface ItemLinkedRes {

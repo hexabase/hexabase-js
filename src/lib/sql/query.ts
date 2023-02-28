@@ -456,6 +456,101 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     return res.then();
   }
 
+  insertMany<
+    TResult1 = any,
+    TResult2 = never,
+  >(params?: any) : PromiseLike<NewItems | TResult1| TResult2> {
+    return new Promise((resolve, rejects) =>
+    // {
+    //   console.log("Initial");
+    //   if (items){
+    //     console.log("resolve");
+    //     resolve(items)
+    //   }else{
+    //     console.log("rejects");
+
+    //     rejects(console.log("error"));
+    //   }
+    // }); 
+    {
+      const items: NewItems = {
+        data: [],
+        error: [],
+      };
+      let itemsList: NewItem[] = []
+      let errors : string[] = []
+      const parameter = this.getParameter();
+
+      if (Array.isArray(params) ) {
+        console.log("params")
+
+        const datastoreId = this.datastoreId ? this.datastoreId
+                          : parameter['datastore_id'] ? parameter['datastore_id']
+                          : "";
+        const projectId = this.projectId ? this.projectId 
+                          : parameter['project_id'] ? parameter['project_id']
+                          : "";
+
+        for (let i = 0; i <params.length; i ++) {
+          this.insertItem(datastoreId, projectId, params[i])
+          .then(async (i) => {
+            itemsList.push(i)
+            if (i.error) {
+              errors.push(i.error)
+            }
+            items.data = itemsList
+          }).catch(err => {
+            console.log(err);
+          });
+          console.log("items", items)
+        }
+        
+        items.data = itemsList
+        items.error = errors
+        resolve(items)
+      }
+    })
+  }
+
+  async insertItem(datastoreId: string, projectId: string, param: any):  Promise<NewItem> {
+
+    const data: NewItem = {
+      data: undefined,
+      error: undefined,
+    };
+    const payload: CreateNewItem = {
+      datastoreId,
+      projectId,
+      payload: {
+        item: param,
+        return_item_result: true
+      }
+    }
+
+    const _fetch = fetch;
+    let res = _fetch(
+        this.urlGraphql,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.tokenHxb}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({query: CREATE_NEW_ITEM, variables: {...payload}})
+        }
+      ).then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body.data.datastoreCreateNewItem;
+        } else {
+          const error =  await res.json();
+          data.error = error;
+        }
+        return data;
+    });
+
+    return await res.then()
+  }
 
 }
 

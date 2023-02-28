@@ -64,17 +64,33 @@ describe('Hexabase SQL', () => {
   // });
 
 
+  // describe('Hexabase SQL', () => {
+  //   it(`Test function execute insert item`, async () => {
+  //     jest.useFakeTimers();
+  //     const q = hexabase.query();
+  //     hexabase.useProject("632ad81082bd898623884d2e")
+  //     const itemInserted = await hexabase.from('6360deb505cc9cb016fbc53f')
+  //       .insertOne({
+  //         "636343dbeb4e1e3bd91c4a72": [],
+  //         "63633c6feb4e1e3bd918b5a4": "nguyen",
+  //         "6360deb5990afe5d523ba6b7": "nguyen title"
+  //       })
+
+  //     console.log('itemInserted', JSON.stringify(itemInserted));
+  //   });
+  // });
+
   describe('Hexabase SQL', () => {
     it(`Test function execute insert item`, async () => {
       jest.useFakeTimers();
       const q = hexabase.query();
       hexabase.useProject("632ad81082bd898623884d2e")
       const itemInserted = await hexabase.from('6360deb505cc9cb016fbc53f')
-        .insertOne({
+        .insertMany([{
           "636343dbeb4e1e3bd91c4a72": [],
-          "63633c6feb4e1e3bd918b5a4": "nguyen",
+          "63633c6feb4e1e3bd918b5a4": "nguyen123123",
           "6360deb5990afe5d523ba6b7": "nguyen title"
-        })
+        }])
 
       console.log('itemInserted', JSON.stringify(itemInserted));
     });
