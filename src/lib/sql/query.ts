@@ -473,12 +473,12 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     //   }
     // }); 
     {
-      const items: NewItems = {
-        data: [],
-        error: [],
-      };
-      let itemsList: NewItem[] = []
-      let errors: string[] = []
+      // const items: NewItems = {
+      //   data: [],
+      //   error: [],
+      // };
+      // let itemsList: NewItem[] = []
+      // let errors: string[] = []
       const parameter = this.getParameter();
 
       if (Array.isArray(params)) {
@@ -503,7 +503,8 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
 
         // items.data = itemsList
         // items.error = errors
-        resolve(promises)
+        const raws = Promise.all(promises)
+        resolve(raws)
       }
     })
   }
@@ -511,7 +512,6 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   async insertItem(datastoreId: string, projectId: string, param: any): Promise<NewItem> {
     const data: NewItem = {
       data: undefined,
-      error: undefined,
     };
     const payload: CreateNewItem = {
       datastoreId,
