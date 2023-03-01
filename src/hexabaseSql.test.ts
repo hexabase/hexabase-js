@@ -89,11 +89,10 @@ describe('Hexabase SQL', () => {
         .insertMany([
           {
             "636343dbeb4e1e3bd91c4a72": [],
-            "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm",
-            "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm"
+            "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyenpd",
+            "6360deb5990afe5d523ba6b7": "[Title] nguyenpd"
           },
         ]);
-      // const raws = await Promise.all(itemInserted)
       console.log('itemInserted', itemInserted)
     });
   });

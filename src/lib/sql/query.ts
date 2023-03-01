@@ -460,25 +460,9 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     TResult1 = any,
     TResult2 = never,
   >(params?: { [key: string]: any }[]): PromiseLike<any | TResult1 | TResult2> {
-    return new Promise((resolve, rejects) =>
-    // {
-    //   console.log("Initial");
-    //   if (items){
-    //     console.log("resolve");
-    //     resolve(items)
-    //   }else{
-    //     console.log("rejects");
-
-    //     rejects(console.log("error"));
-    //   }
-    // }); 
+    return new Promise((resolve, rejects) => 
     {
-      // const items: NewItems = {
-      //   data: [],
-      //   error: [],
-      // };
-      // let itemsList: NewItem[] = []
-      // let errors: string[] = []
+
       const parameter = this.getParameter();
 
       if (Array.isArray(params)) {
@@ -491,18 +475,9 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
         let promises = []
         for (let i = 0; i < params.length; i++) {
           promises.push(this.insertItem(datastoreId, projectId, params[i]))
-          // .then((i) => {
-          //   itemsList.push(i)
-          //   if (i.error) {
-          //     errors.push(i.error)
-          //   }
-          // }).catch(err => {
-          //   console.log(err);
-          // });
+          
         }
 
-        // items.data = itemsList
-        // items.error = errors
         const raws = Promise.all(promises)
         resolve(raws)
       }
