@@ -1,4 +1,5 @@
 import { createClient, HexabaseClient } from './';
+import { NewItems } from './lib/types/item';
 
 require('dotenv').config();
 jest.useRealTimers();
@@ -83,16 +84,22 @@ describe('Hexabase SQL', () => {
   describe('Hexabase SQL', () => {
     it(`Test function execute insert item`, async () => {
       jest.useFakeTimers();
-      const q = hexabase.query();
-      hexabase.useProject("632ad81082bd898623884d2e")
-      const itemInserted = await hexabase.from('6360deb505cc9cb016fbc53f')
-        .insertMany([{
-          "636343dbeb4e1e3bd91c4a72": [],
-          "63633c6feb4e1e3bd918b5a4": "nguyen123123",
-          "6360deb5990afe5d523ba6b7": "nguyen title"
-        }])
-
-      console.log('itemInserted', JSON.stringify(itemInserted));
+      await hexabase.useProject("632ad81082bd898623884d2e")
+      const items = await hexabase.from('6360deb505cc9cb016fbc53f')
+        .insertMany([
+          {
+            "636343dbeb4e1e3bd91c4a72": [],
+            "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm",
+            "6360deb5990afe5d523ba6b7": "[Title] title nguyên mõm"
+          },
+          // {
+          //   "636343dbeb4e1e3bd91c4a72": [],
+          //   "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm 1",
+          //   "6360deb5990afe5d523ba6b7": "[Title] title nguyên mõm 1"
+          // }
+        ]);
+      const raws = await Promise.all(items)
+      console.log('raws', raws)
     });
   });
 
