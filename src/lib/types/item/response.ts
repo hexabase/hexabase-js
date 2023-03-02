@@ -246,8 +246,14 @@ export interface NewItem {
   error?: string;
 }
 
+export interface ItemUpdatedSuccess {
+  error: string;
+  itemHistory: ItemHistoryComment;
+  rev_no: RevNo;
+}
+
 export interface UpdateItemRes {
-  data?: ResponseOkModel;
+  data?: ItemUpdatedSuccess;
   error?: string;
 }
 

@@ -490,7 +490,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
             : "";
         let promises = []
         for (let i = 0; i < params.length; i++) {
-          promises.push(this.insertItem(datastoreId, projectId, params[i]))
+          promises.push(this.insertItem(datastoreId, projectId, params[i]));
           // .then((i) => {
           //   itemsList.push(i)
           //   if (i.error) {
@@ -503,8 +503,8 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
 
         // items.data = itemsList
         // items.error = errors
-        const raws = Promise.all(promises)
-        resolve(raws)
+        const raws = Promise.all(promises);
+        resolve(raws);
       }
     })
   }
@@ -547,10 +547,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     return res
   }
 
-  updateOne<
-    TResult1 = any,
-    TResult2 = never,
-  >(params?: { [key: string]: any }): PromiseLike<TResult1 | TResult2> {
+  updateOne<TResult1 = any, TResult2 = never>(params?: { [key: string]: any }): PromiseLike<UpdateItemRes | TResult1 | TResult2> {
     const parameter = this.getParameter();
     const data: UpdateItemRes = {
       data: undefined,
@@ -559,27 +556,48 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     const datastoreId = this.datastoreId ? this.datastoreId : parameter['datastore_id'] ? parameter['datastore_id'] : "";
     const projectId = this.projectId ? this.projectId : parameter['project_id'] ? parameter['project_id'] : "";
 
-    if (!params?.revNo) {
+    return Promise.resolve(this.updateItem(datastoreId, projectId, params));
+  }
+
+  updateMany<TResult1 = any, TResult2 = never>(params?: { [key: string]: any }[]): PromiseLike<UpdateItemRes[] | TResult1 | TResult2> {
+    return new Promise((resolve) => {
+      const promises = [];
+      const parameter = this.getParameter();
+      const data: UpdateItemRes = {
+        data: undefined,
+        error: undefined,
+      };
+      const datastoreId = this.datastoreId ? this.datastoreId : parameter['datastore_id'] ? parameter['datastore_id'] : "";
+      const projectId = this.projectId ? this.projectId : parameter['project_id'] ? parameter['project_id'] : "";
+      if (!Array.isArray(params)) {
+        throw new Error('Params is required Array objects');
+      }
+
+      for (const i of params) {
+        promises.push(this.updateItem(datastoreId, projectId, i));
+      }
+      const raws = Promise.all(promises);
+      resolve(raws);
+    })
+  }
+
+  updateItem(datastoreId: string, projectId: string, params?: { [key: string]: any }): PromiseLike<UpdateItemRes> {
+    const data: UpdateItemRes = {
+      data: undefined,
+      error: undefined,
+    };
+    const itemId = params?.itemId;
+    delete params?.itemId;
+
+    if (!params?.rev_no || typeof params?.rev_no !== 'number') {
       throw new Error('rev_no required and type of rev_no is int!')
     }
 
     const payload: UpdateCurrentItem = {
-      itemId: params?.itemId,
+      itemId,
       datastoreId,
       projectId,
-      itemActionParameters: {
-        rev_no: params?.revNo,
-        item: params?.changeItem,
-        return_item_result: true,
-        use_display_id: true,
-        is_force_update: true,
-        ensure_transaction: false,
-        exec_children_post_procs: true,
-        history: {
-          comment: 'test update item',
-          datastore_id: datastoreId
-        }
-      }
+      itemActionParameters: { ...params }
     }
 
     const _fetch = fetch;
@@ -605,7 +623,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
         data.error = error;
       }
       return data;
-    }).catch(error => console.log('error: ', error));
+    }).catch(error => { throw new Error(`error: ${error}`) });
 
     return res.then();
   }

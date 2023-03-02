@@ -1,6 +1,6 @@
 import { createClient, HexabaseClient } from './';
 import Item from './lib/packages/item';
-import { NewItems } from './lib/types/item';
+import { NewItems, UpdateItemRes } from './lib/types/item';
 
 require('dotenv').config();
 jest.useRealTimers();
@@ -11,6 +11,11 @@ const url = process.env.URL || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+
+const params = {
+  page: 1,
+  per_page: 0,
+};
 
 /**
  * Test with class Hexabase
@@ -101,31 +106,57 @@ describe('Hexabase SQL', () => {
   //   });
   // });
 
+  // describe('Hexabase SQL', () => {
+  //   it(`Test function execute update one item`, async () => {
+  //     jest.useFakeTimers();
+  //     const item = new Item(url, token);
+  //     const itemDetail = await item.getItemDetail("6360deb505cc9cb016fbc53f", "63fdd6bf46841e3c4b859448");
+  //     const { itemDetails } = itemDetail;
+  //     const rev_no = itemDetails?.rev_no;
+  //     await hexabase.useProject("632ad81082bd898623884d2e")
+  //     const itemUpdated: UpdateItemRes = await hexabase.from('6360deb505cc9cb016fbc53f')
+  //       .updateOne(
+  //         {
+  //           itemId: "63fdd6bf46841e3c4b859448",
+  //           rev_no,
+  //           item: {
+  //             "636343dbeb4e1e3bd91c4a72": [],
+  //             "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm update 3",
+  //             "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm update 3"
+  //           },
+  //         }
+  //       );
+  //     console.log('itemUpdated', itemUpdated)
+  //   });
+  // });
+
   describe('Hexabase SQL', () => {
-    it(`Test function execute update item`, async () => {
+    it(`Test function execute update many item`, async () => {
       jest.useFakeTimers();
       const item = new Item(url, token);
-      const itemDetail = await item.getItemDetail("6360deb505cc9cb016fbc53f", "63fdd6bf46841e3c4b859448");
-      const { itemDetails } = itemDetail;
-      const revNo = itemDetails?.rev_no;
+      const { dsItems, error } = await item.get(params, "6360deb505cc9cb016fbc53f", "632ad81082bd898623884d2e");
       await hexabase.useProject("632ad81082bd898623884d2e")
-      const itemUpdated: NewItems = await hexabase.from('6360deb505cc9cb016fbc53f')
-        .updateOne(
-          // {
-          //   "636343dbeb4e1e3bd91c4a72": [],
-          //   "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm update 1",
-          //   "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm update 1"
-          // },
+      const itemUpdated: UpdateItemRes[] = await hexabase.from('6360deb505cc9cb016fbc53f')
+        .updateMany([
           {
-            itemId: "63fdd6bf46841e3c4b859448",
-            revNo,
-            changeItem: {
+            itemId: dsItems?.items?.[0]?.i_id,
+            rev_no: parseInt(dsItems?.items?.[0]?.rev_no),
+            item: {
               "636343dbeb4e1e3bd91c4a72": [],
-              "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm update 2",
-              "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm update 2"
+              "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4]1 nguyên mõm update 1",
+              "6360deb5990afe5d523ba6b7": "[Title]1 nguyên mõm update 1"
+            },
+          },
+          {
+            itemId: dsItems?.items?.[1]?.i_id,
+            rev_no: parseInt(dsItems?.items?.[1]?.rev_no),
+            item: {
+              "636343dbeb4e1e3bd91c4a72": [],
+              "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4]2 nguyên mõm update 2",
+              "6360deb5990afe5d523ba6b7": "[Title]2 nguyên mõm update 2"
             },
           }
-        );
+        ]);
       console.log('itemUpdated', itemUpdated)
     });
   });
