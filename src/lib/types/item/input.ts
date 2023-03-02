@@ -30,7 +30,7 @@ export interface GetItemsPl {
   include_lookups?: boolean;
   return_number_value?: boolean;
   format?: string;
- 
+
   return_count_only?: boolean;
   omit_fields_data?: boolean;
   omit_total_items?: boolean;
@@ -74,6 +74,13 @@ export interface CreateNewItem {
   projectId: string;
   datastoreId: string;
   payload: CreateNewItemPl;
+}
+
+export interface UpdateCurrentItem {
+  projectId: string;
+  datastoreId: string;
+  itemId: string;
+  itemActionParameters: ItemActionParameters;
 }
 
 export interface DeleteItemReq {

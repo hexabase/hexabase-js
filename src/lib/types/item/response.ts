@@ -246,6 +246,11 @@ export interface NewItem {
   error?: string;
 }
 
+export interface UpdateItemRes {
+  data?: ResponseOkModel;
+  error?: string;
+}
+
 export interface NewItems {
   data?: NewItem[]
   error?: string[];

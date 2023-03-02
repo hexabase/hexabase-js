@@ -1,4 +1,5 @@
 import { createClient, HexabaseClient } from './';
+import Item from './lib/packages/item';
 import { NewItems } from './lib/types/item';
 
 require('dotenv').config();
@@ -19,10 +20,12 @@ const password = process.env.PASSWORD || '';
 beforeAll(async () => {
   if (email && password && !token) {
     const hxbClient = await createClient({ url: url, token: '', email, password });
+    token = hxbClient?.tokenHxb;
     hexabase = hxbClient;
   }
   if (token && !email && !password) {
     const hxbClient = await createClient({ url: url, token, email: '', password: '' });
+    token = hxbClient?.tokenHxb;
     hexabase = hxbClient;
   }
 });
@@ -81,20 +84,49 @@ describe('Hexabase SQL', () => {
   //   });
   // });
 
+  // describe('Hexabase SQL', () => {
+  //   it(`Test function execute insert item`, async () => {
+  //     jest.useFakeTimers();
+  //     await hexabase.useProject("632ad81082bd898623884d2e")
+  //     const itemInserted: NewItems = await hexabase.from('6360deb505cc9cb016fbc53f')
+  //       .insertMany([
+  //         {
+  //           "636343dbeb4e1e3bd91c4a72": [],
+  //           "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm",
+  //           "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm"
+  //         },
+  //       ]);
+  //     // const raws = await Promise.all(itemInserted)
+  //     console.log('itemInserted', itemInserted)
+  //   });
+  // });
+
   describe('Hexabase SQL', () => {
-    it(`Test function execute insert item`, async () => {
+    it(`Test function execute update item`, async () => {
       jest.useFakeTimers();
+      const item = new Item(url, token);
+      const itemDetail = await item.getItemDetail("6360deb505cc9cb016fbc53f", "63fdd6bf46841e3c4b859448");
+      const { itemDetails } = itemDetail;
+      const revNo = itemDetails?.rev_no;
       await hexabase.useProject("632ad81082bd898623884d2e")
-      const itemInserted: NewItems = await hexabase.from('6360deb505cc9cb016fbc53f')
-        .insertMany([
+      const itemUpdated: NewItems = await hexabase.from('6360deb505cc9cb016fbc53f')
+        .updateOne(
+          // {
+          //   "636343dbeb4e1e3bd91c4a72": [],
+          //   "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm update 1",
+          //   "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm update 1"
+          // },
           {
-            "636343dbeb4e1e3bd91c4a72": [],
-            "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm",
-            "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm"
-          },
-        ]);
-      // const raws = await Promise.all(itemInserted)
-      console.log('itemInserted', itemInserted)
+            itemId: "63fdd6bf46841e3c4b859448",
+            revNo,
+            changeItem: {
+              "636343dbeb4e1e3bd91c4a72": [],
+              "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm update 2",
+              "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm update 2"
+            },
+          }
+        );
+      console.log('itemUpdated', itemUpdated)
     });
   });
 

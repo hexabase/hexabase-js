@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
-import { CREATE_NEW_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
-import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems } from '../types/item';
+import { CREATE_NEW_ITEM, DATASTORE_UPDATE_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
+import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems, UpdateCurrentItem, UpdateItemRes } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
@@ -545,6 +545,69 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     });
 
     return res
+  }
+
+  updateOne<
+    TResult1 = any,
+    TResult2 = never,
+  >(params?: { [key: string]: any }): PromiseLike<TResult1 | TResult2> {
+    const parameter = this.getParameter();
+    const data: UpdateItemRes = {
+      data: undefined,
+      error: undefined,
+    };
+    const datastoreId = this.datastoreId ? this.datastoreId : parameter['datastore_id'] ? parameter['datastore_id'] : "";
+    const projectId = this.projectId ? this.projectId : parameter['project_id'] ? parameter['project_id'] : "";
+
+    if (!params?.revNo) {
+      throw new Error('rev_no required and type of rev_no is int!')
+    }
+
+    const payload: UpdateCurrentItem = {
+      itemId: params?.itemId,
+      datastoreId,
+      projectId,
+      itemActionParameters: {
+        rev_no: params?.revNo,
+        item: params?.changeItem,
+        return_item_result: true,
+        use_display_id: true,
+        is_force_update: true,
+        ensure_transaction: false,
+        exec_children_post_procs: true,
+        history: {
+          comment: 'test update item',
+          datastore_id: datastoreId
+        }
+      }
+    }
+
+    const _fetch = fetch;
+    let res = _fetch(
+      this.urlGraphql,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.tokenHxb}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query: DATASTORE_UPDATE_ITEM, variables: { ...payload } })
+      }
+    ).then(async (res) => {
+      if (res.ok) {
+        const body = await res.json();
+        data.data = body?.data?.datastoreUpdateItem;
+        if (body?.error && body?.error?.length > 0) {
+          data.error = body?.error;
+        }
+      } else {
+        const error = await res.json();
+        data.error = error;
+      }
+      return data;
+    }).catch(error => console.log('error: ', error));
+
+    return res.then();
   }
 
 }
