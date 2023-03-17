@@ -66,12 +66,12 @@ export const CREATE_ITEMID = gql`
 
 export const CREATE_NEW_ITEM = gql`
   mutation DatastoreCreateNewItem(
-    $newItemActionParameters: NewItemActionParameters!
+    $payload: NewItemActionParameters!
     $datastoreId: String!
     $projectId: String!
   ) {
     datastoreCreateNewItem(
-      newItemActionParameters: $newItemActionParameters
+      newItemActionParameters: $payload
       datastoreId: $datastoreId
       projectId: $projectId
     ) {
@@ -405,3 +405,12 @@ export const ITEM_WITH_SEARCH = gql`
     }
   }
 `;
+
+export const DELETE_ITEMS = gql`
+  mutation DatastoreDeleteDatastoreItems($datastoreId: String!, $projectId: String, $payload: DeleteItemsParameters) {
+    datastoreDeleteDatastoreItems(datastoreId: $datastoreId, projectId: $projectId, deleteItemsParameters: $payload) {
+      data
+      success
+    }
+  }
+`

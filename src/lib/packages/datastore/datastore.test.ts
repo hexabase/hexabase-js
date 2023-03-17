@@ -356,13 +356,13 @@ describe('Datastore', () => {
     });
   });
 
-  describe('#datastoreGetFieldAutoNumber()', () => {
+  describe('#getAutoNumber()', () => {
     it('should datastore get field auto number without error', async () => {
       jest.useFakeTimers('legacy');
       try {
         if (datastoreId && projectIDAutoNum && fieldIdAutoNum) {
           const datastore = new Datastore(url, tokenDs);
-          const { dsGetFieldAutoNum, error } = await datastore.datastoreGetFieldAutoNumber(projectIDAutoNum, datastoreId, fieldIdAutoNum);
+          const { dsGetFieldAutoNum, error } = await datastore.getAutoNumber(projectIDAutoNum, datastoreId, fieldIdAutoNum);
 
           if (dsGetFieldAutoNum) expect(typeof dsGetFieldAutoNum?.result).toBe('object');
           else throw new Error(`Error: ${error}`);

@@ -1,7 +1,6 @@
 require('dotenv').config();
 import Item from '.';
 import Auth from '../auth';
-import AuthMw from '../middleware/auth';
 import Datastore from '../datastore/index';
 import Workspace from '../workspace';
 import Project from '../project';
@@ -234,7 +233,7 @@ describe('Item', () => {
         throw new Error(`Error: actions empty`);
       }
       const item = new Item(url, tokenItem);
-      const newItemActionParameters = {
+      const payload = {
         'action_id': `${actionCreate}`,
         'use_display_id': true,
         'return_item_result': true,
@@ -251,7 +250,7 @@ describe('Item', () => {
         }
       };
 
-      const { itemNew, error } = await item.create(projectId, datastoreID, newItemActionParameters);
+      const { itemNew, error } = await item.create(projectId, datastoreID, payload);
 
       // expect response
       if (itemNew) {
@@ -407,18 +406,12 @@ describe('Item', () => {
       const itemS = await item.get(params, datastoreID, projectId);
       const i = itemS.dsItems?.items?.[0];
       const itemID = i?.i_id;
-      const payload: CreateCommentItemsParameters = {
-        'item_id': itemID,
-        'workspace_id': workspaceId,
-        'project_id': projectId,
-        'datastore_id': datastoreID,
-        'comment': 'create comment',
-        'posting': true,
-        'post_mode': 'ItemTimeline',
-        'is_related_post': false,
-        'is_send_item_unread': true
-      };
-      const { postNewItemHistory, error } = await item.createComment(payload);
+      const { postNewItemHistory, error } = await item.createComment(
+        projectId,
+        datastoreID,
+        itemID,
+        { comment: 'create comment', is_send_item_unread: false }
+      );
 
       // expect response
       if (postNewItemHistory) {
@@ -443,14 +436,13 @@ describe('Item', () => {
       if (itemHistories) {
         historyId = itemHistories?.histories[0]?.history_id;
       }
-      const payload: UpdateCommentItemsParameters = {
-        'comment': 'update comment',
-        'd_id': datastoreID,
-        'h_id': historyId,
-        'i_id': itemID,
-        'p_id': projectId,
-      };
-      const { error } = await item.updateComment(payload);
+      const { error } = await item.updateComment(
+        projectId,
+        datastoreID,
+        itemID,
+        historyId,
+        { 'comment': 'update comment' }
+      );
 
       // expect response
       if (error) {
@@ -473,13 +465,12 @@ describe('Item', () => {
       if (itemHistories) {
         historyId = itemHistories?.histories[0]?.history_id;
       }
-      const payload: ArchiveCommentItemsParameters = {
-        'd_id': datastoreID,
-        'h_id': historyId,
-        'i_id': itemID,
-        'p_id': projectId,
-      };
-      const { error } = await item.deleteComment(payload);
+      const { error } = await item.deleteComment(
+        projectId,
+        datastoreID,
+        itemID,
+        datastoreID
+      );
 
       // expect response
       if (error) {

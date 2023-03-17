@@ -9,6 +9,7 @@ import Storage from './lib/packages/storage';
 import QueryClient from './lib/sql/client';
 import QueryBuilder from './lib/sql/query';
 import Query from './lib/sql/query';
+import { QueryParameter } from './lib/types/sql/input';
 
 export default class HexabaseClient {
   public auth: Auth;
@@ -137,7 +138,11 @@ export default class HexabaseClient {
    * @returns new Query
    */
   public _initQuery() {
-    return new Query(this.urlHxb, this.tokenHxb!);
+    const params: QueryParameter = {
+      url: this.urlHxb,
+      token:  this.tokenHxb!
+    };
+    return new Query(params);
 
   }
 
@@ -145,8 +150,8 @@ export default class HexabaseClient {
    * initialize from method
    * @returns new Storage
    */
-  public from(relation: string): QueryBuilder {
-    return this.rest.from(relation);
+  public from(collection: string): QueryBuilder {
+    return this.rest.from(collection);
   }
 
   /**
@@ -157,7 +162,7 @@ export default class HexabaseClient {
     return this.rest.query();
   }
 
-  public setProject(value: string) {
-    // TODO
+  public useProject(project: string): QueryBuilder {
+    return this.rest.useProject(project);
   }
 }

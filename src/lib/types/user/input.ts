@@ -36,12 +36,40 @@ export interface UserInvitePayload {
   username: string;
 }
 
+export interface AddUserParams {
+  username?: string;
+  tmp_password?: string;
+  no_confirm_email?: boolean;
+  invitor_id?: string;
+  email_templates_id?: string;
+  conf_email_template_id?: string;
+  confirm_email_ack?: boolean;
+  send_password_to_email?: boolean;
+  sender_address?: string;
+  hostname?: string;
+  exclusive_w_id?: string;
+  workspace_key?: string;
+  user_code?: string;
+  dynamic_template_data?: string;
+}
+
 export interface UsernameExistsPl {
-  current_workspace_id: string;
   email: string;
   group_id: string;
-  user_code: string;
-  username: string;
+  username?: string;
+  tmp_password?: string;
+  no_confirm_email?: boolean;
+  invitor_id?: string;
+  email_templates_id?: string;
+  conf_email_template_id?: string;
+  confirm_email_ack?: boolean;
+  send_password_to_email?: boolean;
+  sender_address?: string;
+  hostname?: string;
+  exclusive_w_id?: string;
+  workspace_key?: string;
+  user_code?: string;
+  dynamic_template_data?: string;
 }
 
 export interface PostInviteUsersPl {
