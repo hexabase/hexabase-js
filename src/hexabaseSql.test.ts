@@ -11,6 +11,8 @@ const url = process.env.URL || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+const datastoreID = process.env.DATASTOREID || '';
+const projectID = process.env.APPLICATIONID || '';
 
 const params = {
   page: 1,
@@ -133,6 +135,7 @@ describe('Hexabase SQL', () => {
   describe('Hexabase SQL', () => {
     it(`Test function execute update many item`, async () => {
       jest.useFakeTimers();
+
       const item = new Item(url, token);
       const { dsItems, error } = await item.get(params, "6360deb505cc9cb016fbc53f", "632ad81082bd898623884d2e");
       await hexabase.useProject("632ad81082bd898623884d2e")
