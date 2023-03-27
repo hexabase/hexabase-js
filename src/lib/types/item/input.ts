@@ -30,6 +30,7 @@ export interface GetItemsPl {
   include_lookups?: boolean;
   return_number_value?: boolean;
   format?: string;
+
   return_count_only?: boolean;
   omit_fields_data?: boolean;
   omit_total_items?: boolean;
@@ -56,6 +57,7 @@ export interface FieldAccessKeyUpdates {
   users_to_publish?: any;
 }
 
+
 export interface CreateNewItemPl {
   action_id?: string;
   item: any;
@@ -68,6 +70,18 @@ export interface CreateNewItemPl {
   related_ds_items?: any;
   access_key_updates?: FieldAccessKeyUpdates;
 }
+export interface CreateNewItem {
+  projectId: string;
+  datastoreId: string;
+  payload: CreateNewItemPl;
+}
+
+export interface UpdateCurrentItem {
+  projectId: string;
+  datastoreId: string;
+  itemId: string;
+  itemActionParameters: ItemActionParameters;
+}
 
 export interface DeleteItemReq {
   u_id?: string;
@@ -76,6 +90,35 @@ export interface DeleteItemReq {
   delete_linked_items?: boolean;
   target_datastores?: any;
 }
+
+export interface DeleteItem {
+  projectId: string,
+  datastoreId: string,
+  itemId: string,
+  deleteItemReq: DeleteItemReq
+}
+
+export interface DeleteItemParameter {
+  deleteLinkedItems?: boolean,
+  targetDatastores?: any,
+  useDisplayId?: boolean,
+}
+
+export interface ConditionDeleteItems {
+  search_value?: any;
+  data_type?: string;
+}
+export interface DeleteItemsParameter {
+  conditions?: [ConditionDeleteItems],
+  use_display_id?: boolean,
+}
+
+export interface DeleteItemsParameters {
+  datastoreId: string,
+  projectId: string,
+  payload?: DeleteItemsParameter,
+}
+
 export interface GetItemDetailPl {
   include_lookups: boolean;
   use_display_id: boolean;
@@ -172,6 +215,12 @@ export interface UpdateItemLinkInput {
   new_link_datastore_id: string;
   new_link_item_id: string;
 }
+
+export interface CreateCommentParameters {
+  comment: string;
+  is_send_item_unread?: boolean;
+}
+
 export interface CreateCommentItemsParameters {
   comment: string;
   datastore_id: string;
@@ -182,6 +231,10 @@ export interface CreateCommentItemsParameters {
   posting?: boolean;
   project_id: string;
   workspace_id: string;
+}
+
+export interface UpdateCommentParameters {
+  comment: string;
 }
 
 export interface UpdateCommentItemsParameters {

@@ -241,6 +241,27 @@ export interface NewItemRes {
   error?: string;
 }
 
+export interface NewItem {
+  data?: ItemNew;
+  error?: string;
+}
+
+export interface ItemUpdatedSuccess {
+  error: string;
+  itemHistory: ItemHistoryComment;
+  rev_no: RevNo;
+}
+
+export interface UpdateItemRes {
+  data?: ItemUpdatedSuccess;
+  error?: string;
+}
+
+export interface NewItems {
+  data?: NewItem[]
+  error?: string[];
+}
+
 export interface ItemLinkedRes {
   itemLinked?: ItemLinked;
   error?: string;
