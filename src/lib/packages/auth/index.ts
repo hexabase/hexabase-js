@@ -13,14 +13,14 @@ import { uuid } from '../../util/helper';
 export default class Auth {
   protected stateChangeEmitters: Map<string, Subscription> = new Map();
 
-  public urlGr: string;
+  // public urlGr: string;
   public client: GraphQLClient;
 
   constructor(
     protected urlGraphql: string,
   ) {
-    this.urlGr = urlGraphql;
-    this.client = new GraphQLClient(this.urlGr);
+    // this.urlGr = urlGraphql;
+    this.client = new GraphQLClient(urlGraphql);
   }
 
   /**

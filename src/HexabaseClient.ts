@@ -6,6 +6,10 @@ import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
 import DataReport from './lib/packages/dataReport';
 import Storage from './lib/packages/storage';
+import QueryClient from './lib/sql/client';
+import QueryBuilder from './lib/sql/query';
+import Query from './lib/sql/query';
+import { QueryParameter } from './lib/types/sql/input';
 
 export default class HexabaseClient {
   public auth: Auth;
@@ -16,11 +20,13 @@ export default class HexabaseClient {
   public datastore: Datastore;
   public storage: Storage;
   public dataReport: DataReport;
-  public tokenHxb?: string;
+  public tokenHxb: string;
+  protected rest: QueryClient;
+  protected projectId: string;
 
   constructor(
     protected urlHxb: string,
-    tokenHxb?: string
+    tokenHxb: string
   ) {
     if (!urlHxb) throw new Error('urlHxb is required.');
 
@@ -29,6 +35,8 @@ export default class HexabaseClient {
 
     this.auth = this._initAuth();
     this._init();
+
+    this.rest = new QueryClient(urlHxb, tokenHxb);
   }
 
   /**
@@ -42,6 +50,7 @@ export default class HexabaseClient {
     this.datastore = this._initDatastore();
     this.dataReport = this._initDataReport();
     this.storage = this._initStorage();
+    this._initQuery();
   }
 
   /**
@@ -122,5 +131,38 @@ export default class HexabaseClient {
    */
   public _initStorage() {
     return new Storage(this.urlHxb, this.tokenHxb!);
+  }
+
+    /**
+   * initialize class Query
+   * @returns new Query
+   */
+  public _initQuery() {
+    const params: QueryParameter = {
+      url: this.urlHxb,
+      token:  this.tokenHxb!
+    };
+    return new Query(params);
+
+  }
+
+  /**
+   * initialize from method
+   * @returns new Storage
+   */
+  public from(collection: string): QueryBuilder {
+    return this.rest.from(collection);
+  }
+
+  /**
+   * initialize query method
+   * @returns new Storage
+   */
+  public query(): QueryBuilder {
+    return this.rest.query();
+  }
+
+  public useProject(project: string): QueryBuilder {
+    return this.rest.useProject(project);
   }
 }

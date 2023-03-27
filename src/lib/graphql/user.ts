@@ -84,3 +84,32 @@ export const LOG_OUT = gql`
     }
   }
 `;
+
+export const USERNAME_EXITS = gql`
+  mutation UsernameExists($payload: UsernameExistsPl!) {
+    usernameExists(payload: $payload) {
+      added
+      exists
+      user_profile {
+        confirmed
+        email
+        email_sent
+        profile_pics {
+          mediaLink
+        }
+        u_id
+        user_code
+        username
+      }
+    }
+  }
+`;
+
+export const POST_INVITE_USERS = gql`
+  mutation PostInviteUsers($payload: PostInviteUsersPl!) {
+    postInviteUsers(payload: $payload) {
+      email
+      stats
+    }
+  }
+`;

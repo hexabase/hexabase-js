@@ -30,6 +30,7 @@ export interface GetItemsPl {
   include_lookups?: boolean;
   return_number_value?: boolean;
   format?: string;
+
   return_count_only?: boolean;
   omit_fields_data?: boolean;
   omit_total_items?: boolean;
@@ -56,6 +57,7 @@ export interface FieldAccessKeyUpdates {
   users_to_publish?: any;
 }
 
+
 export interface CreateNewItemPl {
   action_id?: string;
   item: any;
@@ -68,6 +70,18 @@ export interface CreateNewItemPl {
   related_ds_items?: any;
   access_key_updates?: FieldAccessKeyUpdates;
 }
+export interface CreateNewItem {
+  projectId: string;
+  datastoreId: string;
+  payload: CreateNewItemPl;
+}
+
+export interface UpdateCurrentItem {
+  projectId: string;
+  datastoreId: string;
+  itemId: string;
+  itemActionParameters: ItemActionParameters;
+}
 
 export interface DeleteItemReq {
   u_id?: string;
@@ -76,6 +90,35 @@ export interface DeleteItemReq {
   delete_linked_items?: boolean;
   target_datastores?: any;
 }
+
+export interface DeleteItem {
+  projectId: string,
+  datastoreId: string,
+  itemId: string,
+  deleteItemReq: DeleteItemReq
+}
+
+export interface DeleteItemParameter {
+  deleteLinkedItems?: boolean,
+  targetDatastores?: any,
+  useDisplayId?: boolean,
+}
+
+export interface ConditionDeleteItems {
+  search_value?: any;
+  data_type?: string;
+}
+export interface DeleteItemsParameter {
+  conditions?: [ConditionDeleteItems],
+  use_display_id?: boolean,
+}
+
+export interface DeleteItemsParameters {
+  datastoreId: string,
+  projectId: string,
+  payload?: DeleteItemsParameter,
+}
+
 export interface GetItemDetailPl {
   include_lookups: boolean;
   use_display_id: boolean;
@@ -207,4 +250,32 @@ export interface ArchiveCommentItemsParameters {
   i_id: string;
   h_id: string;
   p_id: string;
+}
+
+export interface GetItemsParameters {
+  project_id?: string;
+  datastore_id?: string;
+  conditions?: SearchCondition[];
+  use_or_condition?: boolean;
+  unread_only?: boolean;
+  sort_fields?: SortField;
+  sort_field_id?: string;
+  sort_order?: string;
+  page: number;
+  per_page: number;
+  use_field_id?: boolean;
+  use_display_id?: boolean;
+  include_links?: boolean;
+  include_lookups?: boolean;
+  return_number_value?: boolean;
+  format?: string;
+  return_count_only?: boolean;
+  include_fields_data?: boolean;
+  omit_fields_data?: boolean;
+  omit_total_items?: boolean;
+  data_result_timeout_sec?: number;
+  total_count_timeout_sec?: number;
+  debug_query?: boolean;
+  select_fields?: any;
+  select_fields_lookup?: any;
 }

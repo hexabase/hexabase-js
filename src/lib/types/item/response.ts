@@ -1,5 +1,5 @@
 import { ItemHistory } from './input';
-import { FieldNameENJP, ResponseErrorNull, ResponseOkModel } from '../../util/type';
+import { FieldNameENJP, GenericAPIError, ResponseErrorNull, ResponseOkModel } from '../../util/type';
 
 export interface DsItems {
   items: any;
@@ -160,6 +160,14 @@ export interface DatastoreCreateCommentItem {
 }
 
 
+export interface ItemWithSearch {
+  errors: [GenericAPIError];
+  totalItems: number;
+  items: any;
+  fields: any;
+}
+
+
 /** Data response from request graphql */
 export interface DtDsItems {
   datastoreGetDatastoreItems: DsItems;
@@ -211,6 +219,10 @@ export interface DtDatastoreDeleteCommentItem {
   archiveItemHistory: ResponseErrorNull;
 }
 
+export interface DtItemWithSearch {
+  itemWithSearch: ItemWithSearch;
+}
+
 /** export response */
 export interface DsItemsRes {
   dsItems?: DsItems;
@@ -227,6 +239,27 @@ export interface CreatedItemIdRes {
 export interface NewItemRes {
   itemNew?: ItemNew;
   error?: string;
+}
+
+export interface NewItem {
+  data?: ItemNew;
+  error?: string;
+}
+
+export interface ItemUpdatedSuccess {
+  error: string;
+  itemHistory: ItemHistoryComment;
+  rev_no: RevNo;
+}
+
+export interface UpdateItemRes {
+  data?: ItemUpdatedSuccess;
+  error?: string;
+}
+
+export interface NewItems {
+  data?: NewItem[]
+  error?: string[];
 }
 
 export interface ItemLinkedRes {
@@ -262,3 +295,9 @@ export interface DatastoreCreateCommentItemRes {
   postNewItemHistory?: DatastoreCreateCommentItem;
   error?: any;
 }
+
+export interface ItemWithSearchRes {
+  item?: ItemWithSearch;
+  error?: any;
+}
+
