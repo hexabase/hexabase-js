@@ -16,7 +16,7 @@ export default class Storage extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtGetDownloadFile = await this.client.request(GET_DOWNLOAD_FILE, { id });
+      const res: DtGetDownloadFile = await this.gqClient.request(GET_DOWNLOAD_FILE, { id });
 
       data.file = res.getDownloadFile;
     } catch (error: any) {
@@ -38,7 +38,7 @@ export default class Storage extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemFileAttachment = await this.client.request(FILE_ATTACHMENT, { payload });
+      const res: DtItemFileAttachment = await this.gqClient.request(FILE_ATTACHMENT, { payload });
 
       data.data = res.createItemFileAttachment;
     } catch (error: any) {
@@ -61,7 +61,7 @@ export default class Storage extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtStorage = await this.client.request(DELETE_STORAGE, fileId);
+      const res: DtStorage = await this.gqClient.request(DELETE_STORAGE, fileId);
 
       data.data = res.deleteStorage;
     } catch (error: any) {

@@ -6,10 +6,16 @@ import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
 import DataReport from './lib/packages/dataReport';
 import Storage from './lib/packages/storage';
-import QueryClient from './lib/sql/client';
+import QueryClient from './lib/sql/queryClient';
 import QueryBuilder from './lib/sql/query';
 import Query from './lib/sql/query';
 import { QueryParameter } from './lib/types/sql/input';
+
+type LoginParams = {
+  email?: string;
+  password?: string;
+  token?: string;
+};
 
 export default class HexabaseClient {
   public auth: Auth;
@@ -23,20 +29,18 @@ export default class HexabaseClient {
   public tokenHxb: string;
   protected rest: QueryClient;
   protected projectId: string;
-
+  public urlHxb: string;
   constructor(
-    protected urlHxb: string,
-    tokenHxb: string
+    urlHxb: string = 'https://graphql.hexabase.com/graphql',
+    tokenHxb?: string
   ) {
-    if (!urlHxb) throw new Error('urlHxb is required.');
-
+    // if (!urlHxb) throw new Error('urlHxb is required.');
     this.urlHxb = urlHxb;
-    this.tokenHxb = tokenHxb;
-
+    if (tokenHxb) {
+      this.tokenHxb = tokenHxb;
+      this._init();
+    }
     this.auth = this._initAuth();
-    this._init();
-
-    this.rest = new QueryClient(urlHxb, tokenHxb);
   }
 
   /**
@@ -50,6 +54,7 @@ export default class HexabaseClient {
     this.datastore = this._initDatastore();
     this.dataReport = this._initDataReport();
     this.storage = this._initStorage();
+    this.rest = this._initQueryClient();
     this._initQuery();
   }
 
@@ -59,6 +64,24 @@ export default class HexabaseClient {
   public setToken(token: string) {
     this.tokenHxb = token;
     this._init();
+  }
+
+  /**
+   * login to Hexabase
+   */
+  public async login({ email, password, token }: LoginParams) {
+    if (token) {
+      this.setToken(token);
+    } else if (email && password) {
+      const res = await this.auth.login({ email, password });
+      if (res.token) {
+        this.setToken(res.token);
+      } else {
+        throw Error(`Need login failed to initialize sdk: ${res.error}`);
+      }
+    } else {
+      throw Error('Need token or email and password to initialize sdk');
+    }
   }
 
   /**
@@ -74,7 +97,7 @@ export default class HexabaseClient {
    * @returns new Workspace
    */
   public _initWorkspace() {
-    return new Workspace(this.urlHxb, this.tokenHxb!);
+    return new Workspace(this);
   }
 
   /**
@@ -82,7 +105,7 @@ export default class HexabaseClient {
    * @returns new User
    */
   public _initUser() {
-    return new User(this.urlHxb, this.tokenHxb!);
+    return new User(this);
   }
 
   /**
@@ -90,7 +113,7 @@ export default class HexabaseClient {
    * @returns new Project
    */
   public _initProject() {
-    return new Project(this.urlHxb, this.tokenHxb!);
+    return new Project(this);
   }
 
   /**
@@ -98,7 +121,7 @@ export default class HexabaseClient {
    * @returns new Datastore
    */
   public _initDatastore() {
-    return new Datastore(this.urlHxb, this.tokenHxb!);
+    return new Datastore(this);
   }
 
   /**
@@ -106,7 +129,7 @@ export default class HexabaseClient {
    * @returns new Item
    */
   public _initItem() {
-    return new Item(this.urlHxb, this.tokenHxb!);
+    return new Item(this);
   }
 
   /**
@@ -122,7 +145,7 @@ export default class HexabaseClient {
    * @returns new DataReport
    */
   public _initDataReport() {
-    return new DataReport(this.urlHxb, this.tokenHxb!);
+    return new DataReport(this);
   }
 
   /**
@@ -130,7 +153,7 @@ export default class HexabaseClient {
    * @returns new Storage
    */
   public _initStorage() {
-    return new Storage(this.urlHxb, this.tokenHxb!);
+    return new Storage(this);
   }
 
     /**
@@ -139,30 +162,30 @@ export default class HexabaseClient {
    */
   public _initQuery() {
     const params: QueryParameter = {
-      url: this.urlHxb,
-      token:  this.tokenHxb!
+      client: this,
     };
     return new Query(params);
+  }
 
+  public _initQueryClient() {
+    return new QueryClient(this);
   }
 
   /**
    * initialize from method
+   * @param dataStoreId string
    * @returns new Storage
    */
-  public from(collection: string): QueryBuilder {
-    return this.rest.from(collection);
+  public from(dataStoreId: string): QueryBuilder {
+    return this.rest.from(dataStoreId);
   }
 
   /**
    * initialize query method
    * @returns new Storage
    */
-  public query(): QueryBuilder {
-    return this.rest.query();
-  }
-
-  public useProject(project: string): QueryBuilder {
-    return this.rest.useProject(project);
+  public query(projectId: string): QueryClient {
+    this.rest.useProject(projectId);
+    return this.rest;
   }
 }

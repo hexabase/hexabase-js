@@ -1,3 +1,4 @@
+import HexabaseClient from '../../../HexabaseClient';
 import { UserInfo } from '../user';
 
 export type AuthChangeEvent =
@@ -20,8 +21,7 @@ export interface SortOrder {
 
 
 export interface QueryParameter {
-  url?: string,
-  token?: string,
+  client: HexabaseClient,
   datastoreId?: string,
   projectId?: string,
 }

@@ -1,20 +1,13 @@
 import { GraphQLClient } from 'graphql-request';
+import HexabaseClient from './HexabaseClient';
 
 export class HxbAbstract {
-  // public urlGr: string;
-  // public token: string;
-  public client: GraphQLClient;
-
-  constructor(
-    protected urlGraphql: string,
-    protected tokenHxb: string
-  ) {
-    // this.urlGr = urlGraphql;
-    // this.token = tokenHxb;
-    this.client = new GraphQLClient(urlGraphql, {
+  protected gqClient: GraphQLClient;
+  constructor(protected client: HexabaseClient) {
+    this.gqClient = new GraphQLClient(client.urlHxb, {
       timeout: 50000,
       headers: {
-        authorization: `Bearer ${tokenHxb}`,
+        authorization: `Bearer ${client.tokenHxb}`,
       },
     });
   }

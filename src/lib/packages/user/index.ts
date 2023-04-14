@@ -39,7 +39,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUserRegister = await this.client.request(USER_REGISTER, { confirmationId });
+      const res: DtUserRegister = await this.gqClient.request(USER_REGISTER, { confirmationId });
 
       data.userRegister = res.userRegister;
     } catch (error: any) {
@@ -62,7 +62,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUserPassEx = await this.client.request(USER_PASSWORD_EXPIRY);
+      const res: DtUserPassEx = await this.gqClient.request(USER_PASSWORD_EXPIRY);
 
       data.userPassEx = res.userPasswordExpiry;
     } catch (error: any) {
@@ -86,7 +86,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUserConfirm = await this.client.request(USER_CONFIRMATIONS, { confirmationId });
+      const res: DtUserConfirm = await this.gqClient.request(USER_CONFIRMATIONS, { confirmationId });
 
       data.userConfirm = res.userConfirmations;
     } catch (error: any) {
@@ -108,10 +108,10 @@ export default class User extends HxbAbstract {
     };
     // handle call graphql
     try {
-      this.client.setHeader(
+      this.gqClient.setHeader(
         'authorization', `Bearer ${token}`
       );
-      const res: DtUserInfo = await this.client.request(USER_INFO);
+      const res: DtUserInfo = await this.gqClient.request(USER_INFO);
       data.userInfo = res.userInfo;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -152,7 +152,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUsernameExistsRes = await this.client.request(USERNAME_EXITS, { payload });
+      const res: DtUsernameExistsRes = await this.gqClient.request(USERNAME_EXITS, { payload });
       data.usernameExists = res?.usernameExists;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -174,7 +174,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtPostInviteUsersRes = await this.client.request(POST_INVITE_USERS, { payload });
+      const res: DtPostInviteUsersRes = await this.gqClient.request(POST_INVITE_USERS, { payload });
 
       data.postInviteUsers = res?.postInviteUsers;
     } catch (error: any) {
