@@ -1,11 +1,10 @@
 import { DtItemWithSearch, GetItemsParameters } from "../types/item";
-
+import HexabaseClient from "../../HexabaseClient";
 export default class HexabaseBuilder  {
   url: URL;
   constructor(
-    url: URL,
-    token?: string
+    protected client: HexabaseClient,
   ) {
-    this.url = url;
+    this.url = new URL(this.client.urlHxb);
   }
 }

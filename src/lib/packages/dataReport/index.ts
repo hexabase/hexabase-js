@@ -17,7 +17,7 @@ export default class DataReport extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtGetReports = await this.client.request(GET_REPORTS, { projectId });
+      const res: DtGetReports = await this.request(GET_REPORTS, { projectId });
 
       data.reports = res.getReports;
     } catch (error: any) {
@@ -41,7 +41,7 @@ export default class DataReport extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtReportData = await this.client.request(REPORT_DEFAULT, { projectId, reportId, reportDataPayload });
+      const res: DtReportData = await this.request(REPORT_DEFAULT, { projectId, reportId, reportDataPayload });
 
       data.dataReport = res.reportData;
     } catch (error: any) {

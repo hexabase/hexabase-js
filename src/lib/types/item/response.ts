@@ -1,5 +1,6 @@
 import { ItemHistory } from './input';
 import { FieldNameENJP, GenericAPIError, ResponseErrorNull, ResponseOkModel } from '../../util/type';
+import Item from '../../packages/item';
 
 export interface DsItems {
   items: any;
@@ -163,7 +164,7 @@ export interface DatastoreCreateCommentItem {
 export interface ItemWithSearch {
   errors: [GenericAPIError];
   totalItems: number;
-  items: any;
+  items: [ItemWithSearchResItem];
   fields: any;
 }
 
@@ -225,7 +226,7 @@ export interface DtItemWithSearch {
 
 /** export response */
 export interface DsItemsRes {
-  dsItems?: DsItems;
+  items?: Item[];
   error?: string;
 }
 export interface ItemHistoriesRes {
@@ -297,7 +298,24 @@ export interface DatastoreCreateCommentItemRes {
 }
 
 export interface ItemWithSearchRes {
-  item?: ItemWithSearch;
-  error?: any;
+  items?: Item[];
+  errors?: any;
 }
 
+export interface ItemWithSearchResItem {
+  Id: string
+  Status: string
+  Title: string
+  a_id: string
+  created_at: string
+  created_by: string
+  d_id: string
+  i_id: string
+  p_id: string
+  rev_no: string
+  status_id: string
+  title?: string
+  unread: string
+  updated_at: string
+  updated_by: string
+}

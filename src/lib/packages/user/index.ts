@@ -23,9 +23,45 @@ import {
   UserPassExRes,
   UserRegisterRes
 } from '../../types/user';
-import { HxbAbstract } from '../../../HxbAbstract';
 
+import { HxbAbstract } from "../../../HxbAbstract";
 export default class User extends HxbAbstract {
+  public id: string;
+  public user_name: string;
+  public access_key: string;
+  public email: string;
+
+  static fromJson(json: {[key: string]: any}): User {
+		const user = new User();
+		user.sets(json);
+		return user;
+	}
+
+  sets(params: {[key: string]: any}): User {
+    Object.keys(params).forEach(key => {
+      this.set(key, params);
+    });
+    return this;
+  }
+
+  set(key: string, value: any): User {
+    switch (key) {
+      case 'user_name':
+        this.user_name = value;
+        break;
+      case 'access_key':
+        this.access_key = value;
+        break;
+      case 'email':
+        this.email = value;
+        break;
+      case 'user_id':
+        this.id = value;
+        break;
+    }
+    return this;
+  }
+
   /**
    * function userRegisterAsync: get user register info by confirmationId
    * @param confirmationId
@@ -39,7 +75,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUserRegister = await this.client.request(USER_REGISTER, { confirmationId });
+      const res: DtUserRegister = await this.request(USER_REGISTER, { confirmationId });
 
       data.userRegister = res.userRegister;
     } catch (error: any) {
@@ -62,7 +98,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUserPassEx = await this.client.request(USER_PASSWORD_EXPIRY);
+      const res: DtUserPassEx = await this.request(USER_PASSWORD_EXPIRY);
 
       data.userPassEx = res.userPasswordExpiry;
     } catch (error: any) {
@@ -86,7 +122,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUserConfirm = await this.client.request(USER_CONFIRMATIONS, { confirmationId });
+      const res: DtUserConfirm = await this.request(USER_CONFIRMATIONS, { confirmationId });
 
       data.userConfirm = res.userConfirmations;
     } catch (error: any) {
@@ -108,10 +144,12 @@ export default class User extends HxbAbstract {
     };
     // handle call graphql
     try {
-      this.client.setHeader(
+      /*
+      User.gqClient.setHeader(
         'authorization', `Bearer ${token}`
       );
-      const res: DtUserInfo = await this.client.request(USER_INFO);
+      */
+      const res: DtUserInfo = await this.request(USER_INFO);
       data.userInfo = res.userInfo;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -152,7 +190,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUsernameExistsRes = await this.client.request(USERNAME_EXITS, { payload });
+      const res: DtUsernameExistsRes = await this.request(USERNAME_EXITS, { payload });
       data.usernameExists = res?.usernameExists;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -174,7 +212,7 @@ export default class User extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtPostInviteUsersRes = await this.client.request(POST_INVITE_USERS, { payload });
+      const res: DtPostInviteUsersRes = await this.request(POST_INVITE_USERS, { payload });
 
       data.postInviteUsers = res?.postInviteUsers;
     } catch (error: any) {

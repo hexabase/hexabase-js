@@ -6,13 +6,13 @@ require('dotenv').config();
 jest.useRealTimers();
 
 let token = process.env.TOKEN || '';
-let hexabase: HexabaseClient;
+const hexabase = new HexabaseClient();
 const url = process.env.URL || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const datastoreID = process.env.DATASTOREID || '';
-const projectID = process.env.APPLICATIONID || '';
+const datastoreID = process.env.DATASTORE_ID || '';
+const projectID = process.env.PROJECT_ID || '';
 
 const params = {
   page: 1,
@@ -25,6 +25,8 @@ const params = {
  */
 
 beforeAll(async () => {
+  await hexabase.login({email, password, token});
+  /*
   if (email && password && !token) {
     const hxbClient = await createClient({ url: url, token: '', email, password });
     token = hxbClient?.tokenHxb;
@@ -35,10 +37,15 @@ beforeAll(async () => {
     token = hxbClient?.tokenHxb;
     hexabase = hxbClient;
   }
+  */
 });
 
 describe('Hexabase SQL', () => {
-
+  it('Select all fields', async () => {
+    const query = hexabase.query(projectID);
+    const res = await query.from(datastoreID).select('Title').then();
+    console.log(res);
+  });
   // describe('Hexabase SQL', () => {
   //   it(`await hexabase.from('project.members').select('name'); // select_fields: ['name'],  `, async () => {
   //     jest.useFakeTimers();
@@ -131,7 +138,7 @@ describe('Hexabase SQL', () => {
   //     console.log('itemUpdated', itemUpdated)
   //   });
   // });
-
+  /*
   describe('Hexabase SQL', () => {
     it(`Test function execute update many item`, async () => {
       jest.useFakeTimers();
@@ -163,21 +170,22 @@ describe('Hexabase SQL', () => {
       console.log('itemUpdated', itemUpdated)
     });
   });
-
-  // describe('Hexabase SQL', () => {
-  //   it(`Test function execute`, async () => {
-  //     jest.useFakeTimers();
-  //     const q = hexabase.query();
-  //     const dataDeleteItem = await hexabase.from('6360deb505cc9cb016fbc53f')
-  //       .select('*')
-  //       .where(
-  //         q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
-  //         q.equalTo("project_id", "632ad81082bd898623884d2e")
-  //       ).deleteOne("63f31714a417d97eb502380d")
-  //     console.log('delete Item', JSON.stringify(dataDeleteItem));
-  //   });
-  // });
-
+  */
+  /*
+  describe('Hexabase SQL', () => {
+    it(`Test function execute`, async () => {
+      jest.useFakeTimers();
+      const q = hexabase.query();
+      const dataDeleteItem = await hexabase.from('6360deb505cc9cb016fbc53f')
+        .select('*')
+        .where(
+          // q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
+          q.equalTo("project_id", "632ad81082bd898623884d2e")
+        ).deleteOne("63f31714a417d97eb502380d")
+      console.log('delete Item', JSON.stringify(dataDeleteItem));
+    });
+  });
+  */
   // describe('Hexabase SQL', () => {
   //   it(`Test function execute delete use display id`, async () => {
   //     jest.useFakeTimers();

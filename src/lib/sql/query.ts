@@ -2,10 +2,12 @@ import fetch from 'cross-fetch';
 import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
 import { CREATE_NEW_ITEM, DATASTORE_UPDATE_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
-import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems, UpdateCurrentItem, UpdateItemRes } from '../types/item';
+import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems, UpdateCurrentItem, UpdateItemRes, ItemWithSearch } from '../types/item';
 import { ConditionBuilder, SortFields } from '../types/sql'
 import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
+import Item from '../packages/item';
+
 interface QueryBuilder {
   select<Fields extends T>(columns: Fields): this;
   where<Fields extends T>(columns: Fields): this;
@@ -16,9 +18,10 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   query: ConditionBuilder;
   projectId?: string;
   datastoreId?: string;
+  public useDisplayId = true;
 
   constructor(params: QueryParameter) {
-    super(params.url ? params.url : "", params.token ? params.token : "");
+    super();
     this.datastoreId = this.datastoreId ? this.datastoreId
       : params.datastoreId ? params.datastoreId
         : undefined;
@@ -208,15 +211,15 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   }
 
   useDatastore(datastoreId: string) {
-    this.projectId = datastoreId;
+    this.datastoreId = datastoreId;
 
     return this;
   }
 
-  then<TResult1 = any, TResult2 = never>(
+  async then<TResult1 = any, TResult2 = never>(
     onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | undefined | null,
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
-  ): PromiseLike<TResult1 | TResult2> {
+  ): Promise<TResult1 | TResult2> {
     const parameter: any = {
       page: this.query?.page ? this?.query?.page : 1,
       per_page: this.query?.per_page ? this?.query?.per_page : 100,
@@ -240,44 +243,28 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
     const payload: GetItemsParameters = {
       page: parameter['page'],
       per_page: parameter['per_page'],
-      datastore_id: parameter['datastore_id'],
-      project_id: parameter['project_id'],
+      datastore_id: this.datastoreId,
+      project_id: this.projectId,
       include_fields_data: parameter['include_fields_data'],
       omit_total_items: parameter['omit_total_items'],
       return_count_only: parameter['return_count_only'],
+      use_display_id: this.useDisplayId,
     }
+    const data: ItemWithSearchRes = {};
 
-
-    const data: ItemWithSearchRes = {
-      item: undefined,
-      error: undefined,
-    };
-
-    const _fetch = fetch;
-    let res = _fetch(
-      this.urlGraphql,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.tokenHxb}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: ITEM_WITH_SEARCH, variables: { payload: payload } })
-      }
-    ).then(async (res) => {
-      let body = null
-      let error = null
-
-      if (res.ok) {
-        const body = await res.json();
-        data.item = body?.data?.itemWithSearch;
-      } else {
-        const error = await res.json();
-        data.error = error;
-      }
-      return data;
-    });
-
+    const res = this._fetch(ITEM_WITH_SEARCH, { payload })
+      .then(async (res) => {
+        const json = (await res.json()).data.itemWithSearch as ItemWithSearch;
+        if (!res.ok) {
+          data.errors = json.errors;
+          return data;
+        }
+        if (!json || !json.items) {
+          throw new Error('No data');
+        }
+        data.items = json.items.map((params: any) => Item.fromJson(params));
+        return data;
+      });
     return res.then(onfulfilled, onrejected);
   }
 
@@ -329,28 +316,17 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
           : {},
     }
 
-    const _fetch = fetch;
-    let res = _fetch(
-      this.urlGraphql,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.tokenHxb}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: DELETE_ITEM, variables: { ...payload } })
-      }
-    ).then(async (res) => {
-      if (res.ok) {
-        const body = await res.json();
-        data.data = body?.data?.datastoreDeleteItem;
-      } else {
-        const error = await res.json();
-        data.error = error;
-      }
-      return data;
-    });
-
+    const res = this._fetch(DELETE_ITEM, { payload })
+      .then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body?.data?.datastoreDeleteItem;
+        } else {
+          const error = await res.json();
+          data.error = error;
+        }
+        return data;
+      });
     return res.then();
   }
 
@@ -379,29 +355,17 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       }
         : {},
     }
-
-    const _fetch = fetch;
-    let res = _fetch(
-      this.urlGraphql,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.tokenHxb}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: DELETE_ITEMS, variables: { ...payload } })
-      }
-    ).then(async (res) => {
-      if (res.ok) {
-        const body = await res.json();
-        data.data = body?.data?.datastoreDeleteDatastoreItems;
-      } else {
-        const error = await res.json();
-        data.error = error;
-      }
-      return data;
-    });
-
+    const res = this._fetch(DELETE_ITEMS, { payload })
+      .then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body?.data?.datastoreDeleteDatastoreItems;
+        } else {
+          const error = await res.json();
+          data.error = error;
+        }
+        return data;
+      });
     return res.then();
 
   }
@@ -431,28 +395,17 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       }
     }
 
-    const _fetch = fetch;
-    let res = _fetch(
-      this.urlGraphql,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.tokenHxb}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: CREATE_NEW_ITEM, variables: { ...payload } })
-      }
-    ).then(async (res) => {
-      if (res.ok) {
-        const body = await res.json();
-        data.data = body?.data?.datastoreCreateNewItem;
-      } else {
-        const error = await res.json();
-        data.error = error;
-      }
-      return data;
-    });
-
+    const res = this._fetch(CREATE_NEW_ITEM, { payload })
+      .then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body?.data?.datastoreCreateNewItem;
+        } else {
+          const error = await res.json();
+          data.error = error;
+        }
+        return data;
+      });
     return res.then();
   }
 
@@ -522,28 +475,17 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       }
     }
 
-    const _fetch = fetch;
-    const res = await _fetch(
-      this.urlGraphql,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.tokenHxb}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: CREATE_NEW_ITEM, variables: { ...payload } })
-      }
-    ).then(async (res) => {
-      if (res.ok) {
-        const body = await res.json();
-        data.data = body?.data?.datastoreCreateNewItem;
-      } else {
-        const error = await res.json();
-        data.error = error;
-      }
-      return data;
-    });
-
+    const res = this._fetch(CREATE_NEW_ITEM, { payload })
+      .then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body?.data?.datastoreCreateNewItem;
+        } else {
+          const error = await res.json();
+          data.error = error;
+        }
+        return data;
+      });
     return res
   }
 
@@ -600,33 +542,32 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
       itemActionParameters: { ...params }
     }
 
-    const _fetch = fetch;
-    let res = _fetch(
-      this.urlGraphql,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.tokenHxb}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: DATASTORE_UPDATE_ITEM, variables: { ...payload } })
-      }
-    ).then(async (res) => {
-      if (res.ok) {
-        const body = await res.json();
-        data.data = body?.data?.datastoreUpdateItem;
-        if (body?.error && body?.error?.length > 0) {
-          data.error = body?.error;
+    let res = this._fetch(DATASTORE_UPDATE_ITEM, { payload })
+      .then(async (res) => {
+        if (res.ok) {
+          const body = await res.json();
+          data.data = body?.data?.datastoreUpdateItem;
+          if (body?.error && body?.error?.length > 0) {
+            data.error = body?.error;
+          }
+        } else {
+          const error = await res.json();
+          data.error = error;
         }
-      } else {
-        const error = await res.json();
-        data.error = error;
-      }
-      return data;
-    }).catch(error => { throw new Error(`error: ${error}`) });
-
+        return data;
+      }).catch(error => { throw new Error(`error: ${error}`) });
     return res.then();
   }
 
+  _fetch(query: string, variables: any) {
+    return fetch(Query.client.urlHxb, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Query.client.tokenHxb}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query, variables })
+    });
+  }
 }
 

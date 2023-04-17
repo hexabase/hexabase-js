@@ -1,21 +1,25 @@
 import { GraphQLClient } from 'graphql-request';
+import HexabaseClient from './HexabaseClient';
 
 export class HxbAbstract {
-  // public urlGr: string;
-  // public token: string;
-  public client: GraphQLClient;
+  static client: HexabaseClient;
 
-  constructor(
-    protected urlGraphql: string,
-    protected tokenHxb: string
-  ) {
-    // this.urlGr = urlGraphql;
-    // this.token = tokenHxb;
-    this.client = new GraphQLClient(urlGraphql, {
+  static request(query: string, variables?: any, _client?: HexabaseClient) {
+    return new HxbAbstract().request(query, variables, _client);
+  }
+
+  request(query: string, variables?: any, _client?: HexabaseClient) {
+    const client = _client instanceof HexabaseClient ? _client : HxbAbstract.client;
+    const gqClient = new GraphQLClient(client.urlHxb, {
       timeout: 50000,
       headers: {
-        authorization: `Bearer ${tokenHxb}`,
+        authorization: `Bearer ${client.tokenHxb}`,
       },
     });
+    try {
+      return gqClient.request(query, variables);
+    } catch (error: any) {
+      throw JSON.stringify(error?.response?.errors);
+    }
   }
 }

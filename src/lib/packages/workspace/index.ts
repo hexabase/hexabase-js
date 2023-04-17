@@ -1,5 +1,6 @@
 import { ModelRes, ResponseErrorNull } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
+import AppFunction from '../appFunction';
 import {
   WORKSPACES,
   WORKSPACE_PASSWORD_POLICY,
@@ -17,11 +18,8 @@ import {
 } from '../../graphql/workspace';
 import {
   QueryTaskList,
-  WorkspacesRes,
-  WsPasswordPolicyRes,
+  WsAdminUser,
   WsFunctionalityRes,
-  WsUsageRes,
-  WsGroupChildrenRes,
   TaskQueueListRes,
   TaskQueueStatusRes,
   DtWorkspaces,
@@ -33,154 +31,251 @@ import {
   DtTaskQueueList,
   DtTaskQueueStatus,
   CreateWsInput,
-  WorkspaceIDRes,
   DtWorkspaceID,
   DtCurrentWs,
   SetWsInput,
-  WorkspaceSettingReq,
+  WorkspaceSettingPl,
   WorkspaceDetailRes,
-  ArchiveWorkspace,
-  WorkspaceCurrentRes
 } from '../../types/workspace';
+import Language from '../language';
+import PasswordPolicy from '../passwordPolicy';
+import Redirect from '../redirect';
+import WorkspaceFunction from '../workspaceFunction';
+import WorkspaceUsage from '../workspaceUsage';
+import User from '../user';
+import UserSession from '../userSession';
+import Group from '../group';
+import Project from '../project';
+import Datastore from '../datastore';
 
 export default class Workspace extends HxbAbstract {
+  public id: string;
+  public workspaceId: string;
+  public wsKey: string;
+  public name: string;
+  public appFunctions: AppFunction;
+  public createdAt: Date;
+  public updatedAt: Date;
+  public planName: string;
+  public planId: string;
+  public userId: string;
+  public languages: Language[];
+  public wsAdmin: string[];
+  public passwordPolicy: PasswordPolicy;
+  public redirect: Redirect;
+  public workspaceFunction: WorkspaceFunction;
+  public workspaceUsage: WorkspaceUsage;
+  public workspaceAdminUsers: User[];
+  public userSession: UserSession;
+  public group: Group;
+  // public projects = Project;
 
-  /**
-   * function get: get workspaces and current workspace id
-   * @returns WorkspacesRes
-   */
-  async get(): Promise<WorkspacesRes> {
-    const data: WorkspacesRes = {
-      workspaces: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtWorkspaces = await this.client.request(WORKSPACES);
-      data.workspaces = res.workspaces;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+  constructor(id?: string) {
+    super();
+    if (id) this.id = id;
   }
 
   /**
-   * function getDetail: get workspace detail
-   * @params: workspaceId
+   * static function all: get workspaces
+   * @returns Workspace[]
+   */
+  static async all(): Promise<Workspace[]> {
+    // handle call graphql
+    const res = await Workspace.allWithCurrent();
+    return res.workspaces;
+  }
+
+  /**
+   * static function get: get a workspace
    * @returns Workspace
    */
-  async getDetail(): Promise<WorkspaceDetailRes> {
-    const data: WorkspaceDetailRes = {
-      workspace: undefined,
-      error: undefined,
-    };
+  static async get(id: string): Promise<Workspace> {
+    this.setCurrent(id);
+    const res = await this.request(WORKSPACE_DETAIL);
+    return Workspace.fromJson(res.workspace);
+  }
 
+  /**
+   * static function all: get workspaces and current workspace id
+   * @returns workspaces: Workspace[], workspace: Workspace
+   */
+  static async allWithCurrent(): Promise<{ workspaces: Workspace[], workspace: Workspace}> {
     // handle call graphql
-    try {
-      const res: WorkspaceDetailRes = await this.client.request(WORKSPACE_DETAIL);
-      data.workspace = res.workspace;
-    } catch (error: any) {
-      console.log('error', error);
-      data.error = JSON.stringify(error.response.errors);
-    }
+    const res: DtWorkspaces = await this.request(WORKSPACES);
+    const { workspaces, current_workspace_id } = res.workspaces;
+    const ary = workspaces
+      .map((params: any) => Workspace.fromJson(params));
+    return { workspaces: ary, workspace: ary.find(w => w.id === current_workspace_id!)! };
+  }
 
-    return data;
+  /**
+   * static function fromJson: convert json to Workspace
+   * @returns Workspace
+   */
+  static fromJson(params: any): Workspace {
+    const workspace = new Workspace;
+    workspace.sets(params);
+    return workspace;
+  }
+
+  /**
+   * function sets: set values for Workspace
+   * @returns Workspace
+   */
+  sets(params: {[key: string]: any}): Workspace {
+    Object.keys(params).forEach(key => {
+      this.set(key, params[key]);
+    });
+    return this;
+  }
+
+  /**
+   * function set: set value for Workspace
+   * @returns Workspace
+   */
+  set(key: string, value: any): Workspace {
+    switch (key) {
+      case 'w_id':
+      case 'workspace_id':
+          this.id = value;
+        break;
+      case 'ws_key':
+        this.wsKey = value;
+        break;
+      case 'workspace_name':
+        this.name = value;
+        break;
+      case 'app_functions':
+        this.appFunctions = AppFunction.fromJson(value);
+        break;
+      case 'created_at':
+        this.createdAt = new Date(value);
+        break;
+      case 'updated_at':
+        this.updatedAt = new Date(value);
+        break;
+      case 'name':
+        this.name = value;
+        break;
+      case 'plan_name':
+        this.planName = value;
+        break;
+      case 'plan_id':
+        this.planId = value;
+        break;
+      case 'languages':
+        this.languages = (value as any[])
+          .map((lang: any) => Language.fromJson(lang));
+        break;
+      case 'pwd_policy':
+        this.passwordPolicy = PasswordPolicy.fromJson(value);
+        break;
+      case 'redirect':
+        this.redirect = Redirect.fromJson(value);
+        break;
+      case 'user_id':
+        this.userId = value;
+        break;
+      case 'ws_admin':
+        this.wsAdmin = value;
+        break;
+      case 'user_sessions':
+        this.userSession = UserSession.fromJson(value);
+        break;
+      case 'ws_admin_users':
+        value = value as WsAdminUser[];
+        this.workspaceAdminUsers = value.map((user: WsAdminUser) => User.fromJson(user));
+        break;
+      case 'ws_functions':
+        this.workspaceFunction = WorkspaceFunction.fromJson(value);
+        this.workspaceFunction.workspace = this;
+        break;
+      case 'ws_usage':
+        this.workspaceUsage = WorkspaceUsage.fromJson(value);
+        this.workspaceUsage.workspace = this;
+        break;
+      }
+    return this;
+  }
+
+  /**
+   * function getDetail: get and set workspace detail
+   * @returns Workspace
+   */
+  async getDetail(): Promise<boolean> {
+    // handle call graphql
+    await Workspace.setCurrent(this.id);
+    const res: WorkspaceDetailRes = await this.request(WORKSPACE_DETAIL);
+    this.sets(res.workspace as {[key: string]: any});
+    return true;
   }
 
   /**
    * function getPasswordPolicy: get workspace password policy
-   * @returns WsPasswordPolicyRes
+   * @returns PasswordPolicy
    */
-  async getPasswordPolicy(workspaceId: string): Promise<WsPasswordPolicyRes> {
-    const data: WsPasswordPolicyRes = {
-      wsPasswordPolicy: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtWsPasswordPolicy = await this.client.request(WORKSPACE_PASSWORD_POLICY, { workingspaceId: workspaceId });
-      data.wsPasswordPolicy = res.workspacePasswordPolicy;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+  async getPasswordPolicy(): Promise<PasswordPolicy> {
+    const res: DtWsPasswordPolicy = await this.request(WORKSPACE_PASSWORD_POLICY, { workingspaceId: this.id });
+    this.passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy);
+    return this.passwordPolicy;
   }
 
   /**
    * function getFunctionality: get workspace functionlity
-   * @returns WsFunctionalityRes
+   * @returns WorkspaceFunction
    */
-  async getFunctionality(workspaceId: string): Promise<WsFunctionalityRes> {
+  async getFunctionality(): Promise<WorkspaceFunction> {
     const data: WsFunctionalityRes = {
       wsFunctionality: undefined,
       error: undefined,
     };
-
     // handle call graphql
-    try {
-      const res: DtWsFunctionality = await this.client.request(WORKSPACE_FUNCTIONALITY, { workingspaceId: workspaceId });
-
-      data.wsFunctionality = res.workspaceFunctionality;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+    const res: DtWsFunctionality = await this.request(WORKSPACE_FUNCTIONALITY, { workingspaceId: this.id });
+    if (!this.workspaceFunction) {
+      this.workspaceFunction = new WorkspaceFunction(this);
     }
-
-    return data;
+    this.workspaceFunction.sets(res.workspaceFunctionality);
+    return this.workspaceFunction;
   }
 
   /**
    * function getUsage: get workspace usage
-   * @returns WsUsageRes
+   * @returns WorkspaceUsage
    */
-  async getUsage(workspaceId: string): Promise<WsUsageRes> {
-    const data: WsUsageRes = {
-      wsUsage: undefined,
-      error: undefined,
-    };
-
+  async getUsage(): Promise<WorkspaceUsage> {
     // handle call graphql
-    try {
-      const res: DtWsUsage = await this.client.request(WORKSPACE_USAGE, { workingspaceId: workspaceId });
-
-      data.wsUsage = res.workspaceUsage;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+    const res: DtWsUsage = await this.request(WORKSPACE_USAGE, { workingspaceId: this.id });
+    if (!this.workspaceUsage) {
+      this.workspaceUsage = new WorkspaceUsage(this);
     }
-
-    return data;
+    this.workspaceUsage.sets(res.workspaceUsage.usage!);
+    return this.workspaceUsage;
   }
 
   /**
-   * function getGroupChildren: get workspace childrent in group
-   * @returns WsGroupChildrenRes
+   * function getGroup: get workspace group and their children
+   * @returns Group
    */
-  async getGroupChildren(workspaceId: string): Promise<WsGroupChildrenRes> {
-    const data: WsGroupChildrenRes = {
-      wsGroupChildren: undefined,
-      error: undefined,
-    };
-
+  async getGroup(): Promise<Group> {
     // handle call graphql
-    try {
-      const res: DtWsGroupChildren = await this.client.request(WORKSPACE_GROUP_CHILDREN, { workingspaceId: workspaceId });
-
-      data.wsGroupChildren = res.workspaceGetGroupChildren;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+    const res: DtWsGroupChildren = await this.request(WORKSPACE_GROUP_CHILDREN, { workingspaceId: this.id });
+    const { group, children }= res.workspaceGetGroupChildren;
+    if (group) {
+      this.group = Group.fromJson(group);
     }
-
-    return data;
+    if (this.group && children) {
+      this.group.children = children.map((child: any) => Group.fromJson(child));
+    }
+    return this.group;
   }
 
   /**
    * function getTaskQueueList: get queue list
+   * TODO: Need definition type of queryTaskList
    * @param: option: workspaceId or none, queryTaskList or none
    * @returns TaskQueueListRes
    */
+  /*
   async getTaskQueueList(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskQueueListRes> {
     const data: TaskQueueListRes = {
       taskQueueList: undefined,
@@ -189,8 +284,8 @@ export default class Workspace extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtTaskQueueList = await this.client.request(TASK_QUEUE_LIST, { workspaceId, queryTaskList });
-
+      const res: DtTaskQueueList = await this.request(TASK_QUEUE_LIST, { workspaceId, queryTaskList });
+      console.log(res.taskGetQueueList);
       data.taskQueueList = res.taskGetQueueList;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -198,12 +293,14 @@ export default class Workspace extends HxbAbstract {
 
     return data;
   }
+  */
 
   /**
    * function getTaskQueueStatus: get task queue status
    * @param: option: taskId and workspaceId are required
    * @returns TaskQueueStatusRes
    */
+  /*
   async getTaskQueueStatus(taskId: string, workspaceId: string): Promise<TaskQueueStatusRes> {
     const data: TaskQueueStatusRes = {
       taskQueueStatus: undefined,
@@ -212,8 +309,8 @@ export default class Workspace extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtTaskQueueStatus = await this.client.request(TASK_QUEUE_STATUS, { taskId, workspaceId });
-
+      const res: DtTaskQueueStatus = await this.request(TASK_QUEUE_STATUS, { taskId, workspaceId });
+      console.log(res);
       data.taskQueueStatus = res.taskGetQueueTaskStatus;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -221,111 +318,108 @@ export default class Workspace extends HxbAbstract {
 
     return data;
   }
+  */
 
   /**
-   * function create: created workspace
-   * @param: createWorkSpaceInput: {name}
-   * @returns WorkspaceIDRes
+   * function save: create or update workspace
+   * @returns boolean
    */
-  async create(createWsInput: CreateWsInput): Promise<WorkspaceIDRes> {
-    const data: WorkspaceIDRes = {
-      w_id: undefined,
-      error: undefined,
+  async save(): Promise<boolean> {
+    return !this.id ? this.create() : this.update();
+  }
+
+  /**
+   * function create: create workspace
+   * @returns boolean
+   */
+  async create(): Promise<boolean> {
+    const createWorkSpaceInput: CreateWsInput = {
+      name: this.name,
     };
-
     // handle call graphql
-    try {
-      const res: DtWorkspaceID = await this.client.request(CREATE_WORKSPACE, { createWorkSpaceInput: createWsInput });
-
-      data.w_id = res.createWorkspace?.w_id;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+    const res: DtWorkspaceID = await this.request(CREATE_WORKSPACE, { createWorkSpaceInput });
+    if (res.createWorkspace?.w_id) {
+      this.id = res.createWorkspace?.w_id;
+      return true;
+    } else {
+      return false;
     }
-
-    return data;
   }
 
   /**
    * function update: update workspace settings
-   * @param: payload: WorkspaceSettingReq
-   * @returns ResponseErrorNull
+   * @returns boolean
    */
-  async update(payload: WorkspaceSettingReq): Promise<ResponseErrorNull> {
-    const data: ResponseErrorNull = {
-      error: undefined,
+  async update(): Promise<boolean> {
+    const payload: WorkspaceSettingPl = this.toJson();
+    const res: ResponseErrorNull = await this.request(UPDATE_WORKSPACE_SETTINGS, { payload });
+    return !res.error;
+  }
+
+  /**
+   * function toJson: convert workspace to json
+   * @returns WorkspaceSettingPl
+   */
+  toJson(): WorkspaceSettingPl {
+    const params: WorkspaceSettingPl = {
+      w_id: this.id,
+      id: this.id,
     };
-
-    try {
-      const res: ResponseErrorNull = await this.client.request(UPDATE_WORKSPACE_SETTINGS, payload);
-      data.error = res.error;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    if (this.name) params.name = this.name;
+    if (this.planId) params.plan_id = this.planId;
+    if (this.planName) params.plan_name = this.planName;
+    if (this.userId) params.user_id = this.userId;
+    return params;
   }
 
   /**
    * function archive: archive workspace
-   * @param: payload: WorkspaceSettingReq
-   * @returns ResponseErrorNull
+   * @returns boolean
    */
-  async archive(payload: ArchiveWorkspace): Promise<ResponseErrorNull> {
-    const data: ResponseErrorNull = {
-      error: undefined,
-    };
-
-    try {
-      const res: ResponseErrorNull = await this.client.request(ARCHIVE_WORKSPACE, payload);
-      data.error = res.error;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+  async archive(): Promise<boolean> {
+    const payload = {
+      w_id: this.id,
+      archived: true,
     }
-
-    return data;
+    const res: ResponseErrorNull = await this.request(ARCHIVE_WORKSPACE, { payload });
+    return !res.error;
   }
 
 
   /**
-   * function setCurrent: set workspace current with id
-   * @param: option: SetWsInput: {workspace_id} are required
-   * @returns ModelRes
+   * static function setCurrent: set workspace current with id
+   * @param: option: workspaceId: workspace id
+   * @returns boolean
    */
-  async setCurrent(setCurrentWsPl: SetWsInput): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
+  static async setCurrent(workspaceId: string): Promise<boolean> {
+    const setCurrentWorkSpaceInput: SetWsInput = {
+      workspace_id: workspaceId,
     };
-
     // handle call graphql
-    try {
-      const res: DtCurrentWs = await this.client.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput: setCurrentWsPl });
-      data.data = res.setCurrentWorkSpace;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-    return data;
+    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput });
+    return res.setCurrentWorkSpace!.success;
   }
 
   /**
-   * function getCurrent: get workspaces id current
+   * static function getCurrent: get current workspace
    * @returns WorkspaceCurrentRes
    */
-  async getCurrent(): Promise<WorkspaceCurrentRes> {
-    const data: WorkspaceCurrentRes = {
-      wsCurrent: undefined,
-      error: undefined,
-    };
+  static async getCurrent(): Promise<Workspace> {
+    const res: DtWorkspaceCurrent = await this.request(WORKSPACE_CURRENT);
+    const workspace = new Workspace;
+    workspace.id = res.workspaceCurrent!.workspace_id!;
+    return workspace;
+  }
 
-    // handle call graphql
-    try {
-      const res: DtWorkspaceCurrent = await this.client.request(WORKSPACE_CURRENT);
-      data.wsCurrent = res.workspaceCurrent;
-    } catch (error: any) {
+  project(): Project {
+    return new Project(this);
+  }
 
-      data.error = JSON.stringify(error.response.errors);
-    }
+  projects(): Promise<Project[]> {
+    return Project.all(this);
+  }
 
-    return data;
+  getProjectsAndDatastores(): Promise<{ projects: Project[], datastores: Datastore[]}> {
+    return Project.getProjectsAndDatastores(this);
   }
 }

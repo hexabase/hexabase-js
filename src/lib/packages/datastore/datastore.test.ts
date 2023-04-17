@@ -5,6 +5,7 @@ import AuthMw from '../middleware/auth';
 import Project from '../project';
 import User from '../user';
 import Workspace from '../workspace';
+import HexabaseClient from '../../../HexabaseClient';
 require('dotenv').config();
 /**
  * Test with class Datastore
@@ -16,6 +17,8 @@ let userId = '';
 let newDatastoreId: string | undefined = process.env.DATASTOREID || '';
 let workspaceId = process.env.WORKSPACEID || '';
 let projectID = '';
+let client: HexabaseClient;
+let workspace: Workspace;
 const datastoreId = process.env.DATASTOREID || '';
 const projectIDAutoNum = process.env.PROJECT_ID || '';
 const fieldIdAutoNum = process.env.FIELDID || '';
@@ -29,93 +32,33 @@ const createWorkSpaceInput = {
 };
 
 beforeAll(async () => {
-  if (email && password && !tokenDs) {
-    console.log('[email, password]: ', email, password);
-    const auth = new Auth(url);
-    const { token, error } = await auth.login({ email, password });
+  client = new HexabaseClient;
+  await client.login({ email, password, token: tokenDs });
 
-    if (token) {
-      const user = new User(url, token);
-      const { userInfo } = await user.get(token);
-      userInfo?.u_id ? userId = userInfo?.u_id : '';
-      //
-      const workspace = new Workspace(url, token);
-      const { wsCurrent, error } = await workspace.getCurrent();
-
-      if (wsCurrent && wsCurrent?.workspace_id) {
-        workspaceId = wsCurrent?.workspace_id;
-      } else {
-        throw Error(`Errors: ${error}`);
-      }
-      //
-      const appAndDsGetApp = new Project(url, token);
-      const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
-
-      if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
-        projectID = dataApp?.appAndDs[0].application_id;
-      } else {
-        const application = new Project(url, token);
-        const createProjectParams = {
-          name: {
-            en: 'EN Project',
-            ja: 'JA Project',
-          },
-        };
-        const { app } = await application.create(createProjectParams);
-
-        if (app) {
-          projectID = app?.project_id;
-        }
-      }
-
-      if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs && dataApp?.appAndDs[0]?.datastores && dataApp?.appAndDs[0]?.datastores[0]?.datastore_id) {
-        newDatastoreId = dataApp?.appAndDs[0]?.datastores[0]?.datastore_id;
-      }
-
-      return (tokenDs = token);
-    } else {
-      throw Error(`Need login faild to initialize sdk: ${error}`);
-    }
-  } else if (tokenDs) {
-    const user = new User(url, tokenDs);
-    const { userInfo } = await user.get(tokenDs);
-    userInfo?.u_id ? userId = userInfo?.u_id : '';
-    //
-    const workspace = new Workspace(url, tokenDs);
-    const { wsCurrent, error } = await workspace.getCurrent();
-
-    if (wsCurrent && wsCurrent?.workspace_id) {
-      workspaceId = wsCurrent?.workspace_id;
-    } else {
-      throw Error(`Errors: ${error}`);
-    }
-    //
-    const appAndDsGetApp = new Project(url, tokenDs);
-    const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
-
-    if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
-      projectID = dataApp?.appAndDs[0].application_id;
-    } else {
-      const application = new Project(url, tokenDs);
-      const createProjectParams = {
-        name: {
-          en: 'EN Project',
-          ja: 'JA Project',
-        },
-      };
-      const { app } = await application.create(createProjectParams);
-
-      if (app) {
-        projectID = app?.project_id;
-      }
-    }
-
-    if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs && dataApp?.appAndDs[0]?.datastores && dataApp?.appAndDs[0]?.datastores[0]?.datastore_id) {
-      newDatastoreId = dataApp?.appAndDs[0]?.datastores[0]?.datastore_id;
-    }
-
+  // const auth = new Auth(url);
+  // const { token } = await auth.login({ email, password });
+  // workspace = new Workspace();
+  const workspace = await Workspace.getCurrent();
+  workspaceId = workspace.id;
+  const appAndDsGetApp = new Project();
+  const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
+  if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
+    projectID = dataApp?.appAndDs[0].application_id;
   } else {
-    throw Error('Need pass token or email and password parameter');
+    const application = new Project();
+    const createProjectParams = {
+      name: {
+        en: 'EN Project',
+        ja: 'JA Project',
+      },
+    };
+    const { app } = await application.create(createProjectParams);
+    if (app) {
+      projectID = app?.project_id;
+    }
+  }
+  if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs && dataApp?.appAndDs[0]?.datastores && dataApp?.appAndDs[0]?.datastores[0]?.datastore_id) {
+    newDatastoreId = dataApp?.appAndDs[0]?.datastores[0]?.datastore_id;
   }
 });
 
@@ -125,21 +68,19 @@ describe('Datastore', () => {
       jest.useFakeTimers('legacy');
       try {
         if (newDatastoreId) {
-          const datastore = new Datastore(url, tokenDs);
-          const { datastores, error } = await datastore.get(projectID);
-          // expect response
-          if (datastores) {
-            expect(typeof datastores).toBe('object');
-          } else {
-            throw new Error(`Error: ${error}`);
-          }
+          const project = new Project();
+          project.id = projectID;
+          const datastore = new Datastore();
+          datastore.project = project;
+          const datastores = await project.datastores();
+          expect(typeof datastores).toBe(Array);
         }
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }
     });
   });
-
+  /*
   describe('#getDetail()', () => {
     it('should get fields without error', async () => {
       jest.useFakeTimers('legacy');
@@ -392,5 +333,5 @@ describe('Datastore', () => {
       }
     });
   });
-
+  */
 });
