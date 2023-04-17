@@ -77,8 +77,14 @@ export default class Item extends HxbAbstract {
   public unread: number;
   public fields: {[key: string]: any} = {};
 
-  static fromJson(client: HexabaseClient, params: {[key: string]: any}): Item {
-    const item = new Item(client);
+  /**
+   * Create item object from JSON
+   * @param client HexabaseClient
+   * @param params Parameters from GraphQL
+   * @returns Hexabase Item object
+   */
+  static fromJson(params: {[key: string]: any}): Item {
+    const item = new Item();
     item.sets(params);
     return item;
   }
@@ -94,7 +100,7 @@ export default class Item extends HxbAbstract {
     switch (key) {
       case 'a_id':
       case 'p_id':
-        this.project = new Project(this.client);
+        this.project = new Project();
         this.project.id = value as string;
         break;
       case 'created_at':
@@ -112,7 +118,9 @@ export default class Item extends HxbAbstract {
       case 'i_id':
         this.id = value as string;
       case 'd_id':
-        this.datastore = new Datastore(this.client);
+        if (this.project instanceof Project) {
+          this.datastore = new Datastore(this.project);
+        }
         this.datastore.id = value as string;
         break;
       case 'Status':
@@ -135,30 +143,30 @@ export default class Item extends HxbAbstract {
     }
     return this;
   }
+
   /**
    * function get: get items in datastore
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  async get(
+  static async get(
     params: GetItemsPl,
-    datastoreId: string,
-    projectId?: string
+    datastore: Datastore
   ): Promise<DsItemsRes> {
     const data: DsItemsRes = {
-      dsItems: undefined,
+      items: undefined,
       error: undefined,
     };
 
     // handle call graphql
     try {
-      const res: DtDsItems = await this.gqClient.request(DS_ITEMS, {
+      const res: DtDsItems = await Item.request(DS_ITEMS, {
         getItemsParameters: params,
-        datastoreId,
-        projectId,
+        datastoreId: datastore.id,
+        projectId: datastore.project.id,
       });
-
-      data.dsItems = res.datastoreGetDatastoreItems;
+      console.log(res.datastoreGetDatastoreItems.items);
+      data.items = res.datastoreGetDatastoreItems.items.map((params:any) => Item.fromJson(params));
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
     }
@@ -184,7 +192,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemHistories = await this.gqClient.request(ITEM_HISTORIES, {
+      const res: DtItemHistories = await this.request(ITEM_HISTORIES, {
         projectId,
         datastoreId,
         itemId,
@@ -212,7 +220,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemIdCreated = await this.gqClient.request(CREATE_ITEMID, {
+      const res: DtItemIdCreated = await this.request(CREATE_ITEMID, {
         datastoreId,
       });
 
@@ -241,7 +249,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtNewItem = await this.gqClient.request(CREATE_NEW_ITEM, {
+      const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
         projectId,
         datastoreId,
         payload: newItemPl,
@@ -272,7 +280,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemLinked = await this.gqClient.request(ITEM_LINKED, {
+      const res: DtItemLinked = await this.request(ITEM_LINKED, {
         datastoreId,
         itemId,
         linkedDatastoreId,
@@ -304,7 +312,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtItemDetail = await this.gqClient.request(ITEM_DETAIL, {
+      const res: DtItemDetail = await this.request(ITEM_DETAIL, {
         datastoreId,
         itemId,
         projectId,
@@ -337,7 +345,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDeleteItem = await this.gqClient.request(DELETE_ITEM, {
+      const res: DtDeleteItem = await this.request(DELETE_ITEM, {
         datastoreId,
         itemId,
         projectId,
@@ -370,7 +378,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateItem = await this.gqClient.request(
+      const res: DtUpdateItem = await this.request(
         DATASTORE_UPDATE_ITEM,
         { datastoreId, itemId, projectId, itemActionParameters }
       );
@@ -402,7 +410,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateItemRes = await this.gqClient.request(
+      const res: DtUpdateItemRes = await this.request(
         EXECUTE_ITEM_ACTION,
         { projectId, datastoreId, itemId, actionId, itemActionParameters }
       );
@@ -443,7 +451,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreCreateCommentItem = await this.gqClient.request(POST_NEW_ITEM_HISTORY, { payload });
+      const res: DtDatastoreCreateCommentItem = await this.request(POST_NEW_ITEM_HISTORY, { payload });
       data.postNewItemHistory = res.postNewItemHistory;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
@@ -476,7 +484,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreUpdateCommentItem = await this.gqClient.request(POST_UPDATE_ITEM_HISTORY, { payload });
+      const res: DtDatastoreUpdateCommentItem = await this.request(POST_UPDATE_ITEM_HISTORY, { payload });
       data.error = res.postUpdateItemHistory;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
@@ -508,7 +516,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreDeleteCommentItem = await this.gqClient.request(POST_DELETE_ITEM_HISTORY, { payload });
+      const res: DtDatastoreDeleteCommentItem = await this.request(POST_DELETE_ITEM_HISTORY, { payload });
       data.error = res.archiveItemHistory;
     } catch (error: any) {
       data.error = JSON.stringify(error?.response?.errors);
@@ -534,7 +542,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtAddItemLink = await this.gqClient.request(ADD_ITEM_LINK, {
+      const res: DtAddItemLink = await this.request(ADD_ITEM_LINK, {
         projectId,
         datastoreId,
         itemId,
@@ -565,7 +573,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateItemLink = await this.gqClient.request(
+      const res: DtUpdateItemLink = await this.request(
         UPDATE_ITEM_LINK,
         {
           projectId,
@@ -599,7 +607,7 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDeleteItemLink = await this.gqClient.request(
+      const res: DtDeleteItemLink = await this.request(
         DELETE_ITEM_LINK,
         {
           projectId,
@@ -631,7 +639,7 @@ export default class Item extends HxbAbstract {
     // handle call graphql
     try {
       console.log("payload", payload)
-      const res: DtItemWithSearch = await this.gqClient.request(
+      const res: DtItemWithSearch = await this.request(
         ITEM_WITH_SEARCH,
         {
           payload

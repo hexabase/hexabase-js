@@ -21,7 +21,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   public useDisplayId = true;
 
   constructor(params: QueryParameter) {
-    super(params.client);
+    super();
     this.datastoreId = this.datastoreId ? this.datastoreId
       : params.datastoreId ? params.datastoreId
         : undefined;
@@ -262,7 +262,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
         if (!json || !json.items) {
           throw new Error('No data');
         }
-        data.items = json.items.map((params: any) => Item.fromJson(this.client, params));
+        data.items = json.items.map((params: any) => Item.fromJson(params));
         return data;
       });
     return res.then(onfulfilled, onrejected);
@@ -560,10 +560,10 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
   }
 
   _fetch(query: string, variables: any) {
-    return fetch(this.client.urlHxb, {
+    return fetch(Query.client.urlHxb, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.client.tokenHxb}`,
+        'Authorization': `Bearer ${Query.client.tokenHxb}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ query, variables })

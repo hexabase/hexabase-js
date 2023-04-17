@@ -2,6 +2,7 @@ import { DeleteProjectPl, UpdateProjectNamePl, UpdateProjectThemePl } from '../.
 import Project from '.';
 import Auth from '../auth';
 import Workspace from '../workspace';
+import { HexabaseClient } from 'src';
 require('dotenv').config();
 /**
  * Test with class Project
@@ -21,10 +22,9 @@ beforeAll(async () => {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const { token, error } = await auth.login({ email, password });
-
+    const client = new HexabaseClient(url, token);
     if (token) {
-      const workspace = new Workspace(url, token);
-      const { wsCurrent, error } = await workspace.getCurrent();
+      const { wsCurrent, error } = await Workspace.getCurrent();
 
       if (wsCurrent && wsCurrent?.workspace_id) {
         workspaceId = wsCurrent?.workspace_id;

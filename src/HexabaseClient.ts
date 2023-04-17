@@ -9,6 +9,7 @@ import Storage from './lib/packages/storage';
 import QueryClient from './lib/sql/queryClient';
 import QueryBuilder from './lib/sql/query';
 import Query from './lib/sql/query';
+import { HxbAbstract } from './HxbAbstract';
 import { QueryParameter } from './lib/types/sql/input';
 
 type LoginParams = {
@@ -30,6 +31,15 @@ export default class HexabaseClient {
   protected rest: QueryClient;
   protected projectId: string;
   public urlHxb: string;
+  public Workspace: typeof Workspace;
+  public Project: typeof Project;
+  public Datastore: typeof Datastore;
+  public Storage: typeof Storage;
+  public Item: typeof Item;
+  public DataReport: typeof DataReport;
+  public User: typeof User;
+  public Rest: typeof QueryClient;
+
   constructor(
     urlHxb: string = 'https://graphql.hexabase.com/graphql',
     tokenHxb?: string
@@ -47,6 +57,7 @@ export default class HexabaseClient {
    * initialize classes
    */
   public _init() {
+    /*
     this.user = this._initUser();
     this.project = this._initProject();
     this.workspace = this._initWorkspace();
@@ -56,6 +67,16 @@ export default class HexabaseClient {
     this.storage = this._initStorage();
     this.rest = this._initQueryClient();
     this._initQuery();
+    */
+    this.Workspace = Workspace;
+    this.Project = Project;
+    this.Datastore = Datastore;
+    this.Storage = Storage;
+    this.Item = Item;
+    this.DataReport = DataReport;
+    this.User = User;
+    this.Rest = QueryClient;
+    HxbAbstract.client = this;
   }
 
   /**
@@ -96,80 +117,100 @@ export default class HexabaseClient {
    * initialize class Workspace
    * @returns new Workspace
    */
+  /**
   public _initWorkspace() {
-    return new Workspace(this);
+    Workspace.setClient(this);
   }
+   */
 
   /**
    * initialize class User
    * @returns new User
    */
+  /**
   public _initUser() {
     return new User(this);
   }
+  */
 
   /**
    * initialize class Project
    * @returns new Project
    */
+  /**
   public _initProject() {
     return new Project(this);
   }
+  */
 
   /**
    * initialize class Datastore
    * @returns new Datastore
    */
+  /**
   public _initDatastore() {
     return new Datastore(this);
   }
+  */
 
   /**
    * initialize class Item
    * @returns new Item
    */
+  /**
   public _initItem() {
     return new Item(this);
   }
+  */
 
   /**
    * Check login status
    * @returns boolean
    */
+  /**
   public isLogin() {
     return !!this.tokenHxb;
   }
+  */
 
   /**
    * initialize class DataReport
    * @returns new DataReport
    */
+  /**
   public _initDataReport() {
     return new DataReport(this);
   }
+  */
 
   /**
    * initialize class Storage
    * @returns new Storage
    */
+  /**
   public _initStorage() {
     return new Storage(this);
   }
+  */
 
     /**
    * initialize class Query
    * @returns new Query
    */
+  /**
   public _initQuery() {
     const params: QueryParameter = {
       client: this,
     };
     return new Query(params);
   }
+  */
 
+  /**
   public _initQueryClient() {
     return new QueryClient(this);
   }
+  */
 
   /**
    * initialize from method

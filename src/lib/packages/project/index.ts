@@ -1,5 +1,6 @@
 import { ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
+import Workspace from '../workspace';
 import {
   GET_APPLICATION_AND_DATASTORE,
   APPLICATION_CREATE_PROJECT,
@@ -29,15 +30,17 @@ import {
   TemplateRes,
   DtTemplates
 } from '../../types/project';
+import Datastore from '../datastore';
 
 export default class Project extends HxbAbstract {
+  public workspace: Workspace;
   public id: string;
   /**
    * function get: get list project in a workspace
    * @params workspaceId
    * @returns ApplicationRes
    */
-  async get(workspaceId: string): Promise<ApplicationRes> {
+  async all(): Promise<ApplicationRes> {
     const data: ApplicationRes = {
       getApplications: undefined,
       error: undefined,
@@ -45,7 +48,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtApplicationRes = await this.gqClient.request(GET_APPLICATIONS, { workspaceId });
+      const res: DtApplicationRes = await this.request(GET_APPLICATIONS, { workspaceId: this.workspace!.id });
 
       data.getApplications = res.getApplications;
     } catch (error: any) {
@@ -55,12 +58,18 @@ export default class Project extends HxbAbstract {
     return data;
   }
 
+  async datastores(): Promise<Datastore[]> {
+    return Project.client.Datastore.all({
+      project: this
+    });
+  }
+
   /**
    * function getProjectsAndDatastores: get list application and datastore in a workspace
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
+  static async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
     const data: AppAndDsRes = {
       appAndDs: undefined,
       error: undefined,
@@ -68,7 +77,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtAppAndDs = await this.gqClient.request(GET_APPLICATION_AND_DATASTORE, { workspaceId });
+      const res: DtAppAndDs = await this.request(GET_APPLICATION_AND_DATASTORE, { workspaceId });
 
       data.appAndDs = res.getApplicationAndDataStore;
     } catch (error: any) {
@@ -91,7 +100,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtTemplates = await this.gqClient.request(GET_TEMPLATES);
+      const res: DtTemplates = await this.request(GET_TEMPLATES);
 
       data.getTemplates = res.getTemplates;
     } catch (error: any) {
@@ -114,7 +123,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtCreateApp = await this.gqClient.request(APPLICATION_CREATE_PROJECT, { createProjectParams });
+      const res: DtCreateApp = await this.request(APPLICATION_CREATE_PROJECT, { createProjectParams });
 
       data.app = res.applicationCreateProject;
     } catch (error: any) {
@@ -138,7 +147,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtProjectInfo = await this.gqClient.request(GET_INFO_PROJECT, { projectId });
+      const res: DtProjectInfo = await this.request(GET_INFO_PROJECT, { projectId });
 
       data.project = res.getInfoProject;
     } catch (error: any) {
@@ -162,7 +171,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDeleteProject = await this.gqClient.request(DELETE_PROJECT, payload);
+      const res: DtDeleteProject = await this.request(DELETE_PROJECT, payload);
 
       data.data = res.deleteProject;
     } catch (error: any) {
@@ -186,7 +195,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateThemeProject = await this.gqClient.request(UPDATE_PROJECT_THEME, payload);
+      const res: DtUpdateThemeProject = await this.request(UPDATE_PROJECT_THEME, payload);
 
       data.data = res.updateProjectTheme;
     } catch (error: any) {
@@ -209,7 +218,7 @@ export default class Project extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtUpdateNameProject = await this.gqClient.request(UPDATE_PROJECT_NAME, payload);
+      const res: DtUpdateNameProject = await this.request(UPDATE_PROJECT_NAME, payload);
 
       data.data = res.updateProjectName;
     } catch (error: any) {

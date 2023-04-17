@@ -226,7 +226,7 @@ export interface DtItemWithSearch {
 
 /** export response */
 export interface DsItemsRes {
-  dsItems?: DsItems;
+  items?: Item[];
   error?: string;
 }
 export interface ItemHistoriesRes {

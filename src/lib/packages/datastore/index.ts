@@ -42,31 +42,55 @@ import {
   GetFieldAutoNumberQuery,
   IsExistsDSDisplayIDExcludeOwnReq,
 } from '../../types/datastore';
+import { GraphQLClient } from 'graphql-request';
+import Project from '../project';
+import AppFunction from '../appFunction';
+
+type allArgs = {
+  project: Project;
+}
 
 export default class Datastore extends HxbAbstract {
   public id: string;
-  
+  public project: Project;
+
+  constructor(project?: Project) {
+    super();
+    if (project) this.project = project;
+  }
+
   /**
    * function get: get all datastore in project
    * @params projectId is requirement
    * @returns DatastoreRes
    */
-  async get(projectId: string): Promise<DatastoreRes> {
-    const data: DatastoreRes = {
-      datastores: undefined,
-      error: undefined,
-    };
+  static async all({ project }: allArgs): Promise<Datastore[]> {
+    const res: DtDatastoreRes = await Datastore.request(GET_DATASTORES, {
+      projectId: project.id,
+    });
+    return res.datastores.map(params => Datastore.fromJson(project, params));
+  }
 
-    // handle call graphql
-    try {
-      const res: DtDatastoreRes = await this.gqClient.request(GET_DATASTORES, { projectId });
+  static fromJson(project: Project, params: any): Datastore {
+    const datastore = new Datastore(project);
+    datastore.sets(params);
+    return datastore;
+  }
 
-      data.datastores = res.datastores;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+  sets(params: {[key: string]: any}): Datastore {
+    Object.keys(params).forEach(key => {
+      this.set(key, params[key]);
+    });
+    return this;
+  }
+
+  set(key: string, value: any): Datastore {
+    switch (key) {
+      case 'id':
+        this.id = value;
+        break;
     }
-
-    return data;
+    return this;
   }
 
   /**
@@ -82,7 +106,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreSettingRes = await this.gqClient.request(GET_DATASTORE_DETAIL, { datastoreId });
+      const res: DtDatastoreSettingRes = await this.request(GET_DATASTORE_DETAIL, { datastoreId });
 
       data.datastoreSetting = res.datastoreSetting;
     } catch (error: any) {
@@ -105,7 +129,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtCreateDatastoreFromSeed = await this.gqClient.request(CREATE_DATASTORE_FROM_TEMPLATE, payload);
+      const res: DtCreateDatastoreFromSeed = await this.request(CREATE_DATASTORE_FROM_TEMPLATE, payload);
 
       data.datastoreId = res?.createDatastoreFromTemplate?.datastoreId;
     } catch (error: any) {
@@ -128,7 +152,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const resUpdate: DtValidateBeforeUpdateDsRes = await this.gqClient.request(VALIDATE_DS_DISPLAY_ID, payload);
+      const resUpdate: DtValidateBeforeUpdateDsRes = await this.request(VALIDATE_DS_DISPLAY_ID, payload);
       data.exits = resUpdate?.validateDatastoreDisplayID?.exits;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -150,7 +174,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const resUpdate: DtUpdateDatastore = await this.gqClient.request(UPDATE_DATASTORE_SETTING, payload);
+      const resUpdate: DtUpdateDatastore = await this.request(UPDATE_DATASTORE_SETTING, payload);
       data.data = resUpdate?.updateDatastoreSetting;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
@@ -172,7 +196,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreGetFieldsRes = await this.gqClient.request(DS_FIELDS, { datastoreId, projectId });
+      const res: DtDatastoreGetFieldsRes = await this.request(DS_FIELDS, { datastoreId, projectId });
 
       data.dsFields = res.datastoreGetFields;
     } catch (error: any) {
@@ -196,7 +220,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDsFieldSettings = await this.gqClient.request(DS_FIELD_SETTING, { fieldId, datastoreId });
+      const res: DtDsFieldSettings = await this.request(DS_FIELD_SETTING, { fieldId, datastoreId });
 
       data.dsField = res.datastoreGetFieldSettings;
     } catch (error: any) {
@@ -220,7 +244,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDsActions = await this.gqClient.request(DS_ACTIONS, { datastoreId });
+      const res: DtDsActions = await this.request(DS_ACTIONS, { datastoreId });
 
       data.dsActions = res.datastoreGetActions;
     } catch (error: any) {
@@ -244,7 +268,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDsStatus = await this.gqClient.request(DS_STATUS, { datastoreId });
+      const res: DtDsStatus = await this.request(DS_STATUS, { datastoreId });
 
       data.dsStatuses = res.datastoreGetStatuses;
     } catch (error: any) {
@@ -268,7 +292,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDsActionSetting = await this.gqClient.request(DS_ACTION_SETTING, { actionId, datastoreId });
+      const res: DtDsActionSetting = await this.request(DS_ACTION_SETTING, { actionId, datastoreId });
 
       data.dsAction = res.datastoreGetActionSetting;
     } catch (error: any) {
@@ -296,7 +320,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const res: DtDatastoreFieldsAutoNum = await this.gqClient.request(DATASTORE_GET_FIELD_AUTO_NUMBER, { datastoreId, fieldId, projectId, params });
+      const res: DtDatastoreFieldsAutoNum = await this.request(DATASTORE_GET_FIELD_AUTO_NUMBER, { datastoreId, fieldId, projectId, params });
 
       data.dsGetFieldAutoNum = res.datastoreGetFieldAutoNumber;
     } catch (error: any) {
@@ -318,7 +342,7 @@ export default class Datastore extends HxbAbstract {
 
     // handle call graphql
     try {
-      const resUpdate: DtDeleteDatastore = await this.gqClient.request(DELETE_DATASTORE, { datastoreId });
+      const resUpdate: DtDeleteDatastore = await this.request(DELETE_DATASTORE, { datastoreId });
       data.data = resUpdate?.deleteDatastore;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);
