@@ -22,7 +22,7 @@ export default class HexabaseClient {
   public auth: Auth;
   public user: User;
   public project: Project;
-  public workspace: Workspace;
+  // public workspace: Workspace;
   public item: Item;
   public datastore: Datastore;
   public storage: Storage;
@@ -31,7 +31,7 @@ export default class HexabaseClient {
   protected rest: QueryClient;
   protected projectId: string;
   public urlHxb: string;
-  public Workspace: typeof Workspace;
+  public workspaces: typeof Workspace;
   public Project: typeof Project;
   public Datastore: typeof Datastore;
   public Storage: typeof Storage;
@@ -68,7 +68,7 @@ export default class HexabaseClient {
     this.rest = this._initQueryClient();
     this._initQuery();
     */
-    this.Workspace = Workspace;
+    this.workspaces = Workspace;
     this.Project = Project;
     this.Datastore = Datastore;
     this.Storage = Storage;
@@ -111,6 +111,10 @@ export default class HexabaseClient {
    */
   public _initAuth() {
     return new Auth(this.urlHxb);
+  }
+
+  public workspace(id?: string) {
+    return new Workspace(id);
   }
 
   /**

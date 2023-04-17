@@ -100,7 +100,7 @@ export default class Item extends HxbAbstract {
     switch (key) {
       case 'a_id':
       case 'p_id':
-        this.project = new Project();
+        this.project = new Project(this.project.workspace);
         this.project.id = value as string;
         break;
       case 'created_at':

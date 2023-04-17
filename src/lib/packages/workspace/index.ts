@@ -45,6 +45,8 @@ import WorkspaceUsage from '../workspaceUsage';
 import User from '../user';
 import UserSession from '../userSession';
 import Group from '../group';
+import Project from '../project';
+import Datastore from '../datastore';
 
 export default class Workspace extends HxbAbstract {
   public id: string;
@@ -66,6 +68,7 @@ export default class Workspace extends HxbAbstract {
   public workspaceAdminUsers: User[];
   public userSession: UserSession;
   public group: Group;
+  // public projects = Project;
 
   constructor(id?: string) {
     super();
@@ -406,5 +409,17 @@ export default class Workspace extends HxbAbstract {
     const workspace = new Workspace;
     workspace.id = res.workspaceCurrent!.workspace_id!;
     return workspace;
+  }
+
+  project(): Project {
+    return new Project(this);
+  }
+
+  projects(): Promise<Project[]> {
+    return Project.all(this);
+  }
+
+  getProjectsAndDatastores(): Promise<{ projects: Project[], datastores: Datastore[]}> {
+    return Project.getProjectsAndDatastores(this);
   }
 }

@@ -52,6 +52,7 @@ type allArgs = {
 
 export default class Datastore extends HxbAbstract {
   public id: string;
+  public name: string;
   public project: Project;
 
   constructor(project?: Project) {
@@ -87,7 +88,11 @@ export default class Datastore extends HxbAbstract {
   set(key: string, value: any): Datastore {
     switch (key) {
       case 'id':
+      case 'datastore_id':
         this.id = value;
+        break;
+      case 'name':
+        this.name = value;
         break;
     }
     return this;

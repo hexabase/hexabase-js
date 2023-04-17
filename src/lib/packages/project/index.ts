@@ -1,4 +1,4 @@
-import { ModelRes } from '../../util/type';
+import { FieldNameENJP, ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import Workspace from '../workspace';
 import {
@@ -28,34 +28,102 @@ import {
   ApplicationRes,
   DtApplicationRes,
   TemplateRes,
-  DtTemplates
+  DtTemplates,
+  UpdateProjectNameParamsProject,
+  DeleteParamsProject
 } from '../../types/project';
 import Datastore from '../datastore';
+import TemplateCategory from '../templateCategory';
+import Language from '../language';
 
 export default class Project extends HxbAbstract {
-  public workspace: Workspace;
-  public id: string;
+  workspace: Workspace;
+  id: string;
+  name: FieldNameENJP = {
+    ja: '',
+    en: ''
+  };
+  displayId: string;
+  theme?: 'blue' | 'white' | 'gray' | 'black';
+  displayOrder: number;
+  _datastores: Datastore[] = [];
+  templateId: string;
+
+  constructor(workspace: Workspace) {
+    super();
+    this.workspace = workspace;
+  }
+
+	static fromJson(workspace: Workspace, json: {[key: string]: any}): Project {
+		const project = new Project(workspace);
+		project.sets(json);
+		return project;
+	}
+
+  sets(params: {[key: string]: any}): Project {
+    Object.keys(params).forEach(key => {
+      this.set(key, params[key]);
+    });
+    return this;
+  }
+
+  set(key: string, value: any): Project {
+    switch (key) {
+      case 'application_id':
+      case 'p_id':
+        this.id = value;
+        break;
+      case 'name':
+        if (typeof value === 'string') {
+          const language = this.workspace.languages?.find(language => language.default);
+          if (language) {
+            switch (language.langCd) {
+              case 'ja':
+                this.name.ja = value;
+                break;
+              case 'en':
+                this.name.en = value;
+                break;
+            }
+          } else {
+            this.name = {
+              ja: value,
+              en: value,
+            };
+          }
+        } else {
+          this.name = value;
+        }
+        break;
+      case 'display_id':
+        this.displayId = value;
+        break;
+      case 'theme':
+        this.theme = value;
+        break;
+      case 'display_order':
+        this.displayOrder = value;
+        break;
+      case 'datastores':
+        if (!value) break;
+        this._datastores = (value as any[]).map(datastore => Datastore.fromJson(this, datastore));
+        break;
+      case 'template_id':
+        this.templateId = value;
+        break;
+    }
+    return this;
+  }
+
   /**
    * function get: get list project in a workspace
    * @params workspaceId
    * @returns ApplicationRes
    */
-  async all(): Promise<ApplicationRes> {
-    const data: ApplicationRes = {
-      getApplications: undefined,
-      error: undefined,
-    };
-
+  static async all(workspace: Workspace): Promise<Project[]> {
     // handle call graphql
-    try {
-      const res: DtApplicationRes = await this.request(GET_APPLICATIONS, { workspaceId: this.workspace!.id });
-
-      data.getApplications = res.getApplications;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtApplicationRes = await this.request(GET_APPLICATIONS, { workspaceId: workspace!.id });
+    return res.getApplications.map(params => Project.fromJson(workspace, params));
   }
 
   async datastores(): Promise<Datastore[]> {
@@ -69,93 +137,85 @@ export default class Project extends HxbAbstract {
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  static async getProjectsAndDatastores(workspaceId: string): Promise<AppAndDsRes> {
-    const data: AppAndDsRes = {
-      appAndDs: undefined,
-      error: undefined,
-    };
-
+  static async getProjectsAndDatastores(workspace: Workspace): Promise<{ projects: Project[], datastores: Datastore[]}> {
     // handle call graphql
-    try {
-      const res: DtAppAndDs = await this.request(GET_APPLICATION_AND_DATASTORE, { workspaceId });
+    const res: DtAppAndDs = await this.request(GET_APPLICATION_AND_DATASTORE, { workspaceId: workspace.id });
+    // data.appAndDs = res.getApplicationAndDataStore;
 
-      data.appAndDs = res.getApplicationAndDataStore;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const projects = res.getApplicationAndDataStore.map(params => Project.fromJson(workspace, params));
+    const datastores: Datastore[] = [];
+    projects.forEach(project => {
+      datastores.push(...project._datastores);
+    });
+    return {
+      projects,
+      datastores,
+    };
   }
 
   /**
    * function getTemplates: get templates
    * @returns TemplateRes
    */
-  async getTemplates(): Promise<TemplateRes> {
-    const data: TemplateRes = {
-      getTemplates: undefined,
-      error: undefined,
-    };
-
+  async getTemplates(): Promise<TemplateCategory[]> {
     // handle call graphql
-    try {
-      const res: DtTemplates = await this.request(GET_TEMPLATES);
+    const res: DtTemplates = await this.request(GET_TEMPLATES);
+    return res.getTemplates.categories.map(category => TemplateCategory.fromJson(this, category));
+  }
 
-      data.getTemplates = res.getTemplates;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+  async save(): Promise<boolean> {
+    if (this.id) {
+      return this.update();
     }
-
-    return data;
+    return this.create();
   }
 
   /**
-   * function create: get list application and datastore in a workspace
-   * @params workspaceId
-   * @returns AppAndDsRes
+   * function create: create new project
+   * @params tp_id string | undefined
+   * @returns boolean
    */
-  async create(createProjectParams: CreateProjectPl): Promise<CreateAppRes> {
-    const data: CreateAppRes = {
-      app: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtCreateApp = await this.request(APPLICATION_CREATE_PROJECT, { createProjectParams });
-
-      data.app = res.applicationCreateProject;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
+  async create(tp_id?: string): Promise<boolean> {
+    if (this.name.en === '' || this.name.ja === '') {
+      throw new Error('name Japanese and English are required');
     }
-
-    return data;
+    const params: CreateProjectPl = {
+      name: this.name,
+      tp_id,
+    }
+    // handle call graphql
+    const res: DtCreateApp = await this.request(APPLICATION_CREATE_PROJECT, { createProjectParams: params });
+    this.id = res.applicationCreateProject.project_id;
+    return true;
   }
+
+  /**
+   * function update: update project settings
+   * @returns boolean
+   */
+  async update(): Promise<boolean> {
+    const payload: UpdateProjectNameParamsProject = {
+      project_id: this.id,
+      project_name: this.name,
+      project_displayid: this.displayId,
+      theme: this.theme,
+    }
+    // handle call graphql
+    const res: DtUpdateNameProject = await this.request(UPDATE_PROJECT_NAME, { payload });
+    return res.updateProjectName.success;
+  }
+
 
   /**
    * function getDetail: get info project
    * @params projectId string
    * @returns ReportDataRes
    */
-  async getDetail(projectId: string): Promise<ProjectInfoRes> {
-    const data: ProjectInfoRes = {
-      project: undefined,
-      error: undefined,
-    };
-
+  async getDetail(): Promise<boolean> {
     // handle call graphql
-    try {
-      const res: DtProjectInfo = await this.request(GET_INFO_PROJECT, { projectId });
-
-      data.project = res.getInfoProject;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtProjectInfo = await this.request(GET_INFO_PROJECT, { projectId: this.id });
+    this.sets(res.getInfoProject);
+    return true;
   }
 
   /**
@@ -163,70 +223,12 @@ export default class Project extends HxbAbstract {
    * @params {DeleteProjectPl} payload is requirement
    * @returns ModelRes
    */
-  async delete(payload: DeleteProjectPl): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtDeleteProject = await this.request(DELETE_PROJECT, payload);
-
-      data.data = res.deleteProject;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+  async delete(): Promise<boolean> {
+    const payload: DeleteParamsProject = {
+      project_id: this.id,
     }
-
-    return data;
-  }
-
-
-  /**
-   * function updateProjectTheme: update project theme in workspace
-   * @params {UpdateProjectThemePl} payload is requirement
-   * @returns ModelRes
-   */
-  async updateProjectTheme(payload: UpdateProjectThemePl): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
     // handle call graphql
-    try {
-      const res: DtUpdateThemeProject = await this.request(UPDATE_PROJECT_THEME, payload);
-
-      data.data = res.updateProjectTheme;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtDeleteProject = await this.request(DELETE_PROJECT, { payload });
+    return res.deleteProject.success;
   }
-
-  /**
-   * function updateProjectName: update project name in workspace
-   * @params {UpdateProjectNamePl} payload is requirement
-   * @returns ModelRes
-   */
-  async updateProjectName(payload: UpdateProjectNamePl): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtUpdateNameProject = await this.request(UPDATE_PROJECT_NAME, payload);
-
-      data.data = res.updateProjectName;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-
-
 }
