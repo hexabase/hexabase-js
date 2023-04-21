@@ -103,15 +103,10 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId is requirement
    * @returns DatastoreSettingRes
    */
-  async getDetail(datastoreId: string): Promise<DatastoreSettingRes> {
-    const data: DatastoreSettingRes = {
-      datastoreSetting: undefined,
-      error: undefined,
-    };
-
+  async getDetail(): Promise<boolean> {
     // handle call graphql
     try {
-      const res: DtDatastoreSettingRes = await this.request(GET_DATASTORE_DETAIL, { datastoreId });
+      const res: DtDatastoreSettingRes = await this.request(GET_DATASTORE_DETAIL, { datastoreId: this.id });
 
       data.datastoreSetting = res.datastoreSetting;
     } catch (error: any) {

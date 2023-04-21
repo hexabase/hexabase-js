@@ -31,35 +31,22 @@ const createWorkSpaceInput = {
   name: 'new Workspace'
 };
 
+let project: Project;
+
 beforeAll(async () => {
   client = new HexabaseClient;
   await client.login({ email, password, token: tokenDs });
+  const workspace = await client.workspaces.getCurrent();
+  project = workspace.project();
+  project.name = {
+    en: 'EN Project',
+    ja: 'JA Project',
+  };
+  await project.save();
 
-  // const auth = new Auth(url);
-  // const { token } = await auth.login({ email, password });
-  // workspace = new Workspace();
-  const workspace = await Workspace.getCurrent();
-  workspaceId = workspace.id;
-  const appAndDsGetApp = new Project();
-  const dataApp = await appAndDsGetApp.getProjectsAndDatastores(workspaceId);
-  if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs[0] && dataApp?.appAndDs[0].application_id) {
-    projectID = dataApp?.appAndDs[0].application_id;
-  } else {
-    const application = new Project();
-    const createProjectParams = {
-      name: {
-        en: 'EN Project',
-        ja: 'JA Project',
-      },
-    };
-    const { app } = await application.create(createProjectParams);
-    if (app) {
-      projectID = app?.project_id;
-    }
-  }
-  if (dataApp && dataApp?.appAndDs && dataApp?.appAndDs && dataApp?.appAndDs[0]?.datastores && dataApp?.appAndDs[0]?.datastores[0]?.datastore_id) {
-    newDatastoreId = dataApp?.appAndDs[0]?.datastores[0]?.datastore_id;
-  }
+  const datastore = project.datastore();
+  datastore.name = 'new datastore';
+  await datastore.save();
 });
 
 describe('Datastore', () => {

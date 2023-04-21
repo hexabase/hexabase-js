@@ -132,6 +132,12 @@ export default class Project extends HxbAbstract {
     });
   }
 
+  datastore(id?: string): Datastore {
+    const datastore = new Datastore(this);
+    if (id) datastore.id = id;
+    return datastore;
+  }
+
   /**
    * function getProjectsAndDatastores: get list application and datastore in a workspace
    * @params workspaceId
