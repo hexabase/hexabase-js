@@ -12,19 +12,6 @@ export default class Template extends HxbAbstract {
 		this.category = category;
 	}
 	
-	static fromJson(category: TemplateCategory, json: {[key: string]: any}): Template {
-		const template = new Template(category);
-		template.sets(json);
-		return template;
-	}
-
-  sets(params: {[key: string]: any}): Template {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): Template {
     switch (key) {
 			case 'tp_id':

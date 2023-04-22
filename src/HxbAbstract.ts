@@ -22,4 +22,24 @@ export class HxbAbstract {
       throw JSON.stringify(error?.response?.errors);
     }
   }
+
+  static fromJson(json: {[key: string]: any}): HxbAbstract {
+		const obj = new this;
+		obj.sets(json);
+		return obj;
+	}
+
+  sets(params: {[key: string]: any}): HxbAbstract {
+    if (params.workspace) this.set('workspace', params.workspace);
+    if (params.project) this.set('project', params.project);
+    if (params.datastore) this.set('datastore', params.datastore);
+    Object.keys(params).forEach(key => {
+      this.set(key, params[key]);
+    });
+    return this;
+  }
+
+  set(key: string, value: any): HxbAbstract {
+    return this;
+  }
 }

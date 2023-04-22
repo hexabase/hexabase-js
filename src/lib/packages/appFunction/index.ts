@@ -88,19 +88,6 @@ export default class AppFunction extends HxbAbstract {
 		disableBoradView: false,
 	};
 
-	static fromJson(json: {[key: string]: any}): AppFunction {
-		const appFunction = new AppFunction();
-		appFunction.sets(json);
-		return appFunction;
-	}
-	
-	sets(params: {[key: string]: {[key: string]: boolean}}): AppFunction {
-		Object.keys(params).forEach(group => {
-			this.set(group, params[group]);
-		});
-		return this;
-	}
-
 	set(group: string, params: {[key: string]: boolean}): AppFunction {
 		switch (group) {
 			case 'dashboards':

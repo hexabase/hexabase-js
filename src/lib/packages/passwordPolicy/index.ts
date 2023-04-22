@@ -16,19 +16,6 @@ export default class PasswordPolicy extends HxbAbstract {
 	sameLimit: number;
 	patternCheckType: number;
 
-	static fromJson(json: {[key: string]: any}): PasswordPolicy {
-		const passwordPolicy = new PasswordPolicy();
-		passwordPolicy.sets(json);
-		return passwordPolicy;
-	}
-
-  sets(params: {[key: string]: any}): PasswordPolicy {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): PasswordPolicy {
     switch (key) {
 			case 'expired_day':

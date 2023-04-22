@@ -25,28 +25,20 @@ import {
 } from '../../types/user';
 
 import { HxbAbstract } from "../../../HxbAbstract";
+import Workspace from '../workspace';
 export default class User extends HxbAbstract {
   public id: string;
   public user_name: string;
   public access_key: string;
   public email: string;
-
-  static fromJson(json: {[key: string]: any}): User {
-		const user = new User();
-		user.sets(json);
-		return user;
-	}
-
-  sets(params: {[key: string]: any}): User {
-    Object.keys(params).forEach(key => {
-      this.set(key, params);
-    });
-    return this;
-  }
+  public profilePicture: string;
+  public currentWorkspace: Workspace;
+  public isWorkspaceAdmin: boolean;
 
   set(key: string, value: any): User {
     switch (key) {
       case 'user_name':
+      case 'username':
         this.user_name = value;
         break;
       case 'access_key':
@@ -56,7 +48,17 @@ export default class User extends HxbAbstract {
         this.email = value;
         break;
       case 'user_id':
+      case 'u_id':
         this.id = value;
+        break;
+      case 'profile_pic':
+        this.profilePicture = value;
+        break;
+      case 'current_workspace_id':
+        this.currentWorkspace = new Workspace(value);
+        break;
+      case 'is_ws_admin':
+        this.isWorkspaceAdmin = value;
         break;
     }
     return this;
@@ -137,25 +139,11 @@ export default class User extends HxbAbstract {
    * function get: get user info by token
    * @returns UserInfoRes
    */
-  async get(token: string): Promise<UserInfoRes> {
-    const data: UserInfoRes = {
-      userInfo: undefined,
-      error: undefined,
-    };
+  static async currentUser(): Promise<User> {
     // handle call graphql
-    try {
-      /*
-      User.gqClient.setHeader(
-        'authorization', `Bearer ${token}`
-      );
-      */
-      const res: DtUserInfo = await this.request(USER_INFO);
-      data.userInfo = res.userInfo;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtUserInfo = await this.request(USER_INFO);
+    const user = User.fromJson(res.userInfo) as User;
+    return user;
   }
 
   /**

@@ -5,19 +5,6 @@ export default class Language extends HxbAbstract {
 	langCd: string;
 	use: boolean;
 
-	static fromJson(json: {[key: string]: any}): Language {
-		const language = new Language();
-		language.sets(json);
-		return language;
-	}
-
-  sets(params: {[key: string]: any}): Language {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): Language {
     switch (key) {
 			case 'default':

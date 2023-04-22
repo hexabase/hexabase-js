@@ -3,6 +3,7 @@ import Project from '.';
 import Auth from '../auth';
 import Workspace from '../workspace';
 import HexabaseClient from '../../../HexabaseClient';
+import { FieldNameENJP } from '../../util/type';
 require('dotenv').config();
 /**
  * Test with class Project
@@ -45,7 +46,8 @@ describe('Project', () => {
         const { projects, datastores } = await workspace.getProjectsAndDatastores();
         const project = projects[0];
         expect(typeof project.id).toBe('string');
-        expect(typeof project.name.en).toBe('string');
+        const name = project.name as FieldNameENJP;
+        expect(typeof name.en).toBe('string');
         expect(typeof project.displayId).toBe('string');
 
         const datastore = datastores[0];
@@ -79,8 +81,10 @@ describe('Project', () => {
       jest.useFakeTimers('legacy');
       const workspace = await client.workspaces.getCurrent();
       const project = await workspace.project();
-      project.name.ja = '新しいプロジェクト';
-      project.name.en = 'new project';
+      project.name = {
+        ja: '新しいプロジェクト',
+        en: 'new project'
+      };
       const bol = await project.save();
       expect(bol).toBe(true);
       expect(typeof project.id).toBe('string');
@@ -95,9 +99,10 @@ describe('Project', () => {
       const projects = await workspace.projects();
       const project = projects[0];
       await project.getDetail();
-      expect(typeof project.name.ja).toBe('string');
-      expect(project.name.ja !== '').toBe(true);
-      expect(typeof project.name.en).toBe('string');
+      const name = project.name as FieldNameENJP;
+      expect(typeof name.ja).toBe('string');
+      expect(name.ja !== '').toBe(true);
+      expect(typeof name.en).toBe('string');
     });
   });
 
@@ -134,8 +139,10 @@ describe('Project', () => {
       jest.useFakeTimers('legacy');
       const workspace = await client.workspaces.getCurrent();
       const project = await workspace.project();
-      project.name.ja = '新しいプロジェクト';
-      project.name.en = 'new project';
+      project.name = {
+        ja: '新しいプロジェクト',
+        en: 'new project',
+      };
       const bol = await project.save();
       expect(bol).toBe(true);
       expect(typeof project.id).toBe('string');

@@ -20,7 +20,7 @@ type LoginParams = {
 
 export default class HexabaseClient {
   public auth: Auth;
-  public user: User;
+  public users: typeof User;
   public project: Project;
   // public workspace: Workspace;
   public item: Item;
@@ -74,7 +74,7 @@ export default class HexabaseClient {
     this.Storage = Storage;
     this.Item = Item;
     this.DataReport = DataReport;
-    this.User = User;
+    this.users = User;
     this.Rest = QueryClient;
     HxbAbstract.client = this;
   }
@@ -105,6 +105,10 @@ export default class HexabaseClient {
     }
   }
 
+  public async currentUser(): Promise<User> {
+    return this.users.currentUser();
+  }
+
   /**
    * initialize class Auth
    * @returns new Auth
@@ -131,11 +135,9 @@ export default class HexabaseClient {
    * initialize class User
    * @returns new User
    */
-  /**
   public _initUser() {
-    return new User(this);
+    return new User();
   }
-  */
 
   /**
    * initialize class Project

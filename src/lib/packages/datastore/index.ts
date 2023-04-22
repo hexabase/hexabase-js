@@ -1,4 +1,4 @@
-import { ModelRes } from '../../util/type';
+import { FieldNameENJP, ModelRes } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   DS_ACTIONS,
@@ -15,16 +15,20 @@ import {
   DATASTORE_GET_FIELD_AUTO_NUMBER,
 } from '../../graphql/datastore';
 import {
+  CreateDatastoreFromSeedInput,
   CreateDatastoreFromSeedReq,
   CreateDatastoreFromSeedRes,
   DatastoreFieldsAutoNumRes,
   DatastoreGetFieldsRes,
   DatastoreRes,
   DatastoreSettingRes,
+  DatastoreUpdateNameInput,
   DatastoreUpdateSetting,
+  DsAction,
   DsActionRes,
   DsActionSettingRes,
   DsFieldSettingsRes,
+  DsStatus,
   DsStatusRes,
   DtCreateDatastoreFromSeed,
   DtDatastoreFieldsAutoNum,
@@ -38,26 +42,54 @@ import {
   DtDsStatus,
   DtUpdateDatastore,
   DtValidateBeforeUpdateDsRes,
+  ExistsDSDisplayIDExcludeOwnInput,
   ExistsDSDisplayIDExcludeOwnRes,
   GetFieldAutoNumberQuery,
   IsExistsDSDisplayIDExcludeOwnReq,
 } from '../../types/datastore';
-import { GraphQLClient } from 'graphql-request';
 import Project from '../project';
-import AppFunction from '../appFunction';
+import Language from '../language';
+import Field from '../field';
+import Action from '../action';
+import Status from '../status';
 
 type allArgs = {
   project: Project;
 }
 
+const DEFAULT_TEXTAREA_LENGTH = 2000;
+
 export default class Datastore extends HxbAbstract {
   public id: string;
-  public name: string;
+  public name: FieldNameENJP | string;
   public project: Project;
+  public language?: Language;
+  public templateName: string = 'SEED1';
+  public _fields: Field[] = [];
+  // public fields = Field;
+  // Update
+  displayId: string
+  extendLimitEextareaLength = DEFAULT_TEXTAREA_LENGTH;
+  ignoreSaveTemplate = false;
+  showDisplayIdToList = false;
+  showInMenu = true;
+  showInfoToList = false;
+  showOnlyDevMode = false;
+  useBoardView = false;
+  useCsvUpdate = false;
+  useExternal_sync = false;
+  useGridView = false;
+  useGridViewByDefault = false;
+  useWrDownload = false;
+  useReplaceUpload = false;
+  useStatusUpdate = false;
 
   constructor(project?: Project) {
     super();
-    if (project) this.project = project;
+    if (project) {
+      this.project = project;
+      this.language = project.workspace.languages?.find(language => language.default);
+    }
   }
 
   /**
@@ -69,27 +101,17 @@ export default class Datastore extends HxbAbstract {
     const res: DtDatastoreRes = await Datastore.request(GET_DATASTORES, {
       projectId: project.id,
     });
-    return res.datastores.map(params => Datastore.fromJson(project, params));
-  }
-
-  static fromJson(project: Project, params: any): Datastore {
-    const datastore = new Datastore(project);
-    datastore.sets(params);
-    return datastore;
-  }
-
-  sets(params: {[key: string]: any}): Datastore {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
+    return res.datastores.map(params => Datastore.fromJson({...project, ...params}) as Datastore);
   }
 
   set(key: string, value: any): Datastore {
     switch (key) {
       case 'id':
       case 'datastore_id':
-        this.id = value;
+        if (value.trim() !== '') this.id = value;
+        break;
+      case 'project':
+        this.project = value;
         break;
       case 'name':
         this.name = value;
@@ -105,15 +127,17 @@ export default class Datastore extends HxbAbstract {
    */
   async getDetail(): Promise<boolean> {
     // handle call graphql
-    try {
-      const res: DtDatastoreSettingRes = await this.request(GET_DATASTORE_DETAIL, { datastoreId: this.id });
+    const res: DtDatastoreSettingRes = await this.request(GET_DATASTORE_DETAIL, { datastoreId: this.id });
+    this.sets(res.datastoreSetting);
+    return true;
+  }
 
-      data.datastoreSetting = res.datastoreSetting;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
+  async save(): Promise<boolean> {
+    if (this.id) {
+      return this.update();
+    } else {
+      return this.create();
     }
-
-    return data;
   }
 
   /**
@@ -121,22 +145,19 @@ export default class Datastore extends HxbAbstract {
    * @params {CreateDatastoreFromSeedReq} payload is requirement
    * @returns CreateDatastoreFromSeedRes
    */
-  async create(payload: CreateDatastoreFromSeedReq): Promise<CreateDatastoreFromSeedRes> {
-    const data: CreateDatastoreFromSeedRes = {
-      datastoreId: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtCreateDatastoreFromSeed = await this.request(CREATE_DATASTORE_FROM_TEMPLATE, payload);
-
-      data.datastoreId = res?.createDatastoreFromTemplate?.datastoreId;
-    } catch (error: any) {
-      throw new Error(JSON.stringify(error.response.errors));
+  async create(): Promise<boolean> {
+    const user = await Datastore.client.currentUser();
+    const payload: CreateDatastoreFromSeedInput = {
+      lang_cd: this.language?.langCd || 'en',
+      project_id: this.project.id,
+      template_name: this.templateName,
+      workspace_id: this.project.workspace.id,
+      user_id: user.id,
     }
-
-    return data;
+    // handle call graphql
+    const res: DtCreateDatastoreFromSeed = await this.request(CREATE_DATASTORE_FROM_TEMPLATE, { payload });
+    this.id = res?.createDatastoreFromTemplate?.datastoreId!;
+    return true;
   }
 
   /**
@@ -144,21 +165,15 @@ export default class Datastore extends HxbAbstract {
    * @params {IsExistsDSDisplayIDExcludeOwnReq} payload is requirement
    * @returns ExistsDSDisplayIDExcludeOwnRes
    */
-  async validateDatastoreDisplayID(payload: IsExistsDSDisplayIDExcludeOwnReq): Promise<ExistsDSDisplayIDExcludeOwnRes> {
-    const data: ExistsDSDisplayIDExcludeOwnRes = {
-      exits: undefined,
-      error: undefined,
+  async validateDisplayId(displayId: string): Promise<boolean> {
+    const payload: ExistsDSDisplayIDExcludeOwnInput = {
+      displayId,
+      datastoreId: this.id,
+      projectId: this.project.id,
     };
-
     // handle call graphql
-    try {
-      const resUpdate: DtValidateBeforeUpdateDsRes = await this.request(VALIDATE_DS_DISPLAY_ID, payload);
-      data.exits = resUpdate?.validateDatastoreDisplayID?.exits;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtValidateBeforeUpdateDsRes = await this.request(VALIDATE_DS_DISPLAY_ID, { payload });
+    return res!.validateDatastoreDisplayID!.exits!;
   }
 
   /**
@@ -166,69 +181,54 @@ export default class Datastore extends HxbAbstract {
    * @params {DatastoreUpdateSetting} payload, {DatastoreUpdateSetting} validate is requirement
    * @returns ModelRes
    */
-  async updateDatastoreSetting(payload: DatastoreUpdateSetting): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
+  async update(): Promise<boolean> {
+    const payload: DatastoreUpdateNameInput = {
+      datastore_id: this.id,
+      display_id: this.displayId,
+      extend_limit_textarea_length: this.extendLimitEextareaLength,
+      ignore_save_template: this.ignoreSaveTemplate,
+      is_extend_limit_textarea: this.extendLimitEextareaLength !== DEFAULT_TEXTAREA_LENGTH,
+      name: this.name as FieldNameENJP,
+      show_display_id_to_list: this.showDisplayIdToList,
+      show_in_menu: this.showInMenu,
+      show_info_to_list: this.showInfoToList,
+      show_only_dev_mode: this.showOnlyDevMode,
+      use_board_view: this.useBoardView,
+      use_csv_update: this.useCsvUpdate,
+      use_external_sync: this.useExternal_sync,
+      use_grid_view: this.useGridView,
+      use_grid_view_by_default: this.useGridViewByDefault,
+      use_qr_download: this.useWrDownload,
+      use_replace_upload: this.useReplaceUpload,
+      use_status_update: this.useStatusUpdate,
     };
-
     // handle call graphql
-    try {
-      const resUpdate: DtUpdateDatastore = await this.request(UPDATE_DATASTORE_SETTING, payload);
-      data.data = resUpdate?.updateDatastoreSetting;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const resUpdate: DtUpdateDatastore = await this.request(UPDATE_DATASTORE_SETTING, { payload });
+    return resUpdate.updateDatastoreSetting.success;
   }
 
   /**
-   * function getFields: get all field in Ds
+   * function fields: get all field in Ds
    * @params projectId and datastoreId are requirement
    * @returns DatastoreGetFieldsRes
    */
-  async getFields(datastoreId: string, projectId: string): Promise<DatastoreGetFieldsRes> {
-    const data: DatastoreGetFieldsRes = {
-      dsFields: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtDatastoreGetFieldsRes = await this.request(DS_FIELDS, { datastoreId, projectId });
-
-      data.dsFields = res.datastoreGetFields;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+  async fields(): Promise<Field[]> {
+    this._fields = await Field.all(this);
+    return this._fields;
   }
 
+
   /**
-   * function getField: get field setting in Ds
+   * function field: get field setting in Ds
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */
-  async getField(fieldId: string, datastoreId: string): Promise<DsFieldSettingsRes> {
-    const data: DsFieldSettingsRes = {
-      dsField: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtDsFieldSettings = await this.request(DS_FIELD_SETTING, { fieldId, datastoreId });
-
-      data.dsField = res.datastoreGetFieldSettings;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+  async field(id: string): Promise<Field> {
+    const field = this._fields.find(f => f.id === id);
+    if (field) return field;
+    const f = await Field.get(this, id);
+    this._fields.push(f);
+    return f;
   }
 
   /**
@@ -236,47 +236,25 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId are requirement
    * @returns DsActionRes
    */
-  async getActions(datastoreId: string): Promise<DsActionRes> {
-    const data: DsActionRes = {
-      dsActions: undefined,
-      error: undefined,
-    };
-
+  
+  async actions(): Promise<Action[]> {
     // handle call graphql
-    try {
-      const res: DtDsActions = await this.request(DS_ACTIONS, { datastoreId });
-
-      data.dsActions = res.datastoreGetActions;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtDsActions = await this.request(DS_ACTIONS, { datastoreId: this.id });
+    return res.datastoreGetActions
+      .map((action: DsAction) => Action.fromJson({...{ datastore: this }, ...action}) as Action);
   }
+  
 
   /**
    * function getStatuses: get statuses in Ds
    * @params datastoreId are requirement
    * @returns DsStatusRes
    */
-  async getStatuses(datastoreId: string): Promise<DsStatusRes> {
-    const data: DsStatusRes = {
-      dsStatuses: undefined,
-      error: undefined,
-    };
-
+  async statuses(): Promise<Status[]> {
     // handle call graphql
-    try {
-      const res: DtDsStatus = await this.request(DS_STATUS, { datastoreId });
-
-      data.dsStatuses = res.datastoreGetStatuses;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtDsStatus = await this.request(DS_STATUS, { datastoreId: this.id });
+    return res.datastoreGetStatuses
+      .map((status: DsStatus) => Status.fromJson({...{ datastore: this }, ...status}) as Status);
   }
 
   /**
@@ -284,22 +262,10 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId and actionIdare requirement
    * @returns DsActionSettingRes
    */
-  async getAction(datastoreId: string, actionId: string): Promise<DsActionSettingRes> {
-    const data: DsActionSettingRes = {
-      dsAction: undefined,
-      error: undefined,
-    };
-
+  async action(actionId: string): Promise<Action> {
     // handle call graphql
-    try {
-      const res: DtDsActionSetting = await this.request(DS_ACTION_SETTING, { actionId, datastoreId });
-
-      data.dsAction = res.datastoreGetActionSetting;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-    return data;
+    const res: DtDsActionSetting = await this.request(DS_ACTION_SETTING, { actionId, datastoreId: this.id });
+    return Action.fromJson(res.datastoreGetActionSetting) as Action;
   }
 
   /**
@@ -307,26 +273,19 @@ export default class Datastore extends HxbAbstract {
    * @params projectId, datastoreId and fieldId requirement
    * @returns DatastoreFieldsAutoNumRes
    */
-  async getAutoNumber(
-    projectId: string,
-    datastoreId: string,
+  async autoNumber(
     fieldId: string,
     params?: GetFieldAutoNumberQuery,
-  ): Promise<DatastoreFieldsAutoNumRes> {
-    const data: DatastoreFieldsAutoNumRes = {
-      dsGetFieldAutoNum: undefined,
-      error: undefined,
+  ): Promise<number> {
+    const payload = {
+      datastoreId: this.id,
+      fieldId,
+      projectId: this.project.id,
+      getFieldAutoNumberQuery: params,
     };
-
     // handle call graphql
-    try {
-      const res: DtDatastoreFieldsAutoNum = await this.request(DATASTORE_GET_FIELD_AUTO_NUMBER, { datastoreId, fieldId, projectId, params });
-
-      data.dsGetFieldAutoNum = res.datastoreGetFieldAutoNumber;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-    return data;
+    const res: DtDatastoreFieldsAutoNum = await this.request(DATASTORE_GET_FIELD_AUTO_NUMBER, payload);
+    return res.datastoreGetFieldAutoNumber.result.number as number;
   }
 
   /**
@@ -334,21 +293,10 @@ export default class Datastore extends HxbAbstract {
    * @params {string} datastoreId is requirement
    * @returns ModelRes
    */
-  async deleteDatastore(datastoreId: string): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
+  async delete(): Promise<boolean> {
     // handle call graphql
-    try {
-      const resUpdate: DtDeleteDatastore = await this.request(DELETE_DATASTORE, { datastoreId });
-      data.data = resUpdate?.deleteDatastore;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const resUpdate: DtDeleteDatastore = await this.request(DELETE_DATASTORE, { datastoreId: this.id });
+    return resUpdate?.deleteDatastore.success;
   }
 
 }

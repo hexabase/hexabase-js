@@ -55,19 +55,6 @@ export default class WorkspaceFunction extends HxbAbstract {
 		if (workspace) this.workspace = workspace;
 	}
 
-	static fromJson(json: {[key: string]: any}): WorkspaceFunction {
-		const workspaceFunction = new WorkspaceFunction();
-		workspaceFunction.sets(json);
-		return workspaceFunction;
-	}
-
-  sets(params: {[key: string]: any}): WorkspaceFunction {
-    Object.keys(params).forEach(key => {
-      this.set(key, params);
-    });
-    return this;
-  }
-
   set(key: string, value: any): WorkspaceFunction {
     switch (key) {
 			case 'ws_settings':

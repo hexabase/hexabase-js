@@ -12,26 +12,13 @@ export default class TemplateCategory extends HxbAbstract {
 		this.project = project;
 	}
 
-	static fromJson(project: Project, json: {[key: string]: any}): TemplateCategory {
-		const templateCategory = new TemplateCategory(project);
-		templateCategory.sets(json);
-		return templateCategory;
-	}
-
-  sets(params: {[key: string]: any}): TemplateCategory {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): TemplateCategory {
     switch (key) {
 			case 'category':
 				this.name = value;
 				break;
 			case 'templates':
-				this.templates = (value as any[]).map((template: any) => Template.fromJson(this, template));
+				this.templates = (value as any[]).map((template: any) => Template.fromJson({...{project: this.project}, ...template}) as Template);
 				break;
 		}
 		return this;
