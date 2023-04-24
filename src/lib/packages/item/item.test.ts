@@ -198,7 +198,6 @@ describe('Item', () => {
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
       const item = await datastore.item(itemId);
-      const histories = await item.histories();
       const comment = item.comment();
       comment.comment = 'create comment';
       const bol = await comment.save();
