@@ -325,7 +325,11 @@ export default class Datastore extends HxbAbstract {
     return Item.all(params, this);
   }
 
-  item(id?: string): Item {
-    return new Item({ datastore: this, id });
+  async item(id?: string): Promise<Item> {
+    const item = new Item({ datastore: this, id });
+    if (item.id) {
+      await item.getDetail();
+    }
+    return item;
   }
 }

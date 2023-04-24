@@ -84,7 +84,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = datastore.item();
+      const item = await datastore.item();
       const bol = await item.save();
       // Save item id for next test
       itemId = item.id;
@@ -98,7 +98,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = datastore.item(itemId);
+      const item = await datastore.item(itemId);
       const histories = await item.histories();
       expect(typeof histories[0].id).toBe('string');
       const { unread } = await item.historiesWithUnread();
@@ -132,8 +132,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = datastore.item(itemId);
-      await item.getDetail();
+      const item = await datastore.item(itemId);
       expect(typeof item.title).toBe('string');
     });
   });
@@ -144,8 +143,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = datastore.item(itemId);
-      await item.getDetail();
+      const item = await datastore.item(itemId);
       item.set('price', 100);
       const bol = await item.save();
       expect(bol).toBe(true);
@@ -192,87 +190,55 @@ describe('Item', () => {
   //     }
   //   });
   // });
+  */
 
   describe('#createComment()', () => {
     it('should create comment items histories', async () => {
       jest.useFakeTimers('legacy');
-      const item = new Item(url, tokenItem);
-      const itemS = await item.get(params, datastoreID, projectId);
-      const i = itemS.dsItems?.items?.[0];
-      const itemID = i?.i_id;
-      const { postNewItemHistory, error } = await item.createComment(
-        projectId,
-        datastoreID,
-        itemID,
-        { comment: 'create comment', is_send_item_unread: false }
-      );
-
-      // expect response
-      if (postNewItemHistory) {
-        expect(typeof postNewItemHistory).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      const project = client.currentWorkspace!.project(projectId);
+      const datastore = project.datastore(datastoreId);
+      const item = await datastore.item(itemId);
+      const histories = await item.histories();
+      const comment = item.comment();
+      comment.comment = 'create comment';
+      const bol = await comment.save();
+      expect(bol).toBe(true);
     });
   });
 
   describe('#updateComment()', () => {
     it('should update comment items histories', async () => {
       jest.useFakeTimers('legacy');
-      let historyId = '';
-      const item = new Item(url, tokenItem);
-      const itemS = await item.get(params, datastoreID, projectId);
-      const itemID = itemS.dsItems?.items?.[0]?.i_id;
-      const { error: errorHistoryItem, itemHistories } = await item.getHistories(projectId, datastoreID, itemID);
-      if (errorHistoryItem) {
-        throw new Error(`Error: ${errorHistoryItem}`);
-      }
-      if (itemHistories) {
-        historyId = itemHistories?.histories[0]?.history_id;
-      }
-      const { error } = await item.updateComment(
-        projectId,
-        datastoreID,
-        itemID,
-        historyId,
-        { 'comment': 'update comment' }
-      );
-
-      // expect response
-      if (error) {
-        return error;
-      }
+      const newComment = 'update comment message';
+      const project = client.currentWorkspace!.project(projectId);
+      const datastore = project.datastore(datastoreId);
+      const item = await datastore.item(itemId);
+      const histories = await item.histories();
+      const comment = histories[0];
+      comment.comment = newComment;
+      const bol = await comment.save();
+      expect(bol).toBe(true);
+      const histories2 = await item.histories();
+      expect(histories2[0].comment).toBe(newComment);
+      expect(histories2[0].id).toBe(histories[0].id);
     });
   });
 
   describe('#deleteComment()', () => {
     it('should delete comment items histories', async () => {
       jest.useFakeTimers('legacy');
-      let historyId = '';
-      const item = new Item(url, tokenItem);
-      const itemS = await item.get(params, datastoreID, projectId);
-      const itemID = itemS.dsItems?.items?.[0]?.i_id;
-      const { error: errorHistoryItem, itemHistories } = await item.getHistories(projectId, datastoreID, itemID);
-      if (errorHistoryItem) {
-        throw new Error(`Error: ${errorHistoryItem}`);
-      }
-      if (itemHistories) {
-        historyId = itemHistories?.histories[0]?.history_id;
-      }
-      const { error } = await item.deleteComment(
-        projectId,
-        datastoreID,
-        itemID,
-        datastoreID
-      );
-
-      // expect response
-      if (error) {
-        return error;
-      }
+      const newComment = 'update comment message';
+      const project = client.currentWorkspace!.project(projectId);
+      const datastore = project.datastore(datastoreId);
+      const item = await datastore.item(itemId);
+      const histories = await item.histories();
+      const bol = await histories[0].delete();
+      expect(bol).toBe(true);
+      const histories2 = await item.histories();
+      expect(histories2.length + 1).toBe(histories.length);
     });
   });
-
+  /*
   describe('#createLink()', () => {
     it('should create item link in datastore', async () => {
       jest.useFakeTimers('legacy');
@@ -371,7 +337,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = datastore.item(itemId);
+      const item = await datastore.item(itemId);
       const bol = await item.delete();
       expect(bol).toBe(true);
     });
