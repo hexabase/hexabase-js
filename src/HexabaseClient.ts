@@ -30,8 +30,9 @@ export default class HexabaseClient {
   public tokenHxb: string;
   protected rest: QueryClient;
   protected projectId: string;
+  public currentWorkspace?: Workspace;
+  public currentUser?: User;
   public urlHxb: string;
-  public workspaces: typeof Workspace;
   public Project: typeof Project;
   public Datastore: typeof Datastore;
   public Storage: typeof Storage;
@@ -39,6 +40,8 @@ export default class HexabaseClient {
   public DataReport: typeof DataReport;
   public User: typeof User;
   public Rest: typeof QueryClient;
+
+  private _workspaces: Workspace[];
 
   constructor(
     urlHxb: string = 'https://graphql.hexabase.com/graphql',
@@ -56,7 +59,7 @@ export default class HexabaseClient {
   /**
    * initialize classes
    */
-  public _init() {
+  public async _init() {
     /*
     this.user = this._initUser();
     this.project = this._initProject();
@@ -68,7 +71,6 @@ export default class HexabaseClient {
     this.rest = this._initQueryClient();
     this._initQuery();
     */
-    this.workspaces = Workspace;
     this.Project = Project;
     this.Datastore = Datastore;
     this.Storage = Storage;
@@ -77,36 +79,43 @@ export default class HexabaseClient {
     this.users = User;
     this.Rest = QueryClient;
     HxbAbstract.client = this;
+    this.currentWorkspace = await Workspace.get();
+    this.currentUser = await this.users.current();
   }
 
   /**
    * set token
    */
-  public setToken(token: string) {
+  public async setToken(token: string) {
     this.tokenHxb = token;
-    this._init();
+    await this._init();
   }
 
   /**
    * login to Hexabase
    */
-  public async login({ email, password, token }: LoginParams) {
+  public async login({ email, password, token }: LoginParams): Promise<boolean> {
     if (token) {
-      this.setToken(token);
-    } else if (email && password) {
-      const res = await this.auth.login({ email, password });
-      if (res.token) {
-        this.setToken(res.token);
-      } else {
-        throw Error(`Need login failed to initialize sdk: ${res.error}`);
-      }
-    } else {
+      await this.setToken(token);
+      return true;
+    }
+    if (!email || !password) {
       throw Error('Need token or email and password to initialize sdk');
     }
+    const res = await this.auth.login({ email, password });
+    if (!res.token) {
+      throw Error(`Need login failed to initialize sdk: ${res.error}`);
+    }
+    await this.setToken(res.token);
+    return true;
   }
 
-  public async currentUser(): Promise<User> {
-    return this.users.currentUser();
+  public async setWorkspace(workspace?: Workspace | string): Promise<boolean> {
+    if (workspace) {
+      await Workspace.current(typeof workspace === 'string' ? workspace : workspace.id);
+    }
+    this.currentWorkspace = await Workspace.get();
+    return true;
   }
 
   /**
@@ -117,19 +126,17 @@ export default class HexabaseClient {
     return new Auth(this.urlHxb);
   }
 
+  public workspaces(): Promise<Workspace[]> {
+    return Workspace.all();
+  }
+
+  public workspacesWithCurrent(): Promise<{workspaces: Workspace[], workspace: Workspace}> {
+    return Workspace.allWithCurrent();
+  }
+
   public workspace(id?: string) {
     return new Workspace(id);
   }
-
-  /**
-   * initialize class Workspace
-   * @returns new Workspace
-   */
-  /**
-  public _initWorkspace() {
-    Workspace.setClient(this);
-  }
-   */
 
   /**
    * initialize class User
@@ -138,85 +145,6 @@ export default class HexabaseClient {
   public _initUser() {
     return new User();
   }
-
-  /**
-   * initialize class Project
-   * @returns new Project
-   */
-  /**
-  public _initProject() {
-    return new Project(this);
-  }
-  */
-
-  /**
-   * initialize class Datastore
-   * @returns new Datastore
-   */
-  /**
-  public _initDatastore() {
-    return new Datastore(this);
-  }
-  */
-
-  /**
-   * initialize class Item
-   * @returns new Item
-   */
-  /**
-  public _initItem() {
-    return new Item(this);
-  }
-  */
-
-  /**
-   * Check login status
-   * @returns boolean
-   */
-  /**
-  public isLogin() {
-    return !!this.tokenHxb;
-  }
-  */
-
-  /**
-   * initialize class DataReport
-   * @returns new DataReport
-   */
-  /**
-  public _initDataReport() {
-    return new DataReport(this);
-  }
-  */
-
-  /**
-   * initialize class Storage
-   * @returns new Storage
-   */
-  /**
-  public _initStorage() {
-    return new Storage(this);
-  }
-  */
-
-    /**
-   * initialize class Query
-   * @returns new Query
-   */
-  /**
-  public _initQuery() {
-    const params: QueryParameter = {
-      client: this,
-    };
-    return new Query(params);
-  }
-  */
-
-  /**
-  public _initQueryClient() {
-    return new QueryClient(this);
-  }
-  */
 
   /**
    * initialize from method

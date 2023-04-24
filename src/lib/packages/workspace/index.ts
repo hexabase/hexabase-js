@@ -89,11 +89,45 @@ export default class Workspace extends HxbAbstract {
    * static function get: get a workspace
    * @returns Workspace
    */
-  static async get(id: string): Promise<Workspace> {
-    this.setCurrent(id);
+  static async get(id?: string): Promise<Workspace> {
+    if (id) this.current(id);
     const res = await this.request(WORKSPACE_DETAIL);
     return Workspace.fromJson(res.workspace) as Workspace;
   }
+
+  /**
+   * static function setCurrent: set workspace current with id
+   * @param: option: workspaceId: workspace id
+   * @returns boolean
+   */
+  static async current(workspaceId?: string): Promise<Workspace> {
+    if (workspaceId) {
+      await this.set(workspaceId);
+    }
+    return this.get();
+  }
+
+  static async set(workspaceId: string): Promise<boolean> {
+    const setCurrentWorkSpaceInput: SetWsInput = {
+      workspace_id: workspaceId,
+    };
+    // handle call graphql
+    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput });
+    return res.setCurrentWorkSpace!.success;
+  }
+
+  /**
+   * static function getCurrent: get current workspace
+   * @returns WorkspaceCurrentRes
+   */
+  /*
+  static async getCurrent(): Promise<Workspace> {
+    const res: DtWorkspaceCurrent = await this.request(WORKSPACE_CURRENT);
+    const workspace = new Workspace;
+    workspace.id = res.workspaceCurrent!.workspace_id!;
+    return workspace;
+  }
+  */
 
   /**
    * static function all: get workspaces and current workspace id
@@ -183,7 +217,7 @@ export default class Workspace extends HxbAbstract {
    */
   async getDetail(): Promise<boolean> {
     // handle call graphql
-    await Workspace.setCurrent(this.id);
+    await Workspace.current(this.id);
     const res: WorkspaceDetailRes = await this.request(WORKSPACE_DETAIL);
     this.sets(res.workspace as {[key: string]: any});
     return true;
@@ -364,34 +398,8 @@ export default class Workspace extends HxbAbstract {
     return !res.error;
   }
 
-
-  /**
-   * static function setCurrent: set workspace current with id
-   * @param: option: workspaceId: workspace id
-   * @returns boolean
-   */
-  static async setCurrent(workspaceId: string): Promise<boolean> {
-    const setCurrentWorkSpaceInput: SetWsInput = {
-      workspace_id: workspaceId,
-    };
-    // handle call graphql
-    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput });
-    return res.setCurrentWorkSpace!.success;
-  }
-
-  /**
-   * static function getCurrent: get current workspace
-   * @returns WorkspaceCurrentRes
-   */
-  static async getCurrent(): Promise<Workspace> {
-    const res: DtWorkspaceCurrent = await this.request(WORKSPACE_CURRENT);
-    const workspace = new Workspace;
-    workspace.id = res.workspaceCurrent!.workspace_id!;
-    return workspace;
-  }
-
   project(id?: string): Project {
-    return new Project(this, { id });
+    return new Project({workspace: this, id });
   }
 
   projects(): Promise<Project[]> {

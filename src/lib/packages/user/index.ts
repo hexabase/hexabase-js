@@ -139,7 +139,7 @@ export default class User extends HxbAbstract {
    * function get: get user info by token
    * @returns UserInfoRes
    */
-  static async currentUser(): Promise<User> {
+  static async current(): Promise<User> {
     // handle call graphql
     const res: DtUserInfo = await this.request(USER_INFO);
     const user = User.fromJson(res.userInfo) as User;

@@ -52,6 +52,8 @@ import Language from '../language';
 import Field from '../field';
 import Action from '../action';
 import Status from '../status';
+import Item from '../item';
+import { GetItemsPl } from '../../types/item';
 
 type allArgs = {
   project: Project;
@@ -84,11 +86,13 @@ export default class Datastore extends HxbAbstract {
   useReplaceUpload = false;
   useStatusUpdate = false;
 
-  constructor(project?: Project) {
-    super();
-    if (project) {
-      this.project = project;
-      this.language = project.workspace.languages?.find(language => language.default);
+  // Cache
+  private _actions: Action[] = [];
+
+  constructor(params?: {[key: string]: any}) {
+    super(params);
+    if (this.project) {
+      this.language = this.project.workspace.languages?.find(language => language.default);
     }
   }
 
@@ -102,6 +106,10 @@ export default class Datastore extends HxbAbstract {
       projectId: project.id,
     });
     return res.datastores.map(params => Datastore.fromJson({...project, ...params}) as Datastore);
+  }
+
+  async createItemId(): Promise<string> {
+    return Item.createItemId(this);
   }
 
   set(key: string, value: any): Datastore {
@@ -146,7 +154,7 @@ export default class Datastore extends HxbAbstract {
    * @returns CreateDatastoreFromSeedRes
    */
   async create(): Promise<boolean> {
-    const user = await Datastore.client.currentUser();
+    const user = await Datastore.client.currentUser!;
     const payload: CreateDatastoreFromSeedInput = {
       lang_cd: this.language?.langCd || 'en',
       project_id: this.project.id,
@@ -213,6 +221,7 @@ export default class Datastore extends HxbAbstract {
    * @returns DatastoreGetFieldsRes
    */
   async fields(): Promise<Field[]> {
+    if (this._fields.length > 0) return this._fields;
     this._fields = await Field.all(this);
     return this._fields;
   }
@@ -238,10 +247,12 @@ export default class Datastore extends HxbAbstract {
    */
   
   async actions(): Promise<Action[]> {
+    if (this._actions.length > 0) return this._actions;
     // handle call graphql
     const res: DtDsActions = await this.request(DS_ACTIONS, { datastoreId: this.id });
-    return res.datastoreGetActions
+    this._actions = res.datastoreGetActions
       .map((action: DsAction) => Action.fromJson({...{ datastore: this }, ...action}) as Action);
+    return this._actions;
   }
   
 
@@ -262,10 +273,14 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId and actionIdare requirement
    * @returns DsActionSettingRes
    */
-  async action(actionId: string): Promise<Action> {
+  async action(operation: string): Promise<Action | undefined> {
     // handle call graphql
+    const actions = await this.actions();
+    return actions.find(a => a.operation === operation);
+    /*
     const res: DtDsActionSetting = await this.request(DS_ACTION_SETTING, { actionId, datastoreId: this.id });
     return Action.fromJson(res.datastoreGetActionSetting) as Action;
+    */
   }
 
   /**
@@ -299,4 +314,18 @@ export default class Datastore extends HxbAbstract {
     return resUpdate?.deleteDatastore.success;
   }
 
+  async items(params?: GetItemsPl): Promise<Item[]> {
+    const { items, totalCount } = await this.itemsWithCount(params);
+    return items;
+  }
+
+  itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}): Promise<{items: Item[], totalCount: number}> {
+    if (!params.page) params.page = 1;
+    if (!params.per_page) params.per_page = 10;
+    return Item.all(params, this);
+  }
+
+  item(id?: string): Item {
+    return new Item({ datastore: this, id });
+  }
 }

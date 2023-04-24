@@ -4,6 +4,10 @@ import HexabaseClient from './HexabaseClient';
 export class HxbAbstract {
   static client: HexabaseClient;
 
+  constructor(params?: {[key: string]: any}) {
+    if (params) this.sets(params);
+  }
+
   static request(query: string, variables?: any, _client?: HexabaseClient) {
     return new HxbAbstract().request(query, variables, _client);
   }
@@ -33,6 +37,7 @@ export class HxbAbstract {
     if (params.workspace) this.set('workspace', params.workspace);
     if (params.project) this.set('project', params.project);
     if (params.datastore) this.set('datastore', params.datastore);
+    if (params.item) this.set('item', params.item);
     Object.keys(params).forEach(key => {
       this.set(key, params[key]);
     });

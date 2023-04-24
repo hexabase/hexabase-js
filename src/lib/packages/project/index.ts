@@ -46,12 +46,6 @@ export default class Project extends HxbAbstract {
   _datastores: Datastore[] = [];
   templateId: string;
 
-  constructor(workspace: Workspace, params: {[key: string]: any} = {}){
-    super();
-    this.workspace = workspace;
-    this.sets(params);
-  }
-
   set(key: string, value: any): Project {
     switch (key) {
       case 'application_id':
@@ -103,8 +97,7 @@ export default class Project extends HxbAbstract {
   }
 
   datastore(id?: string): Datastore {
-    const datastore = new Datastore(this);
-    if (id) datastore.id = id;
+    const datastore = new Datastore({ project: this, id });
     return datastore;
   }
 
@@ -133,7 +126,7 @@ export default class Project extends HxbAbstract {
    * function getTemplates: get templates
    * @returns TemplateRes
    */
-  async getTemplates(): Promise<TemplateCategory[]> {
+  async templates(): Promise<TemplateCategory[]> {
     // handle call graphql
     const res: DtTemplates = await this.request(GET_TEMPLATES);
     return res.getTemplates.categories.map(category => TemplateCategory.fromJson({...{project: this}, ...category}) as TemplateCategory);

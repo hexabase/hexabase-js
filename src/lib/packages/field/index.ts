@@ -27,6 +27,10 @@ export default class Field extends HxbAbstract {
 	layout: FieldLayout;
 	hideOnInput: boolean;
 	roles: UserRole[] = [];
+	sizeX: number;
+	sizeY: number;
+	col: number;
+	row: number;
 
   set(key: string, value: any): Field {
     switch (key) {
@@ -36,8 +40,8 @@ export default class Field extends HxbAbstract {
 			case 'field_id':
 				this.id = value;
 				break;
-			case 'name':
-				this.name = value as FieldNameENJP;
+			case 'field_name':
+				this.name = value;
 				break;
 			case 'display_id':
 				this.displayId = value;
@@ -85,6 +89,18 @@ export default class Field extends HxbAbstract {
 			case 'hideOnInput':
 				this.hideOnInput = value;
 				break;
+			case 'sizeX':
+				this.sizeX = value;
+				break;
+			case 'sizeY':
+				this.sizeY = value;
+				break;
+			case 'col':
+				this.col = value;
+				break;
+			case 'row':
+				this.row = value;
+				break;
 			case 'roles':
 				this.roles = (value as any[]).map(role => UserRole.fromJson({...{ project: this.datastore.project}, ...role}) as UserRole);
 				break;
@@ -107,6 +123,13 @@ export default class Field extends HxbAbstract {
       field.layout = fieldLayout;
     });
 		return fields;
+	}
+
+	isValid(value: any): boolean {
+		if (this.dataType === 'text') {
+			return typeof value === 'string' || !isNaN(value);
+		}
+		return true;
 	}
 
 	static async get(datastore: Datastore, fieldId: string): Promise<Field> {

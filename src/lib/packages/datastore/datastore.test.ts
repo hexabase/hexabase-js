@@ -1,14 +1,10 @@
 import { CreateDatastoreFromSeedReq, DatastoreUpdateSetting, IsExistsDSDisplayIDExcludeOwnReq } from '../../types/datastore';
 import Workspace from '../workspace';
 import Datastore from '.';
-// import Auth from '../auth';
-// import AuthMw from '../middleware/auth';
 import Project from '../project';
-// import User from '../user';
 import HexabaseClient from '../../../HexabaseClient';
 import Field from '../field';
 import { FieldNameENJP } from '../../util/type';
-import Action from '../action';
 require('dotenv').config();
 /**
  * Test with class Datastore
@@ -16,31 +12,18 @@ require('dotenv').config();
  */
 
 let tokenDs = process.env.TOKEN || '';
-let userId = '';
-let newDatastoreId: string | undefined = process.env.DATASTOREID || '';
-let workspaceId = process.env.WORKSPACEID || '';
-let projectID = '';
-let client: HexabaseClient;
-let workspace: Workspace;
+const client = new HexabaseClient;
 const datastoreId = process.env.DATASTOREID || '';
-const projectIDAutoNum = process.env.PROJECT_ID || '';
-const fieldIdAutoNum = process.env.FIELDID || '';
-const url = process.env.URL || '';
+const projectId = process.env.PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const templateName = process.env.TEMPLATE_NAME || '';
-
-const createWorkSpaceInput = {
-  name: 'new Workspace'
-};
 
 let project: Project;
 let datastore: Datastore;
 
 beforeAll(async () => {
-  client = new HexabaseClient;
   await client.login({ email, password, token: tokenDs });
-  const workspace = await client.workspaces.getCurrent();
+  const workspace = client.currentWorkspace!;
   const ary = await workspace.projects();
   const p = ary.map((project) => {
     const name = project.name as FieldNameENJP;
@@ -104,9 +87,9 @@ describe('Datastore', () => {
     it('should get fields in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
-        const project = workspace.project('6442397a31136e9dd84dc0de');
-        const datastore = project.datastore('6442398d3a92ee71b4301204');
+        const workspace = client.currentWorkspace!;
+        const project = workspace.project(projectId);
+        const datastore = project.datastore(datastoreId);
         const fields = await datastore.fields();
         expect(fields[0] instanceof Field).toBe(true);
       } catch (e) {
@@ -119,9 +102,9 @@ describe('Datastore', () => {
     it('should get field setting in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
-        const project = workspace.project('6442397a31136e9dd84dc0de');
-        const datastore = project.datastore('6442398d3a92ee71b4301204');
+        const workspace = client.currentWorkspace!;
+        const project = workspace.project(projectId);
+        const datastore = project.datastore(datastoreId);
         const fields = await datastore.fields();
         const field = await datastore.field(fields[0].id);
         expect(field instanceof Field).toBe(true);
@@ -135,9 +118,9 @@ describe('Datastore', () => {
     it('should get actions in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
-        const project = workspace.project('6442397a31136e9dd84dc0de');
-        const datastore = project.datastore('6442398d3a92ee71b4301204');
+        const workspace = client.currentWorkspace!;
+        const project = workspace.project(projectId);
+        const datastore = project.datastore(datastoreId);
         
         const actions = await datastore.actions();
         const action = actions[0];
@@ -152,9 +135,9 @@ describe('Datastore', () => {
   describe('#getStatuses()', () => {
     it('should get status in Ds', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
-      const project = workspace.project('6442397a31136e9dd84dc0de');
-      const datastore = project.datastore('6442398d3a92ee71b4301204');
+      const workspace = client.currentWorkspace!;
+      const project = workspace.project(projectId);
+      const datastore = project.datastore(datastoreId);
       const status = await datastore.statuses();
       expect(typeof status[0].displayId).toBe('string');
       expect(typeof status[0].id).toBe('string');
@@ -164,15 +147,12 @@ describe('Datastore', () => {
   describe('#getAction()', () => {
     it('should get action by Id in Ds', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
-      const project = workspace.project('6442397a31136e9dd84dc0de');
-      const datastore = project.datastore('6442398d3a92ee71b4301204');
-      const actions = await datastore.actions();
-      const createAction = actions
-        .find((action) => action.operation === 'new');
-      const action = await datastore.action(createAction!.id);
-      expect(typeof action.id).toBe('string');
-      const name = action.name as FieldNameENJP;
+      const workspace = client.currentWorkspace!;
+      const project = workspace.project(projectId);
+      const datastore = project.datastore(datastoreId);
+      const action = await datastore.action('new');
+      expect(typeof action!.id).toBe('string');
+      const name = action!.name as FieldNameENJP;
       expect(typeof name.ja).toBe('string');
     });
   });
@@ -181,9 +161,9 @@ describe('Datastore', () => {
     it('should validate display id datastore current without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
-        const project = workspace.project('6442397a31136e9dd84dc0de');
-        const datastore = project.datastore('6442398d3a92ee71b4301204');
+        const workspace = client.currentWorkspace!;
+        const project = workspace.project(projectId);
+        const datastore = project.datastore(datastoreId);
         const bol = await datastore.validateDisplayId('dsId_update_001');
         expect(typeof bol).toBe('boolean');
         expect(bol).toBe(false);
@@ -198,9 +178,9 @@ describe('Datastore', () => {
   describe('#updateDatastore()', () => {
     it('should update datastore current without error', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
-      const project = workspace.project('6442397a31136e9dd84dc0de');
-      const datastore = project.datastore('6442398d3a92ee71b4301204');
+      const workspace = client.currentWorkspace!;
+      const project = workspace.project(projectId);
+      const datastore = project.datastore(datastoreId);
       datastore.displayId = 'dsId_update_002';
       datastore.name = {
         en: 'EN name update',
@@ -219,9 +199,9 @@ describe('Datastore', () => {
     it('should datastore get field auto number without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
-        const project = workspace.project('6442397a31136e9dd84dc0de');
-        const datastore = project.datastore('6442398d3a92ee71b4301204');
+        const workspace = client.currentWorkspace!;
+        const project = workspace.project(projectId);
+        const datastore = project.datastore(datastoreId);
         const number = await datastore.autoNumber('autoNum');
         expect(typeof number).toBe('number');
       } catch (e) {

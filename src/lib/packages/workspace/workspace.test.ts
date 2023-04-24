@@ -31,7 +31,7 @@ const client = new HexabaseClient;
 beforeAll(async () => {
   try {
     await client.login({ email, password, token: tokenWs });
-    const ary = await client.workspaces.all();
+    const ary = await client.workspaces();
     ary.forEach(async (workspace) => {
       if (workspace.name === 'new ws name') {
         await workspace.archive();
@@ -65,9 +65,9 @@ describe('Workspace', () => {
   describe('#setCurrent()', () => {
     it('should set current workspace', async () => {
       jest.useFakeTimers('legacy');
-      const { workspace } = await client.workspaces.allWithCurrent();
+      const { workspace } = await client.workspacesWithCurrent();
       try {
-        const bol = await client.workspaces.setCurrent(workspace.id);
+        const bol = await client.setWorkspace(workspace);
         expect(bol).toEqual(true);
       } catch (error) {
         throw new Error(`Error: ${error}`);
@@ -79,7 +79,7 @@ describe('Workspace', () => {
     it('should get workspaces id current', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
+        const workspace = client.currentWorkspace!;
         // expect response
         expect(typeof workspace.id).toBe('string');
       } catch (error) {
@@ -93,7 +93,7 @@ describe('Workspace', () => {
     it('should get all workspaces', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const { workspaces, workspace } = await client.workspaces.allWithCurrent();
+        const { workspaces, workspace } = await client.workspacesWithCurrent();
         // expect response
         expect(typeof workspace.id).toBe('string');
         expect(typeof workspaces[0].name).toBe('string');
@@ -108,7 +108,7 @@ describe('Workspace', () => {
     it('should get workspace detail by id', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
+        const workspace = client.currentWorkspace!;
         await workspace.getDetail();
         expect(typeof workspace.id).toBe('string');
         expect(typeof workspace.name).toBe('string');
@@ -121,7 +121,7 @@ describe('Workspace', () => {
   describe('#updateWorkspaceSettings', () => {
     it('should update workspace settings', async () => {
       // jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       try {
         const newName = 'new ws name';
         workspace.name = newName;
@@ -139,7 +139,7 @@ describe('Workspace', () => {
   describe('#getPasswordPolicy()', () => {
     it('should get workspace password policy', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       try {
         const passwordPolicy = await workspace.getPasswordPolicy();
         // expect response
@@ -154,7 +154,7 @@ describe('Workspace', () => {
   describe('#getFunctionality()', () => {
     it('should get workspace functionlity', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       try {
         const workspaceFunction = await workspace.getFunctionality();
         expect(typeof workspaceFunction.workspace.id).toBe('string');
@@ -167,7 +167,7 @@ describe('Workspace', () => {
   describe('#getUsage()', () => {
     it('should get workspace usage', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       const wsUsage = await workspace.getUsage();
       expect(typeof wsUsage.workspace.id).toBe('string');
       expect(typeof wsUsage.datastores).toBe('number');
@@ -178,7 +178,7 @@ describe('Workspace', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
       // const workspace = await client.workspaces.getCurrent();
-      const workspace = await client.workspaces.get('62bac0f0a65b33ec0c212a67');
+      const workspace = await client.workspace('62bac0f0a65b33ec0c212a67');
       try {
         const group = await workspace.getGroup();
         // expect response
@@ -234,7 +234,7 @@ describe('Workspace', () => {
   describe('#archiveWorkspace', () => {
     it('should archive workspace', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       try {
         await workspace.archive();
       } catch (error) {
