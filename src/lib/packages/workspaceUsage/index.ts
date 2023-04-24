@@ -17,19 +17,6 @@ export default class WorkspaceUsage extends HxbAbstract {
 		if (workspace) this.workspace = workspace;
 	}
 
-	static fromJson(json: {[key: string]: any}): WorkspaceUsage {
-		const workspaceUsage = new WorkspaceUsage();
-		workspaceUsage.sets(json);
-		return workspaceUsage;
-	}
-
-  sets(params: {[key: string]: any}): WorkspaceUsage {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): WorkspaceUsage {
     switch (key) {
 			case 'users_limit':

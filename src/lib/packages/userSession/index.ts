@@ -5,19 +5,6 @@ export default class UserSession extends HxbAbstract {
 	default: boolean;
 	sessionTimeoutSec: number;
 
-	static fromJson(json: {[key: string]: any}): UserSession {
-		const userSession = new UserSession();
-		userSession.sets(json);
-		return userSession;
-	}
-
-  sets(params: {[key: string]: any}): UserSession {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): UserSession {
     switch (key) {
 			case 'use':

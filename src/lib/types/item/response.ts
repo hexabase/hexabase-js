@@ -186,10 +186,15 @@ export interface DtItemLinked {
   datastoreGetLinkedItems: ItemLinked;
 }
 export interface DtDeleteItem {
-  datastoreDeleteItem: ResponseOkModel;
+  datastoreDeleteItem: {
+    error: any;
+  };
 }
 export interface DtUpdateItem {
-  datastoreUpdateItem: ResponseOkModel;
+  datastoreUpdateItem: {
+    error: string;
+    item: {[key: string]: any};
+  };
 }
 export interface DtItemDetail {
   getDatastoreItemDetails: ItemDetail;

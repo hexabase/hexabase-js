@@ -1,6 +1,7 @@
 import { ModelRes, ResponseErrorNull } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
-import AppFunction from '../appFunction';
+import Project from '../project';
+import Datastore from '../datastore';
 import {
   WORKSPACES,
   WORKSPACE_PASSWORD_POLICY,
@@ -45,8 +46,7 @@ import WorkspaceUsage from '../workspaceUsage';
 import User from '../user';
 import UserSession from '../userSession';
 import Group from '../group';
-import Project from '../project';
-import Datastore from '../datastore';
+import AppFunction from '../appFunction';
 
 export default class Workspace extends HxbAbstract {
   public id: string;
@@ -89,11 +89,45 @@ export default class Workspace extends HxbAbstract {
    * static function get: get a workspace
    * @returns Workspace
    */
-  static async get(id: string): Promise<Workspace> {
-    this.setCurrent(id);
+  static async get(id?: string): Promise<Workspace> {
+    if (id) this.current(id);
     const res = await this.request(WORKSPACE_DETAIL);
-    return Workspace.fromJson(res.workspace);
+    return Workspace.fromJson(res.workspace) as Workspace;
   }
+
+  /**
+   * static function setCurrent: set workspace current with id
+   * @param: option: workspaceId: workspace id
+   * @returns boolean
+   */
+  static async current(workspaceId?: string): Promise<Workspace> {
+    if (workspaceId) {
+      await this.set(workspaceId);
+    }
+    return this.get();
+  }
+
+  static async set(workspaceId: string): Promise<boolean> {
+    const setCurrentWorkSpaceInput: SetWsInput = {
+      workspace_id: workspaceId,
+    };
+    // handle call graphql
+    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput });
+    return res.setCurrentWorkSpace!.success;
+  }
+
+  /**
+   * static function getCurrent: get current workspace
+   * @returns WorkspaceCurrentRes
+   */
+  /*
+  static async getCurrent(): Promise<Workspace> {
+    const res: DtWorkspaceCurrent = await this.request(WORKSPACE_CURRENT);
+    const workspace = new Workspace;
+    workspace.id = res.workspaceCurrent!.workspace_id!;
+    return workspace;
+  }
+  */
 
   /**
    * static function all: get workspaces and current workspace id
@@ -104,29 +138,8 @@ export default class Workspace extends HxbAbstract {
     const res: DtWorkspaces = await this.request(WORKSPACES);
     const { workspaces, current_workspace_id } = res.workspaces;
     const ary = workspaces
-      .map((params: any) => Workspace.fromJson(params));
+      .map((params: any) => Workspace.fromJson(params) as Workspace);
     return { workspaces: ary, workspace: ary.find(w => w.id === current_workspace_id!)! };
-  }
-
-  /**
-   * static function fromJson: convert json to Workspace
-   * @returns Workspace
-   */
-  static fromJson(params: any): Workspace {
-    const workspace = new Workspace;
-    workspace.sets(params);
-    return workspace;
-  }
-
-  /**
-   * function sets: set values for Workspace
-   * @returns Workspace
-   */
-  sets(params: {[key: string]: any}): Workspace {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
   }
 
   /**
@@ -146,7 +159,7 @@ export default class Workspace extends HxbAbstract {
         this.name = value;
         break;
       case 'app_functions':
-        this.appFunctions = AppFunction.fromJson(value);
+        this.appFunctions = AppFunction.fromJson(value) as AppFunction;
         break;
       case 'created_at':
         this.createdAt = new Date(value);
@@ -165,13 +178,13 @@ export default class Workspace extends HxbAbstract {
         break;
       case 'languages':
         this.languages = (value as any[])
-          .map((lang: any) => Language.fromJson(lang));
+          .map((lang: any) => Language.fromJson(lang) as Language);
         break;
       case 'pwd_policy':
-        this.passwordPolicy = PasswordPolicy.fromJson(value);
+        this.passwordPolicy = PasswordPolicy.fromJson(value) as PasswordPolicy;
         break;
       case 'redirect':
-        this.redirect = Redirect.fromJson(value);
+        this.redirect = Redirect.fromJson(value) as Redirect;
         break;
       case 'user_id':
         this.userId = value;
@@ -180,18 +193,18 @@ export default class Workspace extends HxbAbstract {
         this.wsAdmin = value;
         break;
       case 'user_sessions':
-        this.userSession = UserSession.fromJson(value);
+        this.userSession = UserSession.fromJson(value) as UserSession;
         break;
       case 'ws_admin_users':
         value = value as WsAdminUser[];
         this.workspaceAdminUsers = value.map((user: WsAdminUser) => User.fromJson(user));
         break;
       case 'ws_functions':
-        this.workspaceFunction = WorkspaceFunction.fromJson(value);
+        this.workspaceFunction = WorkspaceFunction.fromJson(value) as WorkspaceFunction;
         this.workspaceFunction.workspace = this;
         break;
       case 'ws_usage':
-        this.workspaceUsage = WorkspaceUsage.fromJson(value);
+        this.workspaceUsage = WorkspaceUsage.fromJson(value) as WorkspaceUsage;
         this.workspaceUsage.workspace = this;
         break;
       }
@@ -204,7 +217,7 @@ export default class Workspace extends HxbAbstract {
    */
   async getDetail(): Promise<boolean> {
     // handle call graphql
-    await Workspace.setCurrent(this.id);
+    await Workspace.current(this.id);
     const res: WorkspaceDetailRes = await this.request(WORKSPACE_DETAIL);
     this.sets(res.workspace as {[key: string]: any});
     return true;
@@ -216,7 +229,7 @@ export default class Workspace extends HxbAbstract {
    */
   async getPasswordPolicy(): Promise<PasswordPolicy> {
     const res: DtWsPasswordPolicy = await this.request(WORKSPACE_PASSWORD_POLICY, { workingspaceId: this.id });
-    this.passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy);
+    this.passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy) as PasswordPolicy;
     return this.passwordPolicy;
   }
 
@@ -261,10 +274,10 @@ export default class Workspace extends HxbAbstract {
     const res: DtWsGroupChildren = await this.request(WORKSPACE_GROUP_CHILDREN, { workingspaceId: this.id });
     const { group, children }= res.workspaceGetGroupChildren;
     if (group) {
-      this.group = Group.fromJson(group);
+      this.group = Group.fromJson(group) as Group;
     }
     if (this.group && children) {
-      this.group.children = children.map((child: any) => Group.fromJson(child));
+      this.group.children = children.map((child: any) => Group.fromJson(child) as Group);
     }
     return this.group;
   }
@@ -325,7 +338,8 @@ export default class Workspace extends HxbAbstract {
    * @returns boolean
    */
   async save(): Promise<boolean> {
-    return !this.id ? this.create() : this.update();
+    if (this.id) throw new Error('Currently, workspace updating is not support.');
+    return this.create(); // : this.update();
   }
 
   /**
@@ -347,14 +361,17 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
+   * TODO: Update settings that want to change
    * function update: update workspace settings
    * @returns boolean
    */
+  /*
   async update(): Promise<boolean> {
     const payload: WorkspaceSettingPl = this.toJson();
     const res: ResponseErrorNull = await this.request(UPDATE_WORKSPACE_SETTINGS, { payload });
     return !res.error;
   }
+  */
 
   /**
    * function toJson: convert workspace to json
@@ -385,34 +402,8 @@ export default class Workspace extends HxbAbstract {
     return !res.error;
   }
 
-
-  /**
-   * static function setCurrent: set workspace current with id
-   * @param: option: workspaceId: workspace id
-   * @returns boolean
-   */
-  static async setCurrent(workspaceId: string): Promise<boolean> {
-    const setCurrentWorkSpaceInput: SetWsInput = {
-      workspace_id: workspaceId,
-    };
-    // handle call graphql
-    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput });
-    return res.setCurrentWorkSpace!.success;
-  }
-
-  /**
-   * static function getCurrent: get current workspace
-   * @returns WorkspaceCurrentRes
-   */
-  static async getCurrent(): Promise<Workspace> {
-    const res: DtWorkspaceCurrent = await this.request(WORKSPACE_CURRENT);
-    const workspace = new Workspace;
-    workspace.id = res.workspaceCurrent!.workspace_id!;
-    return workspace;
-  }
-
-  project(): Project {
-    return new Project(this);
+  project(id?: string): Project {
+    return new Project({workspace: this, id });
   }
 
   projects(): Promise<Project[]> {

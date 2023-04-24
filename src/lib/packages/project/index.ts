@@ -39,61 +39,22 @@ import Language from '../language';
 export default class Project extends HxbAbstract {
   workspace: Workspace;
   id: string;
-  name: FieldNameENJP = {
-    ja: '',
-    en: ''
-  };
+  name: FieldNameENJP | string;
   displayId: string;
   theme?: 'blue' | 'white' | 'gray' | 'black';
   displayOrder: number;
   _datastores: Datastore[] = [];
   templateId: string;
 
-  constructor(workspace: Workspace) {
-    super();
-    this.workspace = workspace;
-  }
-
-	static fromJson(workspace: Workspace, json: {[key: string]: any}): Project {
-		const project = new Project(workspace);
-		project.sets(json);
-		return project;
-	}
-
-  sets(params: {[key: string]: any}): Project {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): Project {
     switch (key) {
       case 'application_id':
       case 'p_id':
-        this.id = value;
+      case 'id':
+        if (value) this.id = value;
         break;
       case 'name':
-        if (typeof value === 'string') {
-          const language = this.workspace.languages?.find(language => language.default);
-          if (language) {
-            switch (language.langCd) {
-              case 'ja':
-                this.name.ja = value;
-                break;
-              case 'en':
-                this.name.en = value;
-                break;
-            }
-          } else {
-            this.name = {
-              ja: value,
-              en: value,
-            };
-          }
-        } else {
-          this.name = value;
-        }
+        this.name = value;
         break;
       case 'display_id':
         this.displayId = value;
@@ -104,9 +65,12 @@ export default class Project extends HxbAbstract {
       case 'display_order':
         this.displayOrder = value;
         break;
+      case 'workspace':
+        this.workspace = value;
+        break;
       case 'datastores':
         if (!value) break;
-        this._datastores = (value as any[]).map(datastore => Datastore.fromJson(this, datastore));
+        this._datastores = (value as any[]).map(datastore => Datastore.fromJson({...{project: this}, ...datastore}) as Datastore);
         break;
       case 'template_id':
         this.templateId = value;
@@ -123,13 +87,18 @@ export default class Project extends HxbAbstract {
   static async all(workspace: Workspace): Promise<Project[]> {
     // handle call graphql
     const res: DtApplicationRes = await this.request(GET_APPLICATIONS, { workspaceId: workspace!.id });
-    return res.getApplications.map(params => Project.fromJson(workspace, params));
+    return res.getApplications.map(params => Project.fromJson({...{ workspace }, ...params }) as Project);
   }
 
   async datastores(): Promise<Datastore[]> {
     return Project.client.Datastore.all({
       project: this
     });
+  }
+
+  datastore(id?: string): Datastore {
+    const datastore = new Datastore({ project: this, id });
+    return datastore;
   }
 
   /**
@@ -142,7 +111,7 @@ export default class Project extends HxbAbstract {
     const res: DtAppAndDs = await this.request(GET_APPLICATION_AND_DATASTORE, { workspaceId: workspace.id });
     // data.appAndDs = res.getApplicationAndDataStore;
 
-    const projects = res.getApplicationAndDataStore.map(params => Project.fromJson(workspace, params));
+    const projects = res.getApplicationAndDataStore.map(params => Project.fromJson({...{ workspace }, ...params}) as Project);
     const datastores: Datastore[] = [];
     projects.forEach(project => {
       datastores.push(...project._datastores);
@@ -157,10 +126,10 @@ export default class Project extends HxbAbstract {
    * function getTemplates: get templates
    * @returns TemplateRes
    */
-  async getTemplates(): Promise<TemplateCategory[]> {
+  async templates(): Promise<TemplateCategory[]> {
     // handle call graphql
     const res: DtTemplates = await this.request(GET_TEMPLATES);
-    return res.getTemplates.categories.map(category => TemplateCategory.fromJson(this, category));
+    return res.getTemplates.categories.map(category => TemplateCategory.fromJson({...{project: this}, ...category}) as TemplateCategory);
   }
 
   async save(): Promise<boolean> {
@@ -176,13 +145,13 @@ export default class Project extends HxbAbstract {
    * @returns boolean
    */
   async create(tp_id?: string): Promise<boolean> {
-    if (this.name.en === '' || this.name.ja === '') {
+    if (typeof this.name === 'string') {
       throw new Error('name Japanese and English are required');
     }
     const params: CreateProjectPl = {
       name: this.name,
-      tp_id,
-    }
+    };
+    if (tp_id) params.tp_id = tp_id;
     // handle call graphql
     const res: DtCreateApp = await this.request(APPLICATION_CREATE_PROJECT, { createProjectParams: params });
     this.id = res.applicationCreateProject.project_id;
@@ -194,6 +163,9 @@ export default class Project extends HxbAbstract {
    * @returns boolean
    */
   async update(): Promise<boolean> {
+    if (typeof this.name === 'string') {
+      throw new Error('name Japanese and English are required');
+    }
     const payload: UpdateProjectNameParamsProject = {
       project_id: this.id,
       project_name: this.name,

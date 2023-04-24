@@ -262,7 +262,7 @@ export default class Query extends HxbAbstract implements QueryBuilder, PromiseL
         if (!json || !json.items) {
           throw new Error('No data');
         }
-        data.items = json.items.map((params: any) => Item.fromJson(params));
+        data.items = json.items.map((params: any) => Item.fromJson(params) as Item);
         return data;
       });
     return res.then(onfulfilled, onrejected);

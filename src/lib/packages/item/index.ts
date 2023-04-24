@@ -61,9 +61,13 @@ import {
   GetItemsParameters,
 } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
+import Field from '../field';
+import ItemHistory from '../itemHistory';
+import ItemAction from '../itemAction';
+import ItemStatus from '../itemStatus';
+import StatusAction from '../statusAction';
 
 export default class Item extends HxbAbstract {
-  public project: Project;
   public datastore: Datastore;
   public id: string;
   public statusLabel: string;
@@ -75,33 +79,23 @@ export default class Item extends HxbAbstract {
   public updatedBy: string;
   public revNo: number;
   public unread: number;
-  public fields: {[key: string]: any} = {};
-
-  /**
-   * Create item object from JSON
-   * @param client HexabaseClient
-   * @param params Parameters from GraphQL
-   * @returns Hexabase Item object
-   */
-  static fromJson(params: {[key: string]: any}): Item {
-    const item = new Item();
-    item.sets(params);
-    return item;
-  }
-
-  public sets(params: {[key: string]: any}): Item {
-    Object.keys(params).forEach((key) => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
+  public fields: {[key: string]: {
+    field: Field, value: any}
+  } = {};
+  public actions: ItemAction[] = [];
+  public statuses: ItemStatus[] = [];
+  public statusActions: StatusAction[] = [];
+  public statusOrder: string;
+  public statusActionOrder: string;
+  public itemActionOrder: string;
 
   public set(key: string, value: any): Item {
     switch (key) {
+      case 'datastore':
+        this.datastore = value as Datastore;
+        break;
       case 'a_id':
       case 'p_id':
-        this.project = new Project(this.project.workspace);
-        this.project.id = value as string;
         break;
       case 'created_at':
         this.createdAt = new Date(value);
@@ -116,12 +110,10 @@ export default class Item extends HxbAbstract {
         this.unread = value as number;
         break;
       case 'i_id':
-        this.id = value as string;
-      case 'd_id':
-        if (this.project instanceof Project) {
-          this.datastore = new Datastore(this.project);
+      case 'id':
+        if (value) {
+          this.id = value as string;
         }
-        this.datastore.id = value as string;
         break;
       case 'Status':
         this.statusLabel = value as string;
@@ -129,7 +121,7 @@ export default class Item extends HxbAbstract {
       case 'status_id':
         this.statusId = value as string;
         break;
-      case 'Title':
+      case 'title':
         this.title = value as string;
         break;
       case 'created_by':
@@ -138,8 +130,50 @@ export default class Item extends HxbAbstract {
       case 'updated_by':
         this.updatedBy = value as string;
         break;
+      case 'item_actions':
+        this.actions = (value as any[])
+          .map((action: any) => ItemAction.fromJson({ ...action, item: this }) as ItemAction);
+        break;
+      case 'status_list':
+        this.statuses = (value as any[])
+          .map((status: any) => ItemStatus.fromJson({ ...status, item: this }) as ItemStatus);
+        break;
+      case 'status_actions':
+        this.statusActions = (value as any[])
+          .map((statusAction: any) => StatusAction.fromJson({ ...statusAction, item: this }) as StatusAction);
+        break;
+      case 'status_order':
+        this.statusOrder = value as string;
+        break;
+      case 'status_action_order':
+        this.statusActionOrder = value as string;
+        break;
+      case 'item_action_order':
+        this.itemActionOrder = value as string;
+        break;
+      case 'field_values':
+        (value as any[]).forEach((params: any) => {
+          const field = Field.fromJson({ ...params, item: this }) as Field;
+          if (this.fields[field.id] && !this.fields[field.id].field) {
+            this.fields[field.id].value = params.value;
+          } else {
+            this.fields[field.id] = {
+              field, value: params.value
+            };
+          }
+        });
+        break;
       default:
-        this.fields[key] = value;
+        if (this.fields[key] && this.fields[key].field) {
+          const field = this.fields[key].field;
+          if (field.isValid(value)) {
+            this.fields[key].value = value;
+          } else {
+            throw new Error(`Invalid value ${value} for field key ${field.id}`);
+          }
+        } else {
+          this.fields[key] = value;
+        }
     }
     return this;
   }
@@ -149,62 +183,38 @@ export default class Item extends HxbAbstract {
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  static async get(
-    params: GetItemsPl,
-    datastore: Datastore
-  ): Promise<DsItemsRes> {
-    const data: DsItemsRes = {
-      items: undefined,
-      error: undefined,
+  static async all(params: GetItemsPl, datastore: Datastore): Promise<{ items: Item[], totalCount: number}> {
+    const payload = {
+      getItemsParameters: params,
+      datastoreId: datastore.id,
+      projectId: datastore.project.id,
     };
-
     // handle call graphql
-    try {
-      const res: DtDsItems = await Item.request(DS_ITEMS, {
-        getItemsParameters: params,
-        datastoreId: datastore.id,
-        projectId: datastore.project.id,
+    const fields = await datastore.fields();
+    const res: DtDsItems = await Item.request(DS_ITEMS, payload);
+    const items = res.datastoreGetDatastoreItems.items
+      .map((params:any) => {
+        params = Item._addFieldsToItem(params, fields);
+        return Item.fromJson({ ...{ datastore }, ...params}) as Item
       });
-      console.log(res.datastoreGetDatastoreItems.items);
-      data.items = res.datastoreGetDatastoreItems.items.map((params:any) => Item.fromJson(params));
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
+    const totalCount = res.datastoreGetDatastoreItems.totalItems;
+    return {
+      totalCount, items,
     }
-
-    return data;
   }
 
-  /**
-   * function getHistories: get items histories
-   * @params projectId, datastoreId and itemId are requirement, historyParams is option
-   * @returns ItemHistoriesRes
-   */
-  async getHistories(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    historyParams?: GetHistoryPl
-  ): Promise<ItemHistoriesRes> {
-    const data: ItemHistoriesRes = {
-      itemHistories: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtItemHistories = await this.request(ITEM_HISTORIES, {
-        projectId,
-        datastoreId,
-        itemId,
-        getHistoryParamQueries: historyParams,
-      });
-
-      data.itemHistories = res.getHistories;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-
-    return data;
+  private static _addFieldsToItem(params: {[key: string]: any}, fields: Field[]): {[key: string]: any} {
+    Object.keys(params).forEach(key => {
+      const field = fields.find(f => f.id === key);
+      if (field) {
+        params[field.displayId] = {
+          value: params[key],
+          field,
+        };
+        delete params[key];
+      }
+    });
+    return params;
   }
 
   /**
@@ -212,86 +222,83 @@ export default class Item extends HxbAbstract {
    * @params datastoreId is requirement
    * @returns CreatedItemIdRes
    */
-  async createItemId(datastoreId: string): Promise<CreatedItemIdRes> {
-    const data: CreatedItemIdRes = {
-      item_id: undefined,
-      error: undefined,
-    };
-
+  static async createItemId(datastore: Datastore): Promise<string> {
     // handle call graphql
-    try {
-      const res: DtItemIdCreated = await this.request(CREATE_ITEMID, {
-        datastoreId,
-      });
-
-      data.item_id = res.datastoreCreateItemID.item_id;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-
-    return data;
+    const res: DtItemIdCreated = await this.request(CREATE_ITEMID, { datastoreId: datastore.id });
+    return res.datastoreCreateItemID.item_id;
   }
 
-  /**
-   * function create: create new item
-   * @params projectId and datastoreId is requirement, optional newItemPl
-   * @returns NewItemRes
-   */
-  async create(
-    projectId: string,
-    datastoreId: string,
-    newItemPl: CreateNewItemPl
-  ): Promise<NewItemRes> {
-    const data: NewItemRes = {
-      itemNew: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
-        projectId,
-        datastoreId,
-        payload: newItemPl,
-      });
-
-      data.itemNew = res.datastoreCreateNewItem;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-
-    return data;
+  async save(comment?: string): Promise<boolean> {
+    if (!this.id) return this.create();
+    return this.update(comment);
   }
 
-  /**
-   * function getItemRelated: get item related in datastore
-   * @params datastoreId, itemId and linkedDatastoreId is requirement
-   * @returns ItemLinkedRes
-   */
-  async getItemRelated(
-    datastoreId: string,
-    itemId: string,
-    linkedDatastoreId: string
-  ): Promise<ItemLinkedRes> {
-    const data: ItemLinkedRes = {
-      itemLinked: undefined,
-      error: undefined,
+  async create(): Promise<boolean> {
+    if (!this.datastore) throw new Error('Datastore is required');
+    const action = await this.datastore.action('new');
+    const payload: CreateNewItemPl = {
+      action_id: action!.id,
+      return_item_result: true,
+      is_notify_to_sender: true,
+      ensure_transaction: false,
+      exec_children_post_procs: true,
+      access_key_updates: {
+        overwrite: true,
+        ignore_action_settings: true,
+      },
+      item: this.toJson(),
     };
-
     // handle call graphql
-    try {
-      const res: DtItemLinked = await this.request(ITEM_LINKED, {
-        datastoreId,
-        itemId,
-        linkedDatastoreId,
-      });
+    const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
+      projectId: this.datastore.project.id,
+      datastoreId: this.datastore.id,
+      payload,
+    });
+    const fields = await this.datastore.fields();
+    const params = Item._addFieldsToItem(res.datastoreCreateNewItem.item, fields);
+    this.sets(params);
+    return true;
+  }
 
-      data.itemLinked = res.datastoreGetLinkedItems;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
+  async update(comment?: string): Promise<boolean> {
+    const action = await this.action('UpdateItem');
+    const params: ItemActionParameters = {
+      rev_no: this.revNo,
+      datastore_id: this.datastore.id,
+      action_id: action.id,
+      is_notify_to_sender: true,
+      ensure_transaction: true,
+      exec_children_post_procs: true,
+      return_item_result: true,
+      item: this.toJson(),
+    };
+    if (comment) {
+      params.history = {
+        comment,
+        datastore_id: this.datastore.id,
+      }
     }
+    const res: DtUpdateItem = await this.request(DATASTORE_UPDATE_ITEM, {
+      datastoreId: this.datastore.id,
+      itemId: this.id,
+      projectId: this.datastore.project.id,
+      itemActionParameters: params }
+    );
+    this.sets(res.datastoreUpdateItem.item);
+    return true;
+  }
 
-    return data;
+  toJson(): {[key: string]: any} {
+    const json: {[key: string]: any} = {};
+    Object.keys(this.fields).forEach(key => {
+      const { value, field } = this.fields[key];
+      if (field.dataType === 'text') {
+        json[key] = value + '';
+      } else {
+        json[key] = value;
+      }
+    });
+    return json;
   }
 
   /**
@@ -299,32 +306,17 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId is requirement. projectId, datastoreItemDetailParams are options
    * @returns ItemDetailRes
    */
-  async getItemDetail(
-    datastoreId: string,
-    itemId: string,
-    projectId?: string,
-    itemDetailParams?: GetItemDetailPl
-  ): Promise<ItemDetailRes> {
-    const data: ItemDetailRes = {
-      itemDetails: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtItemDetail = await this.request(ITEM_DETAIL, {
-        datastoreId,
-        itemId,
-        projectId,
-        datastoreItemDetailParams: itemDetailParams,
-      });
-
-      data.itemDetails = res.getDatastoreItemDetails;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
+  async getDetail(datastoreItemDetailParams?: GetItemDetailPl): Promise<boolean> {
+    const params = {
+      datastoreId: this.datastore.id,
+      itemId: this.id,
+      projectId: this.datastore.project.id,
+      datastoreItemDetailParams,
     }
-
-    return data;
+    // handle call graphql
+    const res: DtItemDetail = await this.request(ITEM_DETAIL, params);
+    this.sets(res.getDatastoreItemDetails);
+    return true;
   }
 
   /**
@@ -332,63 +324,23 @@ export default class Item extends HxbAbstract {
    * @params projectId, datastoreId, itemId and deleteItemReq is requirement
    * @returns ModelRes
    */
-  async delete(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    deleteItemReq: DeleteItemReq
-  ): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
+  async delete(): Promise<boolean> {
+    const action = await this.action('DeleteItem');
+    const params = {
+      a_id: action.id,
     };
-
-    // handle call graphql
-    try {
-      const res: DtDeleteItem = await this.request(DELETE_ITEM, {
-        datastoreId,
-        itemId,
-        projectId,
-        deleteItemReq,
-      });
-
-      data.data = res.datastoreDeleteItem;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-
-    return data;
+    const res: DtDeleteItem = await this.request(DELETE_ITEM, {
+      datastoreId: this.datastore.id,
+      itemId: this.id,
+      projectId: this.datastore.project.id,
+      deleteItemReq: params,
+    });
+    return !res.datastoreDeleteItem.error;
   }
 
-  /**
-   * function update: delete item in datastore
-   * @params projectId, datastoreId, itemId and itemActionParameters is requirement
-   * @returns ModelRes
-   */
-  async update(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    itemActionParameters: ItemActionParameters
-  ): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtUpdateItem = await this.request(
-        DATASTORE_UPDATE_ITEM,
-        { datastoreId, itemId, projectId, itemActionParameters }
-      );
-
-      data.data = res.datastoreUpdateItem;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-
-    return data;
+  async action(actionName: string): Promise<ItemAction> {
+    if (this.actions.length === 0) await this.getDetail();
+    return this.actions.find(a => a.displayId.trim().toLowerCase() === actionName.trim().toLocaleLowerCase())!;
   }
 
   /**
@@ -421,107 +373,8 @@ export default class Item extends HxbAbstract {
     return data;
   }
 
-  /**
-   * function createComment: create comment item in datastore
-   * @params projectId, datastoreId, itemId and CreateCommentParameters is requirement
-   * @returns DatastoreCreateCommentItemRes
-   */
-  async createComment(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    params: CreateCommentParameters): Promise<DatastoreCreateCommentItemRes> {
-    const data: DatastoreCreateCommentItemRes = {
-      postNewItemHistory: undefined,
-      error: undefined,
-    };
-
-    const payload: CreateCommentItemsParameters = {
-      workspace_id: '',
-      project_id: projectId,
-      datastore_id: datastoreId,
-      item_id: itemId,
-      post_mode: '',
-      comment: params.comment,
-    };
-
-    if (params.is_send_item_unread != undefined) {
-      payload.is_send_item_unread = params.is_send_item_unread;
-    }
-
-    // handle call graphql
-    try {
-      const res: DtDatastoreCreateCommentItem = await this.request(POST_NEW_ITEM_HISTORY, { payload });
-      data.postNewItemHistory = res.postNewItemHistory;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
-  }
-
-  /**
-   * function updateComment: update comment item in datastore
-   * @params projectId, datastoreId, itemId , historyId and UpdateCommentParameters is requirement
-   * @returns ResponseErrorNull
-   */
-  async updateComment(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    historyId: string,
-    params: UpdateCommentParameters): Promise<ResponseErrorNull> {
-    const data: ResponseErrorNull = {
-      error: undefined,
-    };
-
-    const payload: UpdateCommentItemsParameters = {
-      p_id: projectId,
-      d_id: datastoreId,
-      i_id: itemId,
-      h_id: historyId,
-      comment: params.comment,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtDatastoreUpdateCommentItem = await this.request(POST_UPDATE_ITEM_HISTORY, { payload });
-      data.error = res.postUpdateItemHistory;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
-  }
-
-  /**
-   * function deleteComment: delete comment item in datastore
-   * @params projectId, datastoreId, itemId , historyId
-   * @returns ResponseErrorNull
-   */
-  async deleteComment(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    historyId: string
-  ): Promise<ResponseErrorNull> {
-    const data: ResponseErrorNull = {
-      error: undefined,
-    };
-
-    const payload: ArchiveCommentItemsParameters = {
-      p_id: projectId,
-      d_id: datastoreId,
-      i_id: itemId,
-      h_id: historyId,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtDatastoreDeleteCommentItem = await this.request(POST_DELETE_ITEM_HISTORY, { payload });
-      data.error = res.archiveItemHistory;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
+  comment(): ItemHistory {
+    return new ItemHistory({ item: this });
   }
 
   /**
@@ -638,7 +491,6 @@ export default class Item extends HxbAbstract {
 
     // handle call graphql
     try {
-      console.log("payload", payload)
       const res: DtItemWithSearch = await this.request(
         ITEM_WITH_SEARCH,
         {
@@ -650,6 +502,63 @@ export default class Item extends HxbAbstract {
     } catch (error: any) {
       data.errors = JSON.stringify(error?.response?.errors);
     }
+    return data;
+  }
+
+  /**
+   * function getHistories: get items histories
+   * @params projectId, datastoreId and itemId are requirement, historyParams is option
+   * @returns ItemHistoriesRes
+   */
+  async histories(getHistoryParamQueries?: GetHistoryPl): Promise<any> {
+    const res = await this.historiesWithUnread();
+    return res.histories;
+  }
+
+  async historiesWithUnread(getHistoryParamQueries?: GetHistoryPl): Promise<{ unread: number, histories: ItemHistory[]}> {
+    const params = {
+      projectId: this.datastore.project.id,
+      datastoreId: this.datastore.id,
+      itemId: this.id,
+      getHistoryParamQueries,
+    }
+    const res: DtItemHistories = await this.request(ITEM_HISTORIES, params);
+    const histories = res.getHistories.histories
+      .map((history: any) => ItemHistory.fromJson({...{item: this}, ...history}) as ItemHistory);
+    return {
+      unread: res.getHistories.unread,
+      histories,
+    };
+  }
+  
+  /**
+   * function getItemRelated: get item related in datastore
+   * @params datastoreId, itemId and linkedDatastoreId is requirement
+   * @returns ItemLinkedRes
+   */
+  async getItemRelated(
+    datastoreId: string,
+    itemId: string,
+    linkedDatastoreId: string
+  ): Promise<ItemLinkedRes> {
+    const data: ItemLinkedRes = {
+      itemLinked: undefined,
+      error: undefined,
+    };
+
+    // handle call graphql
+    try {
+      const res: DtItemLinked = await this.request(ITEM_LINKED, {
+        datastoreId,
+        itemId,
+        linkedDatastoreId,
+      });
+
+      data.itemLinked = res.datastoreGetLinkedItems;
+    } catch (error: any) {
+      data.error = JSON.stringify(error?.response?.errors);
+    }
+
     return data;
   }
 }

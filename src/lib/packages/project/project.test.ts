@@ -3,6 +3,7 @@ import Project from '.';
 import Auth from '../auth';
 import Workspace from '../workspace';
 import HexabaseClient from '../../../HexabaseClient';
+import { FieldNameENJP } from '../../util/type';
 require('dotenv').config();
 /**
  * Test with class Project
@@ -28,7 +29,7 @@ describe('Project', () => {
     it('should get project by workspace id', async () => {
       try {
         jest.useFakeTimers('legacy');
-        const workspace = await client.workspaces.getCurrent();
+        const workspace = client.currentWorkspace!;
         const projects = await workspace.projects();
         expect(typeof projects[0].id).toBe('string');
       } catch (error) {
@@ -41,11 +42,12 @@ describe('Project', () => {
     it('should get project and datastore by workspace id', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
+        const workspace = client.currentWorkspace!;
         const { projects, datastores } = await workspace.getProjectsAndDatastores();
         const project = projects[0];
         expect(typeof project.id).toBe('string');
-        expect(typeof project.name.en).toBe('string');
+        const name = project.name as FieldNameENJP;
+        expect(typeof name.en).toBe('string');
         expect(typeof project.displayId).toBe('string');
 
         const datastore = datastores[0];
@@ -63,10 +65,10 @@ describe('Project', () => {
     it('should get templates without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = await client.workspaces.getCurrent();
+        const workspace = client.currentWorkspace!;
         const projects = await workspace.projects();
         const project = projects[0];
-        const templates = await project.getTemplates();
+        const templates = await project.templates();
         expect(typeof templates[0].name).toBe('string');
       } catch (error) {
         console.error(error);
@@ -77,10 +79,12 @@ describe('Project', () => {
   describe('#create()', () => {
     it('should create project', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       const project = await workspace.project();
-      project.name.ja = '新しいプロジェクト';
-      project.name.en = 'new project';
+      project.name = {
+        ja: '新しいプロジェクト',
+        en: 'new project'
+      };
       const bol = await project.save();
       expect(bol).toBe(true);
       expect(typeof project.id).toBe('string');
@@ -91,20 +95,21 @@ describe('Project', () => {
   describe('#getDetail()', () => {
     it('should get info project', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       const projects = await workspace.projects();
       const project = projects[0];
       await project.getDetail();
-      expect(typeof project.name.ja).toBe('string');
-      expect(project.name.ja !== '').toBe(true);
-      expect(typeof project.name.en).toBe('string');
+      const name = project.name as FieldNameENJP;
+      expect(typeof name.ja).toBe('string');
+      expect(name.ja !== '').toBe(true);
+      expect(typeof name.en).toBe('string');
     });
   });
 
   describe('#updateProjectTheme()', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       const projects = await workspace.projects();
       const project = projects[0];
       project.theme = 'blue';
@@ -117,7 +122,7 @@ describe('Project', () => {
   describe('#updateProjectName()', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       const projects = await workspace.projects();
       const project = projects[0];
       project.name = {
@@ -132,10 +137,12 @@ describe('Project', () => {
   describe('#delete()', () => {
     it('should delete project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = await client.workspaces.getCurrent();
+      const workspace = client.currentWorkspace!;
       const project = await workspace.project();
-      project.name.ja = '新しいプロジェクト';
-      project.name.en = 'new project';
+      project.name = {
+        ja: '新しいプロジェクト',
+        en: 'new project',
+      };
       const bol = await project.save();
       expect(bol).toBe(true);
       expect(typeof project.id).toBe('string');

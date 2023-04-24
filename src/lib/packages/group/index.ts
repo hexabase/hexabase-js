@@ -9,19 +9,6 @@ export default class Group extends HxbAbstract {
 	children: Group[];
 	workspace: Workspace;
 
-	static fromJson(json: {[key: string]: any}): Group {
-		const group = new Group();
-		group.sets(json);
-		return group;
-	}
-
-  sets(params: {[key: string]: any}): Group {
-    Object.keys(params).forEach(key => {
-      this.set(key, params[key]);
-    });
-    return this;
-  }
-
   set(key: string, value: any): Group {
     switch (key) {
 			case 'index':
