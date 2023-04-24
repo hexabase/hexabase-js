@@ -338,7 +338,8 @@ export default class Workspace extends HxbAbstract {
    * @returns boolean
    */
   async save(): Promise<boolean> {
-    return !this.id ? this.create() : this.update();
+    if (this.id) throw new Error('Currently, workspace updating is not support.');
+    return this.create(); // : this.update();
   }
 
   /**
@@ -360,14 +361,17 @@ export default class Workspace extends HxbAbstract {
   }
 
   /**
+   * TODO: Update settings that want to change
    * function update: update workspace settings
    * @returns boolean
    */
+  /*
   async update(): Promise<boolean> {
     const payload: WorkspaceSettingPl = this.toJson();
     const res: ResponseErrorNull = await this.request(UPDATE_WORKSPACE_SETTINGS, { payload });
     return !res.error;
   }
+  */
 
   /**
    * function toJson: convert workspace to json
