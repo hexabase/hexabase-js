@@ -66,6 +66,8 @@ import ItemHistory from '../itemHistory';
 import ItemAction from '../itemAction';
 import ItemStatus from '../itemStatus';
 import StatusAction from '../statusAction';
+import Link from '../relatedItem';
+import RelatedItem from '../relatedItem';
 
 export default class Item extends HxbAbstract {
   public datastore: Datastore;
@@ -88,6 +90,9 @@ export default class Item extends HxbAbstract {
   public statusOrder: string;
   public statusActionOrder: string;
   public itemActionOrder: string;
+
+  public linkItems: Link[] = [];
+  public _relatedItems: RelatedItem[] = [];
 
   public set(key: string, value: any): Item {
     switch (key) {
@@ -229,8 +234,18 @@ export default class Item extends HxbAbstract {
   }
 
   async save(comment?: string): Promise<boolean> {
-    if (!this.id) return this.create();
-    return this.update(comment);
+    const bol = await (!this.id ? this.create() : this.update(comment));
+    if (this._relatedItems.length > 0) {
+      for(const relatedItem of this._relatedItems) {
+        await relatedItem.create();
+      }
+    }
+    return bol;
+  }
+
+  related(item: Item): Item {
+    this._relatedItems.push(new RelatedItem({ item: this, linkedItem: item }));
+    return this;
   }
 
   async create(): Promise<boolean> {
@@ -248,6 +263,7 @@ export default class Item extends HxbAbstract {
       },
       item: this.toJson(),
     };
+    console.log(payload);
     // handle call graphql
     const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
       projectId: this.datastore.project.id,
@@ -292,14 +308,35 @@ export default class Item extends HxbAbstract {
     const json: {[key: string]: any} = {};
     Object.keys(this.fields).forEach(key => {
       const { value, field } = this.fields[key];
-      if (field.dataType === 'text') {
-        json[key] = value + '';
-      } else {
-        json[key] = value;
-      }
+      json[key] = this._translateValue(value || this.fields[key], field);
     });
     return json;
   }
+
+  private _translateValue(value: any, field?: Field): any {
+    if (field) {
+      switch (field.dataType) {
+        case 'text':
+          return value + '';
+        case 'dslookup':
+          if (value instanceof Item) {
+            return value.id;
+          }
+          return value;
+        default:
+          return value;
+      }
+    } else {
+      if (typeof value === 'number') {
+        return value + '';
+      } else if (value instanceof Item) {
+        return value.id;
+      } else {
+        return value;
+      }
+    }
+  }
+
 
   /**
    * function getItemDetail: get item detail
@@ -377,36 +414,6 @@ export default class Item extends HxbAbstract {
     return new ItemHistory({ item: this });
   }
 
-  /**
-   * function createLink: create item link in datastore
-   * @params datastoreId, itemId, itemLinkRequestInput, projectId are required
-   * @returns ModelRes
-   */
-  async createLink(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    itemLinkRequestInput: ItemLinkRequestInput
-  ): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtAddItemLink = await this.request(ADD_ITEM_LINK, {
-        projectId,
-        datastoreId,
-        itemId,
-        itemLinkRequestInput,
-      });
-      data.data = res.addItemLink;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
-  }
 
   /**
    * function updateLink: update item link in datastore

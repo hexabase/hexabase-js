@@ -237,37 +237,29 @@ describe('Item', () => {
       expect(histories2.length + 1).toBe(histories.length);
     });
   });
-  /*
+
   describe('#createLink()', () => {
     it('should create item link in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const item = new Item(url, tokenItem);
-      let itemId = '';
-      const { dsItems, error: errorItem } = await item.get(params, datastoreID);
-
-      if (dsItems) {
-        itemId = dsItems.items[0].i_id;
-      } else {
-        throw new Error(`Error: ${errorItem}`);
-      }
-      const itemLinkRequestInput = {
-        link_datastore_id: linkDsId,
-        link_item_id: linkItemId,
-      };
-      const { data, error } = await item.createLink(
-        projectId,
-        datastoreID,
-        itemId,
-        itemLinkRequestInput
-      );
-      if (data) {
-        expect(typeof data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      const project = client.currentWorkspace!.project(projectId);
+      const datastore1 = project.datastore(datastoreId);
+      const datastore2 = project.datastore('64462a7dc8333e0ab63ac772');
+      const item1 = await datastore1.item();
+      const item2 = await datastore2.item();
+      await item2
+        .set('name', (new Date).toISOString())
+        .save();
+      const bol = await item1
+        .set('name', 'item1')
+        .set('price', 100)
+        .set('Linkeditem', item2)
+        .related(item2)
+        .save();
+      expect(bol).toBe(true);
     });
   });
 
+  /*
   describe('#updateLink()', () => {
     it('should update item link in datastore', async () => {
       jest.useFakeTimers('legacy');

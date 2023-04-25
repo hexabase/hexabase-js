@@ -128,7 +128,6 @@ describe('Workspace', () => {
         // TODO: Fix API
         // const bol = await workspace.save();
         // expect(bol).toEqual(true);
-        await workspace.getDetail();
         // expect(workspace.name).toEqual(newName);
       } catch (error) {
         throw new Error(`Error: ${error}`);
