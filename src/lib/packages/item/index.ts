@@ -66,8 +66,8 @@ import ItemHistory from '../itemHistory';
 import ItemAction from '../itemAction';
 import ItemStatus from '../itemStatus';
 import StatusAction from '../statusAction';
-import Link from '../relatedItem';
-import RelatedItem from '../relatedItem';
+import Link from '../linkItem';
+import LinkItem from '../linkItem';
 
 export default class Item extends HxbAbstract {
   public datastore: Datastore;
@@ -81,6 +81,7 @@ export default class Item extends HxbAbstract {
   public updatedBy: string;
   public revNo: number;
   public unread: number;
+  public pinned: boolean;
   public fields: {[key: string]: {
     field: Field, value: any}
   } = {};
@@ -91,13 +92,30 @@ export default class Item extends HxbAbstract {
   public statusActionOrder: string;
   public itemActionOrder: string;
 
-  public linkItems: Link[] = [];
-  public _relatedItems: RelatedItem[] = [];
+  public _linkItems: LinkItem[] = [];
+  public _unlinkItems: LinkItem[] = [];
+  // public _relatedItems: RelatedItem[] = [];
 
   public set(key: string, value: any): Item {
     switch (key) {
       case 'datastore':
         this.datastore = value as Datastore;
+        break;
+      case 'd_id':
+        break;
+      case 'links':
+        const project = this.datastore.project;
+        (value as any[]).forEach(params => {
+          const datasstore = project.datastore(params.d_id);
+          (params.i_ids as string[])
+            .forEach(i_id => {
+              const linkedItem = datasstore.item(i_id);
+              this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
+            });
+        });
+        break;
+      case 'pinned':
+        this.pinned = value as boolean;
         break;
       case 'a_id':
       case 'p_id':
@@ -159,6 +177,10 @@ export default class Item extends HxbAbstract {
       case 'field_values':
         (value as any[]).forEach((params: any) => {
           const field = Field.fromJson({ ...params, item: this }) as Field;
+          if (field.dataType === 'dslookup') {
+            const datastore = this.datastore.project.datastore(value.d_id);
+            params.value = datastore.item(value.item_id);
+          }
           if (this.fields[field.id] && !this.fields[field.id].field) {
             this.fields[field.id].value = params.value;
           } else {
@@ -234,17 +256,21 @@ export default class Item extends HxbAbstract {
   }
 
   async save(comment?: string): Promise<boolean> {
-    const bol = await (!this.id ? this.create() : this.update(comment));
-    if (this._relatedItems.length > 0) {
-      for(const relatedItem of this._relatedItems) {
-        await relatedItem.create();
-      }
-    }
-    return bol;
+    await (!this.id ? this.create() : this.update(comment));
+    await Promise.all(this._linkItems.map(linkItem => linkItem.create()));
+    await Promise.all(this._unlinkItems.map(linkItem => linkItem.delete()));
+    this._linkItems = [];
+    this._unlinkItems = [];
+    return true;
   }
 
-  related(item: Item): Item {
-    this._relatedItems.push(new RelatedItem({ item: this, linkedItem: item }));
+  link(item: Item): Item {
+    this._linkItems.push(new LinkItem({ item: this, linkedItem: item }));
+    return this;
+  }
+
+  unlink(item: Item): Item {
+    this._unlinkItems.push(new LinkItem({ item: this, linkedItem: item }));
     return this;
   }
 
@@ -263,7 +289,6 @@ export default class Item extends HxbAbstract {
       },
       item: this.toJson(),
     };
-    console.log(payload);
     // handle call graphql
     const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
       projectId: this.datastore.project.id,
@@ -308,7 +333,7 @@ export default class Item extends HxbAbstract {
     const json: {[key: string]: any} = {};
     Object.keys(this.fields).forEach(key => {
       const { value, field } = this.fields[key];
-      json[key] = this._translateValue(value || this.fields[key], field);
+      json[key] = this._translateValue(field ? value : this.fields[key], field);
     });
     return json;
   }
@@ -317,7 +342,7 @@ export default class Item extends HxbAbstract {
     if (field) {
       switch (field.dataType) {
         case 'text':
-          return value + '';
+          return (value || '') + '';
         case 'dslookup':
           if (value instanceof Item) {
             return value.id;
@@ -412,75 +437,6 @@ export default class Item extends HxbAbstract {
 
   comment(): ItemHistory {
     return new ItemHistory({ item: this });
-  }
-
-
-  /**
-   * function updateLink: update item link in datastore
-   * @params datastoreId, itemId, projectId, updateItemLinkInput are required
-   * @returns ModelRes
-   */
-  async updateLink(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    updateItemLinkInput: UpdateItemLinkInput
-  ): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtUpdateItemLink = await this.request(
-        UPDATE_ITEM_LINK,
-        {
-          projectId,
-          datastoreId,
-          itemId,
-          updateItemLinkInput,
-        }
-      );
-      data.data = res.updateItemLink;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
-  }
-
-  /**
-   * function deleteLink: delete item link in datastore
-   * @params datastoreId, itemId, projectId, itemLinkRequestInput are required
-   * @returns ModelRes
-   */
-  async deleteLink(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    itemLinkRequestInput: ItemLinkRequestInput
-  ): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtDeleteItemLink = await this.request(
-        DELETE_ITEM_LINK,
-        {
-          projectId,
-          datastoreId,
-          itemId,
-          itemLinkRequestInput,
-        }
-      );
-      data.data = res.deleteItemLink;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
   }
 
   /**

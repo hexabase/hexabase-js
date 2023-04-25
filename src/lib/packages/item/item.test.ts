@@ -29,6 +29,8 @@ const linkItemId = process.env.LINK_ITEM_ID || '';
 const linkDsIdUpdate = process.env.LINK_DATASTORE_ID_UPDATE || '';
 const linkItemIdUpdate = process.env.LINK_ITEM_ID_UPDATE || '';
 
+let linkedItemId: string;
+
 // local variable in file for testing
 const params = {
   page: 1,
@@ -84,7 +86,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item();
+      const item = datastore.item();
       const bol = await item.save();
       // Save item id for next test
       itemId = item.id;
@@ -98,7 +100,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item(itemId);
+      const item = datastore.item(itemId);
       const histories = await item.histories();
       expect(typeof histories[0].id).toBe('string');
       const { unread } = await item.historiesWithUnread();
@@ -143,7 +145,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item(itemId);
+      const item = datastore.item(itemId);
       item.set('price', 100);
       const bol = await item.save();
       expect(bol).toBe(true);
@@ -197,7 +199,7 @@ describe('Item', () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item(itemId);
+      const item = datastore.item(itemId);
       const comment = item.comment();
       comment.comment = 'create comment';
       const bol = await comment.save();
@@ -211,7 +213,7 @@ describe('Item', () => {
       const newComment = 'update comment message';
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item(itemId);
+      const item = datastore.item(itemId);
       const histories = await item.histories();
       const comment = histories[0];
       comment.comment = newComment;
@@ -229,7 +231,7 @@ describe('Item', () => {
       const newComment = 'update comment message';
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item(itemId);
+      const item = datastore.item(itemId);
       const histories = await item.histories();
       const bol = await histories[0].delete();
       expect(bol).toBe(true);
@@ -244,91 +246,62 @@ describe('Item', () => {
       const project = client.currentWorkspace!.project(projectId);
       const datastore1 = project.datastore(datastoreId);
       const datastore2 = project.datastore('64462a7dc8333e0ab63ac772');
-      const item1 = await datastore1.item();
-      const item2 = await datastore2.item();
+      const item1 = datastore1.item();
+      const item2 = datastore2.item();
       await item2
+        .set('name', (new Date).toISOString())
+        .save();
+      const item3 = await datastore2.item();
+      await item3
         .set('name', (new Date).toISOString())
         .save();
       const bol = await item1
         .set('name', 'item1')
         .set('price', 100)
         .set('Linkeditem', item2)
-        .related(item2)
+        .link(item2)
+        .link(item3)
         .save();
       expect(bol).toBe(true);
     });
   });
 
-  /*
-  describe('#updateLink()', () => {
-    it('should update item link in datastore', async () => {
-      jest.useFakeTimers('legacy');
-      const item = new Item(url, tokenItem);
-      let itemId = '';
-      const { dsItems, error: errorItem } = await item.get(params, datastoreID);
-
-      if (dsItems) {
-        itemId = dsItems.items[0].i_id;
-      } else {
-        throw new Error(`Error: ${errorItem}`);
-      }
-      const updateItemLinkInput = {
-        old_link_datastore_id: linkDsId,
-        old_link_item_id: linkItemId,
-        new_link_datastore_id: linkDsIdUpdate,
-        new_link_item_id: linkItemIdUpdate,
-      };
-      const { data, error } = await item.updateLink(
-        projectId,
-        datastoreID,
-        itemId,
-        updateItemLinkInput
-      );
-      if (data) {
-        expect(typeof data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
-    });
-  });
-
+  
   describe('#deleteLink()', () => {
     it('should delete item link in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const item = new Item(url, tokenItem);
-      let itemId = '';
-      const { dsItems, error: errorItem } = await item.get(params, datastoreID);
-
-      if (dsItems) {
-        itemId = dsItems.items[0].i_id;
-      } else {
-        throw new Error(`Error: ${errorItem}`);
-      }
-      const itemLinkRequestInput = {
-        link_datastore_id: linkDsIdUpdate,
-        link_item_id: linkItemIdUpdate,
-      };
-      const { data, error } = await item.deleteLink(
-        projectId,
-        datastoreID,
-        itemId,
-        itemLinkRequestInput
-      );
-      if (data) {
-        expect(typeof data).toBe('object');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      const project = client.currentWorkspace!.project(projectId);
+      const datastore1 = project.datastore(datastoreId);
+      const datastore2 = project.datastore('64462a7dc8333e0ab63ac772');
+      const item1 = datastore1.item();
+      const item2 = datastore2.item();
+      await item2
+        .set('name', (new Date).toISOString())
+        .save();
+      const item3 = datastore2.item();
+      await item3
+        .set('name', (new Date).toISOString())
+        .save();
+      await item1
+        .set('name', 'item1')
+        .set('price', 100)
+        .set('Linkeditem', item2)
+        .link(item2)
+        .link(item3)
+        .save();
+      const bol = await item1
+        .unlink(item2)
+        .save();
+      expect(bol).toBe(true);
     });
   });
-  */
 
   describe('#delete()', () => {
     it('should delete item in datastore', async () => {
       jest.useFakeTimers('legacy');
       const project = client.currentWorkspace!.project(projectId);
       const datastore = project.datastore(datastoreId);
-      const item = await datastore.item(itemId);
+      const item = datastore.item(itemId);
       const bol = await item.delete();
       expect(bol).toBe(true);
     });

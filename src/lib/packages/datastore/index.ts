@@ -116,7 +116,7 @@ export default class Datastore extends HxbAbstract {
     switch (key) {
       case 'id':
       case 'datastore_id':
-        if (value.trim() !== '') this.id = value;
+        if (value && value.trim() !== '') this.id = value;
         break;
       case 'project':
         this.project = value;
@@ -325,11 +325,7 @@ export default class Datastore extends HxbAbstract {
     return Item.all(params, this);
   }
 
-  async item(id?: string): Promise<Item> {
-    const item = new Item({ datastore: this, id });
-    if (item.id) {
-      await item.getDetail();
-    }
-    return item;
+  item(id?: string): Item {
+    return new Item({ datastore: this, id });
   }
 }
