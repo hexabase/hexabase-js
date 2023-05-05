@@ -4,7 +4,7 @@ import Item from "../item";
 export default class ItemStatus extends HxbAbstract {
 	item: Item;
 	id: string;
-  display_id: string;
+  displayId: string;
   name: string;
 
   set(key: string, value: any): ItemStatus {
@@ -13,7 +13,7 @@ export default class ItemStatus extends HxbAbstract {
 				this.id = value;
 				break;
 			case 'display_id':
-				this.display_id = value;
+				this.displayId = value;
 				break;
 			case 'status_name':
 				this.name = value;

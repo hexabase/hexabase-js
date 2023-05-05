@@ -68,6 +68,7 @@ import ItemStatus from '../itemStatus';
 import StatusAction from '../statusAction';
 import Link from '../linkItem';
 import LinkItem from '../linkItem';
+import { parseCommandLine } from 'typescript';
 
 export default class Item extends HxbAbstract {
   public datastore: Datastore;
@@ -82,19 +83,20 @@ export default class Item extends HxbAbstract {
   public revNo: number;
   public unread: number;
   public pinned: boolean;
-  public fields: {[key: string]: {
-    field: Field, value: any}
-  } = {};
+  public fields: {[key: string]: any} = {};
   public actions: ItemAction[] = [];
   public statuses: ItemStatus[] = [];
   public statusActions: StatusAction[] = [];
   public statusOrder: string;
   public statusActionOrder: string;
   public itemActionOrder: string;
+  public _status: string | ItemStatus | StatusAction;
+  private _updateStatusAction: StatusAction;
 
   public _linkItems: LinkItem[] = [];
   public _unlinkItems: LinkItem[] = [];
   // public _relatedItems: RelatedItem[] = [];
+  private _detail = false;
 
   public set(key: string, value: any): Item {
     switch (key) {
@@ -106,10 +108,10 @@ export default class Item extends HxbAbstract {
       case 'links':
         const project = this.datastore.project;
         (value as any[]).forEach(params => {
-          const datasstore = project.datastore(params.d_id);
+          const datasstore = new Datastore({ project, id: params.d_id });
           (params.i_ids as string[])
-            .forEach(i_id => {
-              const linkedItem = datasstore.item(i_id);
+            .forEach(async (i_id) => {
+              const linkedItem = new Item({ datastore: datasstore, id: i_id });
               this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
             });
         });
@@ -154,16 +156,19 @@ export default class Item extends HxbAbstract {
         this.updatedBy = value as string;
         break;
       case 'item_actions':
-        this.actions = (value as any[])
-          .map((action: any) => ItemAction.fromJson({ ...action, item: this }) as ItemAction);
+        this.actions = Object.keys(value)
+          .map((display_id: string) => ItemAction
+            .fromJson({ ...{ display_id }, ...value[display_id], item: this }) as ItemAction);
         break;
       case 'status_list':
-        this.statuses = (value as any[])
-          .map((status: any) => ItemStatus.fromJson({ ...status, item: this }) as ItemStatus);
+        this.statuses = Object.keys(value)
+          .map((display_id: string) => ItemStatus
+            .fromJson({ ...{ display_id }, ...value[display_id], item: this }) as ItemStatus);
         break;
       case 'status_actions':
-        this.statusActions = (value as any[])
-          .map((statusAction: any) => StatusAction.fromJson({ ...statusAction, item: this }) as StatusAction);
+        this.statusActions = Object.keys(value as any[])
+          .map((display_id: string) => StatusAction
+            .fromJson({ ...{ display_id }, ...value[display_id], item: this }) as StatusAction);
         break;
       case 'status_order':
         this.statusOrder = value as string;
@@ -175,35 +180,38 @@ export default class Item extends HxbAbstract {
         this.itemActionOrder = value as string;
         break;
       case 'field_values':
-        (value as any[]).forEach((params: any) => {
-          const field = Field.fromJson({ ...params, item: this }) as Field;
-          if (field.dataType === 'dslookup') {
-            const datastore = this.datastore.project.datastore(value.d_id);
-            params.value = datastore.item(value.item_id);
-          }
-          if (this.fields[field.id] && !this.fields[field.id].field) {
-            this.fields[field.id].value = params.value;
-          } else {
-            this.fields[field.id] = {
-              field, value: params.value
-            };
-          }
+        Object.keys(value).forEach(fieldName => {
+          this.setFieldValue(fieldName, value[fieldName].value);
         });
         break;
       default:
-        if (this.fields[key] && this.fields[key].field) {
-          const field = this.fields[key].field;
-          if (field.isValid(value)) {
-            this.fields[key].value = value;
-          } else {
-            throw new Error(`Invalid value ${value} for field key ${field.id}`);
-          }
-        } else {
-          this.fields[key] = value;
-        }
+        this.setFieldValue(key, value);
+        break;
     }
     return this;
   }
+
+  public setFieldValue(fieldName: string, value: any): Item {
+    const field = this.datastore.fieldSync(fieldName);
+    if (!field.valid(value)) {
+      console.log({ value });
+      throw new Error(`Invalid value ${value} for field key ${field.id}`);
+    }
+    value = field.value(value, { item: this });
+    if (field.dataType.toLocaleLowerCase() === 'status') {
+      this._status = value;
+    }
+    this.fields[fieldName] = value;
+    return this;
+  }
+
+  get(name: string): any {
+    if (this.fields[name] && this.fields[name].field) {
+      return this.fields[name].value;
+    } else {
+      return this.fields[name];
+    }
+	}
 
   /**
    * function get: get items in datastore
@@ -220,28 +228,23 @@ export default class Item extends HxbAbstract {
     const fields = await datastore.fields();
     const res: DtDsItems = await Item.request(DS_ITEMS, payload);
     const items = res.datastoreGetDatastoreItems.items
-      .map((params:any) => {
-        params = Item._addFieldsToItem(params, fields);
-        return Item.fromJson({ ...{ datastore }, ...params}) as Item
-      });
+      .map((params:any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
     const totalCount = res.datastoreGetDatastoreItems.totalItems;
     return {
       totalCount, items,
     }
   }
 
-  private static _addFieldsToItem(params: {[key: string]: any}, fields: Field[]): {[key: string]: any} {
-    Object.keys(params).forEach(key => {
-      const field = fields.find(f => f.id === key);
-      if (field) {
-        params[field.displayId] = {
-          value: params[key],
-          field,
-        };
-        delete params[key];
-      }
-    });
-    return params;
+  static async search(payload: GetItemsParameters): Promise<Item[]> {
+    if (!payload.page) payload.page = 1;
+    if (!payload.per_page) payload.per_page = 100;
+    payload.include_lookups = true;
+    payload.include_links = true;
+    payload.return_number_value = true;
+    payload.include_fields_data = true;
+    payload.format = 'map';
+    const res: DtItemWithSearch = await this.request(ITEM_WITH_SEARCH, { payload });
+    return res.itemWithSearch.items.map((params: any) => Item.fromJson(params) as Item);
   }
 
   /**
@@ -287,7 +290,7 @@ export default class Item extends HxbAbstract {
         overwrite: true,
         ignore_action_settings: true,
       },
-      item: this.toJson(),
+      item: await this.toJson(),
     };
     // handle call graphql
     const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
@@ -295,14 +298,15 @@ export default class Item extends HxbAbstract {
       datastoreId: this.datastore.id,
       payload,
     });
-    const fields = await this.datastore.fields();
-    const params = Item._addFieldsToItem(res.datastoreCreateNewItem.item, fields);
-    this.sets(params);
+    if (this.datastore._fields.length === 0) await this.datastore.fields();
+    // const params = Item._addFieldsToItem(res.datastoreCreateNewItem.item, fields);
+    this.sets(res.datastoreCreateNewItem.item);
+    this._setStatus(this._status);
     return true;
   }
 
   async update(comment?: string): Promise<boolean> {
-    const action = await this.action('UpdateItem');
+    const action = this._updateStatusAction ? this._updateStatusAction : await this.action('UpdateItem');
     const params: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
@@ -311,7 +315,7 @@ export default class Item extends HxbAbstract {
       ensure_transaction: true,
       exec_children_post_procs: true,
       return_item_result: true,
-      item: this.toJson(),
+      item: await this.toJson(),
     };
     if (comment) {
       params.history = {
@@ -323,61 +327,59 @@ export default class Item extends HxbAbstract {
       datastoreId: this.datastore.id,
       itemId: this.id,
       projectId: this.datastore.project.id,
-      itemActionParameters: params }
-    );
+      itemActionParameters: params
+    });
     this.sets(res.datastoreUpdateItem.item);
+    this._setStatus(this._status);
     return true;
   }
 
-  toJson(): {[key: string]: any} {
+  async toJson(): Promise<{[key: string]: any}> {
     const json: {[key: string]: any} = {};
-    Object.keys(this.fields).forEach(key => {
-      const { value, field } = this.fields[key];
-      json[key] = this._translateValue(field ? value : this.fields[key], field);
-    });
+    for (const key in this.fields) {
+      const field = this.datastore.fieldSync(key);
+      const value = await field.convert(this.fields[key]);
+      if (typeof value !== 'undefined') {
+        json[key] = value;
+      }
+    }
     return json;
   }
 
-  private _translateValue(value: any, field?: Field): any {
-    if (field) {
-      switch (field.dataType) {
-        case 'text':
-          return (value || '') + '';
-        case 'dslookup':
-          if (value instanceof Item) {
-            return value.id;
-          }
-          return value;
-        default:
-          return value;
-      }
-    } else {
-      if (typeof value === 'number') {
-        return value + '';
-      } else if (value instanceof Item) {
-        return value.id;
-      } else {
-        return value;
-      }
+  status(status?: string): string {
+    if (status) {
+      const statusAction = this.statusActions.find(action => action.displayId === status);
+      if (!statusAction) throw new Error('Status action is not found');
+      this._updateStatusAction = statusAction;
+      const newStatus = this.statuses.find(s => s.id === statusAction.nextStatusId);
+      if (!newStatus) throw new Error(`Status is not found ${statusAction.nextStatusId}`);
+      this._setStatus(newStatus);
     }
+    return (this._status as ItemStatus).displayId;
   }
-
 
   /**
    * function getItemDetail: get item detail
    * @params datastoreId, itemId is requirement. projectId, datastoreItemDetailParams are options
    * @returns ItemDetailRes
    */
-  async getDetail(datastoreItemDetailParams?: GetItemDetailPl): Promise<boolean> {
+  async fetch(): Promise<boolean> {
     const params = {
       datastoreId: this.datastore.id,
       itemId: this.id,
       projectId: this.datastore.project.id,
-      datastoreItemDetailParams,
+      datastoreItemDetailParams: {
+        include_lookups: true,
+        use_display_id: true,
+        return_number_value: true,
+        format: 'map',
+        include_linked_items: true,
+      },
     }
     // handle call graphql
     const res: DtItemDetail = await this.request(ITEM_DETAIL, params);
     this.sets(res.getDatastoreItemDetails);
+    this._setStatus(this._status);
     return true;
   }
 
@@ -401,72 +403,27 @@ export default class Item extends HxbAbstract {
   }
 
   async action(actionName: string): Promise<ItemAction> {
-    if (this.actions.length === 0) await this.getDetail();
+    if (this.actions.length === 0) await this.fetch();
     return this.actions.find(a => a.displayId.trim().toLowerCase() === actionName.trim().toLocaleLowerCase())!;
-  }
-
-  /**
-   * function execute: execute action item in datastore
-   * @params projectId, datastoreId, itemId, actionId and itemActionParameters is requirement
-   * @returns ModelRes
-   */
-  async execute(
-    projectId: string,
-    datastoreId: string,
-    itemId: string,
-    actionId: string,
-    itemActionParameters: ItemActionParameters
-  ): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtUpdateItemRes = await this.request(
-        EXECUTE_ITEM_ACTION,
-        { projectId, datastoreId, itemId, actionId, itemActionParameters }
-      );
-      data.data = res.item;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
-    }
-    return data;
   }
 
   comment(): ItemHistory {
     return new ItemHistory({ item: this });
   }
 
-  /**
-   * function itemWithSearch: get item search
-   * @params payload
-   * @returns ItemWithSearchRes
-   */
-  async itemWithSearch(
-    payload: GetItemsParameters,
-  ): Promise<ItemWithSearchRes> {
-    const data: ItemWithSearchRes = {
-      items: undefined,
-      errors: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtItemWithSearch = await this.request(
-        ITEM_WITH_SEARCH,
-        {
-          payload
-        }
-      );
-      
-      // data.items = res.itemWithSearch;
-    } catch (error: any) {
-      data.errors = JSON.stringify(error?.response?.errors);
+  private _setStatus(status: string | ItemStatus): void {
+    if (this.statuses.length === 0) return;
+    if (typeof status === 'string') {
+      const statusName = Object.keys(this.fields).find(fieldName => this.datastore.fieldSync(fieldName).dataType === 'status');
+      if (statusName) {
+        this._status = this.statuses.find(status => status.id === this.fields[statusName])!;
+      }
+      delete this.fields[statusName!];
+    } else {
+      this._status = status;
     }
-    return data;
   }
+
 
   /**
    * function getHistories: get items histories
@@ -499,29 +456,22 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId and linkedDatastoreId is requirement
    * @returns ItemLinkedRes
    */
-  async getItemRelated(
-    datastoreId: string,
-    itemId: string,
-    linkedDatastoreId: string
-  ): Promise<ItemLinkedRes> {
-    const data: ItemLinkedRes = {
-      itemLinked: undefined,
-      error: undefined,
-    };
-
+  async links(linkedDatastoreId: string): Promise<Item[]> {
     // handle call graphql
-    try {
-      const res: DtItemLinked = await this.request(ITEM_LINKED, {
-        datastoreId,
-        itemId,
-        linkedDatastoreId,
-      });
-
-      data.itemLinked = res.datastoreGetLinkedItems;
-    } catch (error: any) {
-      data.error = JSON.stringify(error?.response?.errors);
+    const res: DtItemLinked = await this.request(ITEM_LINKED, {
+      datastoreId: this.datastore.id,
+      itemId: this.id,
+      linkedDatastoreId,
+    });
+    if (res.datastoreGetLinkedItems.items.length === 0) return [];
+    const projects = await Item.client.currentWorkspace!.projects();
+    const items: Item[] = [];
+    for (const params of res.datastoreGetLinkedItems.items) {
+      const project = projects.find(p => p.id === params.p_id)!;
+      const datastore = await project.datastore(linkedDatastoreId);
+      items.push(new Item({ id: params.i_id, datastore }) as Item);
     }
-
-    return data;
+    await Promise.all(items.map((item: Item) => item.fetch()));
+    return items;
   }
 }

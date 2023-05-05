@@ -12,13 +12,11 @@ export default class WorkspaceUsage extends HxbAbstract {
 	datastoresLimit?: number;
 	items: number;
 
-	constructor(workspace?: Workspace) {
-		super();
-		if (workspace) this.workspace = workspace;
-	}
-
   set(key: string, value: any): WorkspaceUsage {
     switch (key) {
+			case 'workspace':
+				this.workspace = value as Workspace;
+				break;
 			case 'users_limit':
 				this.usersLimit = value;
 				break;

@@ -11,6 +11,8 @@ import QueryBuilder from './lib/sql/query';
 import Query from './lib/sql/query';
 import { HxbAbstract } from './HxbAbstract';
 import { QueryParameter } from './lib/types/sql/input';
+import FileObject from './lib/packages/fileObject';
+import { Blob } from 'buffer';
 
 type LoginParams = {
   email?: string;
@@ -33,22 +35,25 @@ export default class HexabaseClient {
   public currentWorkspace?: Workspace;
   public currentUser?: User;
   public urlHxb: string;
+  public restHxb: string;
   public Project: typeof Project;
   public Datastore: typeof Datastore;
   public Storage: typeof Storage;
   public Item: typeof Item;
   public DataReport: typeof DataReport;
   public User: typeof User;
-  public Rest: typeof QueryClient;
+  // public Rest: typeof QueryClient;
 
   private _workspaces: Workspace[];
 
   constructor(
-    urlHxb: string = 'https://graphql.hexabase.com/graphql',
+    urlHxb = 'https://graphql.hexabase.com/graphql',
+    restHxb = 'https://api.hexabase.com',
     tokenHxb?: string
   ) {
     // if (!urlHxb) throw new Error('urlHxb is required.');
     this.urlHxb = urlHxb;
+    this.restHxb = restHxb;
     if (tokenHxb) {
       this.tokenHxb = tokenHxb;
       this._init();
@@ -60,24 +65,7 @@ export default class HexabaseClient {
    * initialize classes
    */
   public async _init() {
-    /*
-    this.user = this._initUser();
-    this.project = this._initProject();
-    this.workspace = this._initWorkspace();
-    this.item = this._initItem();
-    this.datastore = this._initDatastore();
-    this.dataReport = this._initDataReport();
-    this.storage = this._initStorage();
-    this.rest = this._initQueryClient();
-    this._initQuery();
-    */
-    this.Project = Project;
-    this.Datastore = Datastore;
-    this.Storage = Storage;
-    this.Item = Item;
-    this.DataReport = DataReport;
     this.users = User;
-    this.Rest = QueryClient;
     HxbAbstract.client = this;
     this.currentWorkspace = await Workspace.get();
     this.currentUser = await this.users.current();
@@ -118,6 +106,12 @@ export default class HexabaseClient {
     return true;
   }
 
+  public sseUrl(): string {
+    const user = this.currentUser!;
+    const workspace = this.currentWorkspace!;
+    return `https://app.hexabase.com/sse?channel=user_${user.id}_${workspace.id}`;
+  }
+
   /**
    * initialize class Auth
    * @returns new Auth
@@ -126,16 +120,24 @@ export default class HexabaseClient {
     return new Auth(this.urlHxb);
   }
 
-  public workspaces(): Promise<Workspace[]> {
-    return Workspace.all();
+  public async workspaces(): Promise<Workspace[]> {
+    if (this._workspaces.length > 0) return this._workspaces;
+    this._workspaces = await Workspace.all();
+    return this._workspaces;
   }
 
-  public workspacesWithCurrent(): Promise<{workspaces: Workspace[], workspace: Workspace}> {
-    return Workspace.allWithCurrent();
+  public async workspacesWithCurrent(): Promise<{workspaces: Workspace[], workspace: Workspace}> {
+    if (this._workspaces.length > 0 && this.currentWorkspace) {
+      return { workspaces: this._workspaces, workspace: this.currentWorkspace };
+    }
+    const res = await Workspace.allWithCurrent();
+    this._workspaces = res.workspaces;
+    this.currentWorkspace = res.workspace;
+    return res;
   }
 
-  public workspace(id?: string) {
-    return new Workspace(id);
+  public workspace(id?: string): Workspace {
+    return new Workspace({ id });
   }
 
   /**
@@ -151,16 +153,32 @@ export default class HexabaseClient {
    * @param dataStoreId string
    * @returns new Storage
    */
+  /*
   public from(dataStoreId: string): QueryBuilder {
     return this.rest.from(dataStoreId);
   }
-
+  */
   /**
    * initialize query method
    * @returns new Storage
    */
+  /*
   public query(projectId: string): QueryClient {
     this.rest.useProject(projectId);
     return this.rest;
+  }
+  */
+
+  public upload(fileName: string, file: Blob): Promise<FileObject> {
+    return FileObject.upload(fileName, file);
+  }
+  public download(fileId: string): Promise<FileObject> {
+    return FileObject.download(fileId);
+  }
+
+  public file(id?: string): FileObject {
+    const f = new FileObject({ id });
+    console.log(f, { id });
+    return f;
   }
 }

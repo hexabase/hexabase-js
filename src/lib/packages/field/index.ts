@@ -5,6 +5,27 @@ import FieldLayout from "../fieldLayout";
 import { DS_FIELDS, DS_FIELD_SETTING } from "../../graphql/datastore";
 import { FieldNameENJP } from "../../util/type";
 import UserRole from "../userRole";
+import Project from "../project";
+import Item from "../item";
+import ItemStatus from "../itemStatus";
+
+enum DataType {
+	TEXT = 'text',
+	NUMBER = 'number',
+	STATUS = 'status',
+	AUTONUM = 'autonum',
+	TEXTAREA = 'textarea',
+	SELECT = 'select',
+	FILE = 'file',
+	RADIO = 'radio',
+	CHECKBOX = 'checkbox',
+	CALC = 'calc',
+	DATETIME = 'datetime',
+	USERS = 'users',
+	DSLOOKUP = 'dslookup',
+	LABEL = 'label',
+	SEPARATOR = 'separator',
+};
 
 export default class Field extends HxbAbstract {
 	datastore: Datastore;
@@ -41,6 +62,7 @@ export default class Field extends HxbAbstract {
 				this.id = value;
 				break;
 			case 'field_name':
+			case 'name':
 				this.name = value;
 				break;
 			case 'display_id':
@@ -125,11 +147,59 @@ export default class Field extends HxbAbstract {
 		return fields;
 	}
 
-	isValid(value: any): boolean {
+	valid(value: any): boolean {
 		if (this.dataType === 'text') {
-			return typeof value === 'string' || !isNaN(value);
+			return typeof value === 'string' || value === null;
 		}
 		return true;
+	}
+
+	value(value: any, options: {[key: string]: any}): any {
+		if (this.dataType === 'dslookup' && value) {
+			value = this._valueDsLookup(value, options);
+		}
+		return value;
+	}
+
+	_valueDsLookup(value: any, options: {[key: string]: any}): any {
+		const project = new Project({workspace: options.item.datastore.project.workspace, id: value.p_id});
+		const datastore = new Datastore({project, id: value.d_id});
+		return new Item({datastore, id: value.i_id});
+	}
+
+	convert(value: any): any {
+    switch (this.dataType.toLocaleLowerCase()) {
+      case DataType.TEXT:
+			case DataType.TEXTAREA:
+        if (value === null) return '';
+        if (typeof value === 'string') return value;
+        throw new Error(`Field ${this.name} is not string (${value})`);
+      case DataType.DSLOOKUP:
+				if (value === null) return value;
+        if (value instanceof Item) {
+          return value.id;
+        }
+				throw new Error(`Field ${this.name} is not Item (${value})`);
+			case DataType.NUMBER:
+				if (value === null) return null;
+				if (typeof value === 'number') return value;
+				throw new Error(`Field ${this.name} is not number (${value})`);
+			case DataType.AUTONUM:
+			case DataType.CHECKBOX:
+			case DataType.SELECT:
+			case DataType.RADIO:
+			case DataType.USERS:
+			case DataType.FILE:
+			case DataType.DATETIME:
+				return value;
+			case DataType.CALC:
+			case DataType.LABEL:
+			case DataType.SEPARATOR:
+			case DataType.STATUS:
+				return undefined;
+			default:
+				throw new Error(`Field ${this.name} doesn't support (${value})`);
+		}
 	}
 
 	static async get(datastore: Datastore, fieldId: string): Promise<Field> {

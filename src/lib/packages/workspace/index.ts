@@ -47,6 +47,8 @@ import User from '../user';
 import UserSession from '../userSession';
 import Group from '../group';
 import AppFunction from '../appFunction';
+import Template from '../template';
+import TemplateCategory from '../templateCategory';
 
 export default class Workspace extends HxbAbstract {
   public id: string;
@@ -69,11 +71,6 @@ export default class Workspace extends HxbAbstract {
   public userSession: UserSession;
   public group: Group;
   // public projects = Project;
-
-  constructor(id?: string) {
-    super();
-    if (id) this.id = id;
-  }
 
   /**
    * static function all: get workspaces
@@ -215,7 +212,7 @@ export default class Workspace extends HxbAbstract {
    * function getDetail: get and set workspace detail
    * @returns Workspace
    */
-  async getDetail(): Promise<boolean> {
+  async fetch(): Promise<boolean> {
     // handle call graphql
     await Workspace.current(this.id);
     const res: WorkspaceDetailRes = await this.request(WORKSPACE_DETAIL);
@@ -247,7 +244,7 @@ export default class Workspace extends HxbAbstract {
     if (!this.workspaceFunction) {
       this.workspaceFunction = new WorkspaceFunction(this);
     }
-    this.workspaceFunction.sets(res.workspaceFunctionality);
+    this.workspaceFunction = WorkspaceFunction.fromJson({...{workspace: this}, ...res.workspaceFunctionality}) as WorkspaceFunction;
     return this.workspaceFunction;
   }
 
@@ -258,10 +255,7 @@ export default class Workspace extends HxbAbstract {
   async getUsage(): Promise<WorkspaceUsage> {
     // handle call graphql
     const res: DtWsUsage = await this.request(WORKSPACE_USAGE, { workingspaceId: this.id });
-    if (!this.workspaceUsage) {
-      this.workspaceUsage = new WorkspaceUsage(this);
-    }
-    this.workspaceUsage.sets(res.workspaceUsage.usage!);
+    this.workspaceUsage = WorkspaceUsage.fromJson({ ...{workspace: this}, ...res.workspaceUsage}) as WorkspaceUsage;
     return this.workspaceUsage;
   }
 
@@ -402,15 +396,21 @@ export default class Workspace extends HxbAbstract {
     return !res.error;
   }
 
-  project(id?: string): Project {
-    return new Project({workspace: this, id });
+  async project(id?: string): Promise<Project> {
+    const project = new Project({workspace: this, id });
+    if (id) await project.fetch();
+    return project;
   }
 
   projects(): Promise<Project[]> {
     return Project.all(this);
   }
 
-  getProjectsAndDatastores(): Promise<{ projects: Project[], datastores: Datastore[]}> {
-    return Project.getProjectsAndDatastores(this);
+  projectsAndDatastores(): Promise<{ projects: Project[], datastores: Datastore[]}> {
+    return Project.allWithDatastores(this);
+  }
+
+  projectTemplates(): Promise<TemplateCategory[]> {
+    return Template.all();
   }
 }

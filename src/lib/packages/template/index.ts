@@ -1,5 +1,7 @@
+import { DtTemplates } from "../../types/project";
 import { HxbAbstract } from "../../../HxbAbstract";
 import TemplateCategory from "../templateCategory";
+import { GET_TEMPLATES } from "../../graphql/project";
 
 export default class Template extends HxbAbstract {
 	id: string;
@@ -25,5 +27,15 @@ export default class Template extends HxbAbstract {
 				break;
 		}
 		return this;
+	}
+
+  /**
+   * function getTemplates: get templates
+   * @returns TemplateRes
+   */
+  static async all(): Promise<TemplateCategory[]> {
+    // handle call graphql
+    const res: DtTemplates = await this.request(GET_TEMPLATES);
+    return res.getTemplates.categories.map(category => TemplateCategory.fromJson({...{project: this}, ...category}) as TemplateCategory);
 	}
 }
