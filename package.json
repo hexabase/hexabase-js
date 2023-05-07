@@ -26,7 +26,7 @@
     "test:item": "yarn jest src/lib/packages/item/item.test.ts",
     "test:storage": "yarn jest src/lib/packages/storage/storage.test.ts",
     "test:file": "yarn jest src/lib/packages/fileObject/fileObject.test.ts",
-    "test:sql": "yarn jest src/HexabaseSql.test.ts"
+    "test:sql": "yarn jest src/lib/sql/sql.test.ts"
   },
   "dependencies": {
     "form-data": "^4.0.0",

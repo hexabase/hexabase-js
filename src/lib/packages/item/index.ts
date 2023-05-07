@@ -1,4 +1,4 @@
-import { ModelRes, ResponseErrorNull } from '../../util/type';
+import { ModelRes, ResponseErrorNull, ResponseOkModel } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import Project from '../project';
 import Datastore from '../datastore';
@@ -7,19 +7,15 @@ import {
   CREATE_NEW_ITEM,
   DATASTORE_UPDATE_ITEM,
   DELETE_ITEM,
+  DELETE_ITEMS,
   DS_ITEMS,
   ITEM_DETAIL,
   ITEM_HISTORIES,
   ITEM_LINKED,
-  EXECUTE_ITEM_ACTION,
-  ADD_ITEM_LINK,
-  UPDATE_ITEM_LINK,
-  DELETE_ITEM_LINK,
-  POST_NEW_ITEM_HISTORY,
-  POST_UPDATE_ITEM_HISTORY,
-  POST_DELETE_ITEM_HISTORY,
   ITEM_WITH_SEARCH,
 } from '../../graphql/item';
+import { MapType } from '../../util/type';
+
 import {
   CreatedItemIdRes,
   CreateNewItemPl,
@@ -34,31 +30,13 @@ import {
   DtNewItem,
   DtUpdateItem,
   GetHistoryPl,
-  GetItemDetailPl,
   GetItemsPl,
   ItemActionParameters,
-  ItemDetailRes,
-  ItemHistoriesRes,
-  ItemLinkedRes,
-  NewItemRes,
-  DtUpdateItemRes,
-  ItemLinkRequestInput,
-  UpdateItemLinkInput,
-  DtAddItemLink,
-  DtUpdateItemLink,
-  DtDeleteItemLink,
-  CreateCommentParameters,
-  CreateCommentItemsParameters,
-  DtDatastoreCreateCommentItem,
-  DatastoreCreateCommentItemRes,
-  UpdateCommentParameters,
-  UpdateCommentItemsParameters,
-  ArchiveCommentItemsParameters,
-  DtDatastoreUpdateCommentItem,
-  DtDatastoreDeleteCommentItem,
-  ItemWithSearchRes,
   DtItemWithSearch,
   GetItemsParameters,
+  ConditionDeleteItems,
+  DeleteItemsParameters,
+  DatastoreDeleteDatastoreItemsRes,
 } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
 import Field from '../field';
@@ -83,7 +61,7 @@ export default class Item extends HxbAbstract {
   public revNo: number;
   public unread: number;
   public pinned: boolean;
-  public fields: {[key: string]: any} = {};
+  public fields: MapType = {};
   public actions: ItemAction[] = [];
   public statuses: ItemStatus[] = [];
   public statusActions: StatusAction[] = [];
@@ -98,6 +76,8 @@ export default class Item extends HxbAbstract {
   // public _relatedItems: RelatedItem[] = [];
   private _detail = false;
 
+  private ignoreFieldUpdate = false;
+
   public set(key: string, value: any): Item {
     switch (key) {
       case 'datastore':
@@ -105,7 +85,7 @@ export default class Item extends HxbAbstract {
         break;
       case 'd_id':
         break;
-      case 'links':
+      case 'links': {
         const project = this.datastore.project;
         (value as any[]).forEach(params => {
           const datasstore = new Datastore({ project, id: params.d_id });
@@ -116,6 +96,19 @@ export default class Item extends HxbAbstract {
             });
         });
         break;
+      }
+      case 'item_links': {
+        if (value.item_count === 0) break;
+        const project = this.datastore.project;
+        (value.links as any[]).forEach(params => {
+          const datasstore = new Datastore({ project, id: params.d_id });
+          (params.items as any[]).forEach(itemParams => {
+            const linkedItem = new Item({ datastore: datasstore, id: itemParams.i_id });
+            this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
+          });
+        });
+        break;
+      }
       case 'pinned':
         this.pinned = value as boolean;
         break;
@@ -192,9 +185,9 @@ export default class Item extends HxbAbstract {
   }
 
   public setFieldValue(fieldName: string, value: any): Item {
+    if (this.ignoreFieldUpdate) return this;
     const field = this.datastore.fieldSync(fieldName);
     if (!field.valid(value)) {
-      console.log({ value });
       throw new Error(`Invalid value ${value} for field key ${field.id}`);
     }
     value = field.value(value, { item: this });
@@ -225,7 +218,6 @@ export default class Item extends HxbAbstract {
       projectId: datastore.project.id,
     };
     // handle call graphql
-    const fields = await datastore.fields();
     const res: DtDsItems = await Item.request(DS_ITEMS, payload);
     const items = res.datastoreGetDatastoreItems.items
       .map((params:any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
@@ -235,16 +227,35 @@ export default class Item extends HxbAbstract {
     }
   }
 
-  static async search(payload: GetItemsParameters): Promise<Item[]> {
-    if (!payload.page) payload.page = 1;
-    if (!payload.per_page) payload.per_page = 100;
+  static async search(payload: GetItemsParameters, datastore: Datastore): Promise<Item[]> {
+    if (typeof payload.page === 'undefined') payload.page = 1;
+    if (typeof payload.per_page === 'undefined') payload.per_page = 100;
     payload.include_lookups = true;
     payload.include_links = true;
     payload.return_number_value = true;
     payload.include_fields_data = true;
     payload.format = 'map';
     const res: DtItemWithSearch = await this.request(ITEM_WITH_SEARCH, { payload });
-    return res.itemWithSearch.items.map((params: any) => Item.fromJson(params) as Item);
+    return res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
+  }
+
+  static async searchWithCount(payload: GetItemsParameters, datastore: Datastore): Promise<{items: Item[], totalCount: number}> {
+    if (typeof payload.page === 'undefined') payload.page = 1;
+    if (typeof payload.per_page === 'undefined') payload.per_page = 100;
+    payload.include_lookups = true;
+    payload.include_links = true;
+    payload.return_number_value = true;
+    payload.include_fields_data = true;
+    payload.format = 'map';
+    payload.use_display_id = true;
+    payload.datastore_id = datastore.id;
+    payload.project_id = datastore.project.id;
+    const res: DtItemWithSearch = await this.request(ITEM_WITH_SEARCH, { payload });
+    const items = res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
+    const totalCount = res.itemWithSearch.totalItems;
+    return {
+      totalCount, items,
+    };
   }
 
   /**
@@ -258,8 +269,23 @@ export default class Item extends HxbAbstract {
     return res.datastoreCreateItemID.item_id;
   }
 
+  static async delete(conditions: ConditionDeleteItems[], datasstore: Datastore): Promise<boolean> {
+    const params: DeleteItemsParameters = {
+      projectId: datasstore.project.id,
+      datastoreId: datasstore.id,
+      deleteItemsParameters: {
+        use_display_id: true,
+        conditions,
+      }
+    };
+    console.log(params);
+    const res: DatastoreDeleteDatastoreItemsRes = await this.request(DELETE_ITEMS, params);
+    return res.datastoreDeleteDatastoreItems.success;
+  }
+
   async save(comment?: string): Promise<boolean> {
     await (!this.id ? this.create() : this.update(comment));
+    await this.fetch();
     await Promise.all(this._linkItems.map(linkItem => linkItem.create()));
     await Promise.all(this._unlinkItems.map(linkItem => linkItem.delete()));
     this._linkItems = [];
@@ -299,7 +325,6 @@ export default class Item extends HxbAbstract {
       payload,
     });
     if (this.datastore._fields.length === 0) await this.datastore.fields();
-    // const params = Item._addFieldsToItem(res.datastoreCreateNewItem.item, fields);
     this.sets(res.datastoreCreateNewItem.item);
     this._setStatus(this._status);
     return true;
@@ -334,12 +359,12 @@ export default class Item extends HxbAbstract {
     return true;
   }
 
-  async toJson(): Promise<{[key: string]: any}> {
-    const json: {[key: string]: any} = {};
+  async toJson(): Promise<MapType> {
+    const json: MapType = {};
     for (const key in this.fields) {
       const field = this.datastore.fieldSync(key);
       const value = await field.convert(this.fields[key]);
-      if (typeof value !== 'undefined') {
+      if (typeof value !== 'undefined' && this.fields[key]) {
         json[key] = value;
       }
     }
@@ -403,7 +428,11 @@ export default class Item extends HxbAbstract {
   }
 
   async action(actionName: string): Promise<ItemAction> {
-    if (this.actions.length === 0) await this.fetch();
+    if (this.actions.length === 0) {
+      this.ignoreFieldUpdate = true;
+      await this.fetch();
+      this.ignoreFieldUpdate = false;
+    }
     return this.actions.find(a => a.displayId.trim().toLowerCase() === actionName.trim().toLocaleLowerCase())!;
   }
 

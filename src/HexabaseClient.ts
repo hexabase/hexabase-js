@@ -6,11 +6,11 @@ import Datastore from './lib/packages/datastore';
 import Item from './lib/packages/item';
 import DataReport from './lib/packages/dataReport';
 import Storage from './lib/packages/storage';
-import QueryClient from './lib/sql/queryClient';
-import QueryBuilder from './lib/sql/query';
-import Query from './lib/sql/query';
+import HexabaseSQL from './lib/sql';
+// import QueryBuilder from './lib/sql/query';
+// import Query from './lib/sql/query';
 import { HxbAbstract } from './HxbAbstract';
-import { QueryParameter } from './lib/types/sql/input';
+// import { QueryParameter } from './lib/types/sql/input';
 import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
 
@@ -30,7 +30,7 @@ export default class HexabaseClient {
   public storage: Storage;
   public dataReport: DataReport;
   public tokenHxb: string;
-  protected rest: QueryClient;
+  // protected rest: QueryClient;
   protected projectId: string;
   public currentWorkspace?: Workspace;
   public currentUser?: User;
@@ -162,12 +162,10 @@ export default class HexabaseClient {
    * initialize query method
    * @returns new Storage
    */
-  /*
-  public query(projectId: string): QueryClient {
-    this.rest.useProject(projectId);
-    return this.rest;
+  
+  public query(projectId: string): HexabaseSQL {
+    return new HexabaseSQL({ projectId });
   }
-  */
 
   public upload(fileName: string, file: Blob): Promise<FileObject> {
     return FileObject.upload(fileName, file);

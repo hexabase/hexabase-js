@@ -324,3 +324,10 @@ export interface ItemWithSearchResItem {
   updated_at: string
   updated_by: string
 }
+
+export interface DatastoreDeleteDatastoreItemsRes {
+  datastoreDeleteDatastoreItems: {
+    data?: any;
+    success: boolean;
+  }
+}

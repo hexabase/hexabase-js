@@ -414,12 +414,43 @@ export default class Datastore extends HxbAbstract {
       page: 1,
       per_page: 100,
     };
-    return Item.search(payload);
+    return Item.search(payload, this);
+  }
+
+  async searchWithCount(options: GetItemsParameters): Promise<{ items: Item[], totalCount: number }> {
+    const payload: GetItemsParameters = {
+      datastore_id: this.id,
+      project_id: this.project.id,
+      page: options.page,
+      per_page: options.per_page,
+      return_count_only: true,
+      conditions: options.conditions,
+      use_or_condition: options.use_or_condition || false,
+      unread_only: options.unread_only || false,
+      sort_fields: options.sort_fields,
+      sort_field_id: options.sort_field_id,
+      sort_order: options.sort_order,
+      use_field_id: options.use_field_id || false,
+      use_display_id: true,
+      include_links: options.include_links || true,
+      include_lookups: options.include_lookups || true,
+      return_number_value: options.return_number_value || true,
+      format: 'map',
+      include_fields_data: options.include_fields_data || true,
+      omit_fields_data: options.omit_fields_data || false,
+      omit_total_items: options.omit_total_items || false,
+      data_result_timeout_sec: options.data_result_timeout_sec || 30,
+      total_count_timeout_sec: options.total_count_timeout_sec || 30,
+      debug_query: false,
+      select_fields: options.select_fields,
+      select_fields_lookup: options.select_fields_lookup,
+    };
+    return Item.searchWithCount(payload, this);
   }
 
   itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}): Promise<{items: Item[], totalCount: number}> {
-    if (!params.page) params.page = 1;
-    if (!params.per_page) params.per_page = 10;
+    if (typeof params.page === 'undefined') params.page = 1;
+    if (typeof params.per_page === 'undefined') params.per_page = 10;
     return Item.all(params, this);
   }
 

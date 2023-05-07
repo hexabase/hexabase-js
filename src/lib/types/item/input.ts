@@ -6,7 +6,7 @@ export interface SearchCondition {
   exact_match?: boolean;
   not_match?: boolean;
   include_null?: boolean;
-  conditions?: SearchCondition;
+  conditions?: SearchCondition[];
   use_or_condition?: boolean;
 }
 
@@ -106,17 +106,18 @@ export interface DeleteItemParameter {
 
 export interface ConditionDeleteItems {
   search_value?: any;
-  data_type?: string;
+  id?: string;
 }
+
 export interface DeleteItemsParameter {
-  conditions?: [ConditionDeleteItems],
+  conditions?: ConditionDeleteItems[],
   use_display_id?: boolean,
 }
 
 export interface DeleteItemsParameters {
   datastoreId: string,
-  projectId: string,
-  payload?: DeleteItemsParameter,
+  projectId?: string,
+  deleteItemsParameters?: DeleteItemsParameter,
 }
 
 export interface GetItemDetailPl {
