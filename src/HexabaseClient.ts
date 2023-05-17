@@ -1,16 +1,13 @@
 import Auth from './lib/packages/auth';
 import Workspace from './lib/packages/workspace';
 import User from './lib/packages/user';
-import Project from './lib/packages/project';
-import Datastore from './lib/packages/datastore';
-import Item from './lib/packages/item';
-import DataReport from './lib/packages/dataReport';
-import Storage from './lib/packages/storage';
+// import Project from './lib/packages/project';
+// import Datastore from './lib/packages/datastore';
+// import Item from './lib/packages/item';
+// import DataReport from './lib/packages/dataReport';
+// import Storage from './lib/packages/storage';
 import HexabaseSQL from './lib/sql';
-// import QueryBuilder from './lib/sql/query';
-// import Query from './lib/sql/query';
 import { HxbAbstract } from './HxbAbstract';
-// import { QueryParameter } from './lib/types/sql/input';
 import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
 
@@ -23,37 +20,55 @@ type LoginParams = {
 export default class HexabaseClient {
   public auth: Auth;
   public users: typeof User;
-  public project: Project;
-  // public workspace: Workspace;
-  public item: Item;
-  public datastore: Datastore;
-  public storage: Storage;
-  public dataReport: DataReport;
+  // public project: Project;
+  // public item: Item;
+  // public datastore: Datastore;
+  // public storage: Storage;
+  // public dataReport: DataReport;
   public tokenHxb: string;
-  // protected rest: QueryClient;
-  protected projectId: string;
+  // protected projectId: string;
   public currentWorkspace?: Workspace;
   public currentUser?: User;
   public urlHxb: string;
   public restHxb: string;
-  public Project: typeof Project;
-  public Datastore: typeof Datastore;
-  public Storage: typeof Storage;
-  public Item: typeof Item;
-  public DataReport: typeof DataReport;
-  public User: typeof User;
+  public sseHxb: string;
+  // public Project: typeof Project;
+  // public Datastore: typeof Datastore;
+  // public Storage: typeof Storage;
+  // public Item: typeof Item;
+  // public DataReport: typeof DataReport;
+  // public User: typeof User;
   // public Rest: typeof QueryClient;
 
   private _workspaces: Workspace[];
 
   constructor(
-    urlHxb = 'https://graphql.hexabase.com/graphql',
-    restHxb = 'https://api.hexabase.com',
-    tokenHxb?: string
+    env = 'prod',
+    tokenHxb?: string,
+    urlHxb?: string,
+    restHxb?: string,
+    sseHxb?: string,
   ) {
-    // if (!urlHxb) throw new Error('urlHxb is required.');
-    this.urlHxb = urlHxb;
-    this.restHxb = restHxb;
+    switch (env) {
+      case 'prod':
+        this.urlHxb = 'https://graphql.hexabase.com/graphql';
+        this.restHxb = 'https://api.hexabase.com';
+        this.sseHxb = 'https://sse.hexabase.com';
+        break;
+      case 'dev':
+        this.urlHxb = 'https://hxb-graph.hexabase.com/graphql';
+        this.restHxb = 'https://az-api.hexabase.com';
+        this.sseHxb = 'https://az-sse.hexabase.com';
+        break;
+      default:
+        if (!urlHxb || urlHxb?.trim() === '') throw new Error('urlHxb is required.');
+        if (!restHxb || restHxb?.trim() === '') throw new Error('restHxb is required.');
+        if (!sseHxb || sseHxb?.trim() === '') throw new Error('sseHxb is required.');
+        this.urlHxb = urlHxb;
+        this.restHxb = restHxb;
+        this.sseHxb = sseHxb;
+        break;
+    }
     if (tokenHxb) {
       this.tokenHxb = tokenHxb;
       this._init();
@@ -91,10 +106,10 @@ export default class HexabaseClient {
       throw Error('Need token or email and password to initialize sdk');
     }
     const res = await this.auth.login({ email, password });
-    if (!res.token) {
-      throw Error(`Need login failed to initialize sdk: ${res.error}`);
+    if (!res) {
+      throw Error(`Need login failed to initialize sdk`);
     }
-    await this.setToken(res.token);
+    await this.setToken(res);
     return true;
   }
 
@@ -140,24 +155,6 @@ export default class HexabaseClient {
     return new Workspace({ id });
   }
 
-  /**
-   * initialize class User
-   * @returns new User
-   */
-  public _initUser() {
-    return new User();
-  }
-
-  /**
-   * initialize from method
-   * @param dataStoreId string
-   * @returns new Storage
-   */
-  /*
-  public from(dataStoreId: string): QueryBuilder {
-    return this.rest.from(dataStoreId);
-  }
-  */
   /**
    * initialize query method
    * @returns new Storage

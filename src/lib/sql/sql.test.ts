@@ -50,8 +50,7 @@ describe('Hexabase SQL', () => {
     const query = hexabase.query(projectID);
     const res = await query
       .from(datastoreID)
-      .select('*')
-      .execute();
+      .select('*');
     const project = await hexabase.currentWorkspace!.project(projectID);
     const datastore = await project.datastore(datastoreID);
     const items = await datastore.items({per_page: 0, page: 1});
@@ -63,13 +62,11 @@ describe('Hexabase SQL', () => {
     const query = hexabase.query(projectID);
     const res = await query
       .from(datastoreID)
-      .select('textInputUnique, autoNum')
-      .execute();
+      .select('textInputUnique, autoNum');
     expect(Object.keys(res[0].fields).length).toEqual(2);
     const res2 = await query
       .from(datastoreID)
-      .select('textInputUnique, autoNum, calc')
-      .execute();
+      .select('textInputUnique, autoNum, calc');
     expect(Object.keys(res2[0].fields).length).toEqual(3);
   });
 
@@ -78,9 +75,8 @@ describe('Hexabase SQL', () => {
     const query = hexabase.query(projectID);
     const res = await query
       .from(datastoreID)
-      .select('*')
       .limit(LIMIT)
-      .execute();
+      .select('*');
     expect(res.length).toEqual(LIMIT);
   });
 
@@ -89,17 +85,15 @@ describe('Hexabase SQL', () => {
     const query = hexabase.query(projectID);
     const res = await query
       .from(datastoreID)
-      .select('*')
       .limit(LIMIT)
-      .execute();
+      .select('*');
     expect(res.length).toEqual(LIMIT);
     const item = res[LIMIT - 3];
     const res2 = await query
       .from(datastoreID)
-      .select('*')
       .limit(LIMIT - 3)
       .page(2)
-      .execute();
+      .select('*');
     expect(item.id !== '').toBeTruthy();
     expect(res2[0].id).toEqual(item.id);
   });
@@ -109,16 +103,14 @@ describe('Hexabase SQL', () => {
     const c = query.condition;
     const res = await query
       .from(datastoreID)
-      .select('*')
       .limit(6)
-      .execute();
+      .select('*');
     const item = res[5];
     const res2 = await query
       .from(datastoreID)
-      .select('*')
       .where(c.equalTo('i_id', item.id))
       .limit(6)
-      .execute();
+      .select('*');
     expect(res2.length).toEqual(1);
     expect(res2[0].id).toEqual(item.id);
   });
@@ -127,12 +119,10 @@ describe('Hexabase SQL', () => {
     const query = hexabase.query(projectID);
     const res = await query
       .from(datastoreID)
-      .select('*')
       .limit(0)
-      .execute();
+      .select('*');
     const res2 = await query
       .from(datastoreID)
-      .select('*')
       .limit(1)
       .count();
     expect(res.length).toEqual(res2);
@@ -236,7 +226,7 @@ describe('Hexabase SQL', () => {
         query.condition.equalTo('number', NUMBER1),
         query.condition.equalTo('number2', NUMBER2)
       ])
-      .execute() as Item[];
+      .select() as Item[];
     expect(items.length).toEqual(3);
     await query
       .from(datastoreID)
@@ -254,7 +244,7 @@ describe('Hexabase SQL', () => {
         query.condition.equalTo('number', NUMBER1 + 10),
         query.condition.equalTo('number2', NUMBER2 + 10)
       ])
-      .execute() as Item[];
+      .select('*') as Item[];
     expect(updateItems.length).toEqual(items.length);
     expect(updateItems[0].get('number')).toEqual(NUMBER1 + 10);
     for (const item of updateItems) {
@@ -295,7 +285,6 @@ describe('Hexabase SQL', () => {
     expect(res).toEqual(true);
     const num = await query
       .from(datastoreID)
-      .select('*')
       .where(query.condition.equalTo('number2', NUMBER2))
       .count();
     expect(num).toEqual(1);

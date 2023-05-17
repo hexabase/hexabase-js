@@ -305,9 +305,9 @@ export default class Item extends HxbAbstract {
 
   async create(): Promise<boolean> {
     if (!this.datastore) throw new Error('Datastore is required');
-    const action = await this.datastore.action('new');
+    // const action = await this.datastore.action('new');
     const payload: CreateNewItemPl = {
-      action_id: action!.id,
+      // action_id: action!.id,
       return_item_result: true,
       is_notify_to_sender: true,
       ensure_transaction: false,
@@ -331,11 +331,11 @@ export default class Item extends HxbAbstract {
   }
 
   async update(comment?: string): Promise<boolean> {
-    const action = this._updateStatusAction ? this._updateStatusAction : await this.action('UpdateItem');
+    // const action = this._updateStatusAction ? this._updateStatusAction : await this.action('UpdateItem');
     const params: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
-      action_id: action.id,
+      // action_id: action.id,
       is_notify_to_sender: true,
       ensure_transaction: true,
       exec_children_post_procs: true,
@@ -434,6 +434,10 @@ export default class Item extends HxbAbstract {
       this.ignoreFieldUpdate = false;
     }
     return this.actions.find(a => a.displayId.trim().toLowerCase() === actionName.trim().toLocaleLowerCase())!;
+  }
+
+  async execute(actionName: string): Promise<any> {
+    return 
   }
 
   comment(): ItemHistory {

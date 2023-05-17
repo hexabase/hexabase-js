@@ -4,3 +4,4 @@ node_modules/
 package-lock.json
 .node-version
 .DS_Store
+*.zip

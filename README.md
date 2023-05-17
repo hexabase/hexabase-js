@@ -1,5 +1,16 @@
 # Hexabase-sdk
 
+## Development
+
+### Set env
+
+```
+npx hx contexts:set dev --server=https://az-api.hexabase.com --sse=https://az-sse.hexabase.com
+npx hx contexts:use dev
+```
+
+
+
 ### - Started:
 
 - Install:

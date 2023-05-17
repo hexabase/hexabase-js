@@ -86,9 +86,10 @@ export default class Workspace extends HxbAbstract {
    * static function get: get a workspace
    * @returns Workspace
    */
-  static async get(id?: string): Promise<Workspace> {
-    if (id) this.current(id);
+  static async get(id?: string): Promise<Workspace | undefined> {
+    if (id) await this._current(id);
     const res = await this.request(WORKSPACE_DETAIL);
+    if (!res.workspace.id) return undefined;
     return Workspace.fromJson(res.workspace) as Workspace;
   }
 
@@ -97,34 +98,23 @@ export default class Workspace extends HxbAbstract {
    * @param: option: workspaceId: workspace id
    * @returns boolean
    */
-  static async current(workspaceId?: string): Promise<Workspace> {
+  static async current(workspaceId?: string): Promise<Workspace | undefined> {
     if (workspaceId) {
-      await this.set(workspaceId);
+      const bol = await this._current(workspaceId);
+      if (!bol) throw new Error('Set current workspace failed');
     }
     return this.get();
   }
 
-  static async set(workspaceId: string): Promise<boolean> {
-    const setCurrentWorkSpaceInput: SetWsInput = {
-      workspace_id: workspaceId,
-    };
+  static async _current(workspaceId: string): Promise<boolean> {
     // handle call graphql
-    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, { setCurrentWorkSpaceInput });
+    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, {
+      setCurrentWorkSpaceInput: {
+        workspace_id: workspaceId,
+      }
+    });
     return res.setCurrentWorkSpace!.success;
   }
-
-  /**
-   * static function getCurrent: get current workspace
-   * @returns WorkspaceCurrentRes
-   */
-  /*
-  static async getCurrent(): Promise<Workspace> {
-    const res: DtWorkspaceCurrent = await this.request(WORKSPACE_CURRENT);
-    const workspace = new Workspace;
-    workspace.id = res.workspaceCurrent!.workspace_id!;
-    return workspace;
-  }
-  */
 
   /**
    * static function all: get workspaces and current workspace id
@@ -275,57 +265,6 @@ export default class Workspace extends HxbAbstract {
     }
     return this.group;
   }
-
-  /**
-   * function getTaskQueueList: get queue list
-   * TODO: Need definition type of queryTaskList
-   * @param: option: workspaceId or none, queryTaskList or none
-   * @returns TaskQueueListRes
-   */
-  /*
-  async getTaskQueueList(workspaceId?: string, queryTaskList?: QueryTaskList): Promise<TaskQueueListRes> {
-    const data: TaskQueueListRes = {
-      taskQueueList: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtTaskQueueList = await this.request(TASK_QUEUE_LIST, { workspaceId, queryTaskList });
-      console.log(res.taskGetQueueList);
-      data.taskQueueList = res.taskGetQueueList;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-  */
-
-  /**
-   * function getTaskQueueStatus: get task queue status
-   * @param: option: taskId and workspaceId are required
-   * @returns TaskQueueStatusRes
-   */
-  /*
-  async getTaskQueueStatus(taskId: string, workspaceId: string): Promise<TaskQueueStatusRes> {
-    const data: TaskQueueStatusRes = {
-      taskQueueStatus: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtTaskQueueStatus = await this.request(TASK_QUEUE_STATUS, { taskId, workspaceId });
-      console.log(res);
-      data.taskQueueStatus = res.taskGetQueueTaskStatus;
-    } catch (error: any) {
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-  */
 
   /**
    * function save: create or update workspace

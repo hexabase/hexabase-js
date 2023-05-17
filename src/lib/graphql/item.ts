@@ -413,4 +413,4 @@ export const DELETE_ITEMS = gql`
       success
     }
   }
-`
+`;

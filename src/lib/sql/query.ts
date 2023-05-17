@@ -33,14 +33,16 @@ export default class Query extends HxbAbstract {
     return this;
   }
 
-  select(columns?: string | string[]): this {
-    if (columns === '*') return this;
-    if (typeof columns === 'string') {
-      this.query.select_fields = (columns ?? '*').split(',').map((column) => column.trim());
-    } else if (Array.isArray(columns)) {
-      this.query.select_fields = columns;
+  async select(columns?: string | string[]): Promise<Item[]> {
+    if (columns !== '*') {
+      if (typeof columns === 'string') {
+        this.query.select_fields = (columns ?? '*').split(',').map((column) => column.trim());
+      } else if (Array.isArray(columns)) {
+        this.query.select_fields = columns;
+      }
     }
-    return this;
+    const { items } = await this._execute();
+    return items;
   }
 
   where(conditions: SearchCondition | SearchCondition[]): this {
@@ -51,7 +53,7 @@ export default class Query extends HxbAbstract {
     return this;
   }
 
-  orderBy<SortOrders extends SortOrder>(values: SortOrders): this {
+  order<SortOrders extends SortOrder>(values: SortOrders): this {
     const sortFields: SortField[] = [];
     const entries = Object.entries(values)
     entries.map(([key, val]) => {
@@ -84,11 +86,6 @@ export default class Query extends HxbAbstract {
   async count(): Promise<number> {
     const { totalCount } = await this._execute({ return_count_only: true });
     return totalCount;
-  }
-
-  async execute(): Promise<Item[]> {
-    const { items } = await this._execute();
-    return items;
   }
 
   private async _execute(options: MapType = {}): Promise<{ items: Item[], totalCount: number}> {
@@ -134,7 +131,7 @@ export default class Query extends HxbAbstract {
 
   async update(params: MapType): Promise<Item[]> {
     this.limit(0).page(1);
-    const items = await this.execute();
+    const items = await this.select();
     return await Promise.all(items.map(item => this._update(item, params)));
   }
 
@@ -149,7 +146,7 @@ export default class Query extends HxbAbstract {
 
   async delete(): Promise<boolean> {
     this.limit(0).page(1);
-    const items = await this.execute();
+    const items = await this.select();
     await Promise.all(items.map(item => item.delete()));
     return true;
     /*

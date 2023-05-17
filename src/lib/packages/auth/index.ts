@@ -27,48 +27,20 @@ export default class Auth {
    * function login: get user info by token
    * @returns TokenModel
    */
-  async login(loginInput: LoginPayload): Promise<LoginRes> {
-    const data: LoginRes = {
-      token: undefined,
-      error: undefined,
-    };
-
+  async login(loginInput: LoginPayload): Promise<string> {
     // handle call graphql
-    try {
-      const res: DtLogin = await this.client.request(LOGIN, { loginInput });
-      data.token = res.login.token;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtLogin = await this.client.request(LOGIN, { loginInput });
+    return res.login.token;
   }
 
   /**
    * function logout: log out user
    * @returns ModelRes
    */
-  async logout(token: string): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
+  async logout(token: string): Promise<boolean> {
     // handle call graphql
-    try {
-      this.client.setHeader(
-        'authorization', `Bearer ${token}`
-      );
-      const res: DtLogOut = await this.client.request(LOG_OUT);
-
-      data.data = res.logout;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtLogOut = await this.client.request(LOG_OUT);
+    return res.logout.success;
   }
 
   /**

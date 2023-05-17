@@ -7,7 +7,7 @@ export interface ReportDataPayload {
     return_number_value?: boolean;
     return_id_value_results?: boolean;
     return_count_only?: boolean;
-    return_utc_datetime?: Date;
+    return_utc_datetime?: boolean;
     omit_total_items?: boolean;
     total_count_timeout_sec?: number;
     data_result_timeout_sec?: number;

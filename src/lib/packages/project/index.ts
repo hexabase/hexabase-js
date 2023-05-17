@@ -35,6 +35,7 @@ import {
 import Datastore from '../datastore';
 import TemplateCategory from '../templateCategory';
 import Language from '../language';
+import Report from '../report';
 
 export default class Project extends HxbAbstract {
   workspace: Workspace;
@@ -107,6 +108,10 @@ export default class Project extends HxbAbstract {
     if (!datastore) throw new Error(`Datastore ${id} not found`);
     await datastore.fetch();
     return datastore;
+  }
+
+  async reports(): Promise<Report[]> {
+    return Report.all(this);
   }
 
   /**
