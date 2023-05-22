@@ -11,6 +11,11 @@ import { HxbAbstract } from './HxbAbstract';
 import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
 
+/**
+ * ログインパラメータを表すオブジェクトの型
+ * email, password, token のいずれか、またはすべてが含まれる
+ * email, password, token はすべてオプションのため、省略可能
+ */
 type LoginParams = {
   email?: string;
   password?: string;
@@ -20,25 +25,12 @@ type LoginParams = {
 export default class HexabaseClient {
   public auth: Auth;
   public users: typeof User;
-  // public project: Project;
-  // public item: Item;
-  // public datastore: Datastore;
-  // public storage: Storage;
-  // public dataReport: DataReport;
   public tokenHxb: string;
-  // protected projectId: string;
   public currentWorkspace?: Workspace;
   public currentUser?: User;
   public urlHxb: string;
   public restHxb: string;
   public sseHxb: string;
-  // public Project: typeof Project;
-  // public Datastore: typeof Datastore;
-  // public Storage: typeof Storage;
-  // public Item: typeof Item;
-  // public DataReport: typeof DataReport;
-  // public User: typeof User;
-  // public Rest: typeof QueryClient;
 
   private _workspaces: Workspace[];
 
@@ -173,7 +165,6 @@ export default class HexabaseClient {
 
   public file(id?: string): FileObject {
     const f = new FileObject({ id });
-    console.log(f, { id });
     return f;
   }
 }

@@ -122,7 +122,7 @@ export default class ItemHistory extends HxbAbstract {
     const payload: UpdateCommentItemsParameters = {
       p_id: this.item.datastore.project.id,
       d_id: this.item.datastore.id,
-      i_id: this.id,
+      i_id: this.item.id,
       h_id: this.id,
       comment: this.comment,
     };
