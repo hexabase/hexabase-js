@@ -50,13 +50,11 @@ export default class WorkspaceFunction extends HxbAbstract {
 		useReports?: boolean;
 	} = {};
 
-	constructor(workspace?: Workspace) {
-		super();
-		if (workspace) this.workspace = workspace;
-	}
-
   set(key: string, value: any): WorkspaceFunction {
     switch (key) {
+			case 'workspace':
+				this.workspace = value as Workspace;
+				break;
 			case 'ws_settings':
 				value = value as WsSettings;
 				this.wsSettings.disableArchive = value.disable_archive;

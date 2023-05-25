@@ -43,7 +43,7 @@ describe('Project', () => {
       jest.useFakeTimers('legacy');
       try {
         const workspace = client.currentWorkspace!;
-        const { projects, datastores } = await workspace.getProjectsAndDatastores();
+        const { projects, datastores } = await workspace.projectsAndDatastores();
         const project = projects[0];
         expect(typeof project.id).toBe('string');
         const name = project.name as FieldNameENJP;
@@ -66,9 +66,7 @@ describe('Project', () => {
       jest.useFakeTimers('legacy');
       try {
         const workspace = client.currentWorkspace!;
-        const projects = await workspace.projects();
-        const project = projects[0];
-        const templates = await project.templates();
+        const templates = await workspace.projectTemplates();
         expect(typeof templates[0].name).toBe('string');
       } catch (error) {
         console.error(error);
@@ -98,7 +96,7 @@ describe('Project', () => {
       const workspace = client.currentWorkspace!;
       const projects = await workspace.projects();
       const project = projects[0];
-      await project.getDetail();
+      await project.fetch();
       const name = project.name as FieldNameENJP;
       expect(typeof name.ja).toBe('string');
       expect(name.ja !== '').toBe(true);
@@ -114,7 +112,7 @@ describe('Project', () => {
       const project = projects[0];
       project.theme = 'blue';
       await project.save();
-      await project.getDetail();
+      await project.fetch();
       expect(project.theme).toBe('blue');
     });
   });

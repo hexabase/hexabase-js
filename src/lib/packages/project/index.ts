@@ -35,6 +35,7 @@ import {
 import Datastore from '../datastore';
 import TemplateCategory from '../templateCategory';
 import Language from '../language';
+import Report from '../report';
 
 export default class Project extends HxbAbstract {
   workspace: Workspace;
@@ -91,14 +92,26 @@ export default class Project extends HxbAbstract {
   }
 
   async datastores(): Promise<Datastore[]> {
-    return Project.client.Datastore.all({
+    if (this._datastores.length > 0) return this._datastores;
+    this._datastores = await Datastore.all({
       project: this
     });
+    return this._datastores;
   }
 
-  datastore(id?: string): Datastore {
-    const datastore = new Datastore({ project: this, id });
+  async datastore(id?: string): Promise<Datastore> {
+    if (!id) {
+      return new Datastore({ project: this, id });
+    }
+    if (this._datastores.length === 0) await this.datastores();
+    const datastore = this._datastores.find(datastore => datastore.id === id);
+    if (!datastore) throw new Error(`Datastore ${id} not found`);
+    await datastore.fetch();
     return datastore;
+  }
+
+  async reports(): Promise<Report[]> {
+    return Report.all(this);
   }
 
   /**
@@ -106,7 +119,7 @@ export default class Project extends HxbAbstract {
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  static async getProjectsAndDatastores(workspace: Workspace): Promise<{ projects: Project[], datastores: Datastore[]}> {
+  static async allWithDatastores(workspace: Workspace): Promise<{ projects: Project[], datastores: Datastore[]}> {
     // handle call graphql
     const res: DtAppAndDs = await this.request(GET_APPLICATION_AND_DATASTORE, { workspaceId: workspace.id });
     // data.appAndDs = res.getApplicationAndDataStore;
@@ -122,16 +135,6 @@ export default class Project extends HxbAbstract {
     };
   }
 
-  /**
-   * function getTemplates: get templates
-   * @returns TemplateRes
-   */
-  async templates(): Promise<TemplateCategory[]> {
-    // handle call graphql
-    const res: DtTemplates = await this.request(GET_TEMPLATES);
-    return res.getTemplates.categories.map(category => TemplateCategory.fromJson({...{project: this}, ...category}) as TemplateCategory);
-  }
-
   async save(): Promise<boolean> {
     if (this.id) {
       return this.update();
@@ -144,14 +147,14 @@ export default class Project extends HxbAbstract {
    * @params tp_id string | undefined
    * @returns boolean
    */
-  async create(tp_id?: string): Promise<boolean> {
+  async create(): Promise<boolean> {
     if (typeof this.name === 'string') {
       throw new Error('name Japanese and English are required');
     }
     const params: CreateProjectPl = {
       name: this.name,
     };
-    if (tp_id) params.tp_id = tp_id;
+    if (this.templateId) params.tp_id = this.templateId;
     // handle call graphql
     const res: DtCreateApp = await this.request(APPLICATION_CREATE_PROJECT, { createProjectParams: params });
     this.id = res.applicationCreateProject.project_id;
@@ -183,7 +186,7 @@ export default class Project extends HxbAbstract {
    * @params projectId string
    * @returns ReportDataRes
    */
-  async getDetail(): Promise<boolean> {
+  async fetch(): Promise<boolean> {
     // handle call graphql
     const res: DtProjectInfo = await this.request(GET_INFO_PROJECT, { projectId: this.id });
     this.sets(res.getInfoProject);

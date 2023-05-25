@@ -50,7 +50,7 @@ describe('Workspace', () => {
       jest.useFakeTimers('legacy');
       const workspace = client.workspace();
       workspace.name = 'new Workspace';
-      workspace.workspaceId = 'newWorkspaceId';
+      workspace.id = 'newWorkspaceId';
       try {
         await workspace.save();
         newWorkspaceId = workspace.id;
@@ -128,7 +128,6 @@ describe('Workspace', () => {
         // TODO: Fix API
         // const bol = await workspace.save();
         // expect(bol).toEqual(true);
-        await workspace.getDetail();
         // expect(workspace.name).toEqual(newName);
       } catch (error) {
         throw new Error(`Error: ${error}`);

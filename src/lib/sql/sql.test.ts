@@ -1,6 +1,6 @@
-import { createClient, HexabaseClient } from './';
-import Item from './lib/packages/item';
-import { NewItems, UpdateItemRes } from './lib/types/item';
+import { createClient, HexabaseClient } from '../..';
+import Item from '../packages/item';
+import { NewItems, UpdateItemRes } from '../types/item';
 
 require('dotenv').config();
 jest.useRealTimers();
@@ -11,8 +11,8 @@ const url = process.env.URL || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const datastoreID = process.env.DATASTORE_ID || '';
-const projectID = process.env.PROJECT_ID || '';
+const datastoreID = process.env.DEV_DATASOTRE_ID || '';
+const projectID = process.env.DEV_PROJECT_ID || '';
 
 const params = {
   page: 1,
@@ -26,151 +26,270 @@ const params = {
 
 beforeAll(async () => {
   await hexabase.login({email, password, token});
-  /*
-  if (email && password && !token) {
-    const hxbClient = await createClient({ url: url, token: '', email, password });
-    token = hxbClient?.tokenHxb;
-    hexabase = hxbClient;
+  const project = await hexabase.currentWorkspace!.project(projectID);
+  const datastore = await project.datastore(datastoreID);
+  for (let i = 0; i < 10; i++) {
+    const item = await datastore.item();
+    await item
+      .set('textInputUnique', name())
+      .set('number', i)
+      .set('number2', i * i)
+      .save();
   }
-  if (token && !email && !password) {
-    const hxbClient = await createClient({ url: url, token, email: '', password: '' });
-    token = hxbClient?.tokenHxb;
-    hexabase = hxbClient;
-  }
-  */
+});
+
+afterAll(async () => {
+  const query = hexabase.query(projectID);
+  await query
+    .from(datastoreID)
+    .delete();
 });
 
 describe('Hexabase SQL', () => {
   it('Select all fields', async () => {
     const query = hexabase.query(projectID);
-    const res = await query.from(datastoreID).select('Title').then();
-    console.log(res);
+    const res = await query
+      .from(datastoreID)
+      .select('*');
+    const project = await hexabase.currentWorkspace!.project(projectID);
+    const datastore = await project.datastore(datastoreID);
+    const items = await datastore.items({per_page: 0, page: 1});
+    expect(res.length).toEqual(items.length);
+    expect(res[0].fields.length).toEqual(items[0].fields.length);
   });
-  // describe('Hexabase SQL', () => {
-  //   it(`await hexabase.from('project.members').select('name'); // select_fields: ['name'],  `, async () => {
-  //     jest.useFakeTimers();
-  //     // const hexabase = new Hexabase();
-  //     const query = await hexabase.from('database').select('name');
-  //     console.log('query: ', query);
-  //   });
-  // });
 
-  // describe('Hexabase SQL', () => {
-  //   it(` //  select_fields: ['member_id', 'name', 'email']`, async () => {
-  //     jest.useFakeTimers();
-  //     // const hexabase = new Hexabase()
-  //     const query = await hexabase.from('database').select('member_id, name, email').execute()
-  //     console.log('query', query);
-  //   });
-  // });
+  it('Select limited fields', async () => {
+    const query = hexabase.query(projectID);
+    const res = await query
+      .from(datastoreID)
+      .select('textInputUnique, autoNum');
+    expect(Object.keys(res[0].fields).length).toEqual(2);
+    const res2 = await query
+      .from(datastoreID)
+      .select('textInputUnique, autoNum, calc');
+    expect(Object.keys(res2[0].fields).length).toEqual(3);
+  });
 
-  // describe('Hexabase SQL', () => {
-  //   it(`Test function execute`, async () => {
-  //     jest.useFakeTimers();
-  //     const q = hexabase.query();
-  //     const dataItemWithSearch = await hexabase.from('database')
-  //       .select('*')
-  //       .where(
-  //         q.equalTo("datastore_id", "6360deb505cc9cb016fbc53f"),
-  //         q.equalTo("project_id", "632ad81082bd898623884d2e"),
-  //         q.equalTo("include_fields_data", true),
-  //         q.equalTo("omit_total_items", true),
-  //         q.equalTo("return_count_only", false),
-  //       );
-  //     console.log('dataItemWithSearch', JSON.stringify(dataItemWithSearch));
-  //   });
-  // });
+  it('Change limit rows', async () => {
+    const LIMIT = 5;
+    const query = hexabase.query(projectID);
+    const res = await query
+      .from(datastoreID)
+      .limit(LIMIT)
+      .select('*');
+    expect(res.length).toEqual(LIMIT);
+  });
 
+  it('Change page', async () => {
+    const LIMIT = 5;
+    const query = hexabase.query(projectID);
+    const res = await query
+      .from(datastoreID)
+      .limit(LIMIT)
+      .select('*');
+    expect(res.length).toEqual(LIMIT);
+    const item = res[LIMIT - 3];
+    const res2 = await query
+      .from(datastoreID)
+      .limit(LIMIT - 3)
+      .page(2)
+      .select('*');
+    expect(item.id !== '').toBeTruthy();
+    expect(res2[0].id).toEqual(item.id);
+  });
 
-  // describe('Hexabase SQL', () => {
-  //   it(`Test function execute insert item`, async () => {
-  //     jest.useFakeTimers();
-  //     const q = hexabase.query();
-  //     hexabase.useProject("632ad81082bd898623884d2e")
-  //     const itemInserted = await hexabase.from('6360deb505cc9cb016fbc53f')
-  //       .insertOne({
-  //         "636343dbeb4e1e3bd91c4a72": [],
-  //         "63633c6feb4e1e3bd918b5a4": "nguyen",
-  //         "6360deb5990afe5d523ba6b7": "nguyen title"
-  //       })
+  it('Where equalTo', async () => {
+    const query = hexabase.query(projectID);
+    const c = query.condition;
+    const res = await query
+      .from(datastoreID)
+      .limit(6)
+      .select('*');
+    const item = res[5];
+    const res2 = await query
+      .from(datastoreID)
+      .where(c.equalTo('i_id', item.id))
+      .limit(6)
+      .select('*');
+    expect(res2.length).toEqual(1);
+    expect(res2[0].id).toEqual(item.id);
+  });
 
-  //     console.log('itemInserted', JSON.stringify(itemInserted));
-  //   });
-  // });
+  it('Count', async () => {
+    const query = hexabase.query(projectID);
+    const res = await query
+      .from(datastoreID)
+      .limit(0)
+      .select('*');
+    const res2 = await query
+      .from(datastoreID)
+      .limit(1)
+      .count();
+    expect(res.length).toEqual(res2);
+  });
 
-  // describe('Hexabase SQL', () => {
-  //   it(`Test function execute insert item`, async () => {
-  //     jest.useFakeTimers();
-  //     await hexabase.useProject("632ad81082bd898623884d2e")
-  //     const itemInserted: NewItems = await hexabase.from('6360deb505cc9cb016fbc53f')
-  //       .insertMany([
-  //         {
-  //           "636343dbeb4e1e3bd91c4a72": [],
-  //           "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm",
-  //           "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm"
-  //         },
-  //       ]);
-  //     // const raws = await Promise.all(itemInserted)
-  //     console.log('itemInserted', itemInserted)
-  //   });
-  // });
+  it('Insert one', async () => {
+    const query = hexabase.query(projectID);
+    // get randam string
+    const randamString = Math.random().toString(36).substring(7);
+    const textInputUnique = `${(new Date).toISOString()}-${randamString}`;
+    const item = await query
+      .from(datastoreID)
+      .insert(
+        {
+          textInputUnique,
+          number: 100,
+          number2: 200,
+        }
+      ) as Item;
+    expect(item.id !== '').toBeTruthy();
+    expect(item.get('textInputUnique')).toEqual(textInputUnique);
+  });
 
-  // describe('Hexabase SQL', () => {
-  //   it(`Test function execute update one item`, async () => {
-  //     jest.useFakeTimers();
-  //     const item = new Item(url, token);
-  //     const itemDetail = await item.getItemDetail("6360deb505cc9cb016fbc53f", "63fdd6bf46841e3c4b859448");
-  //     const { itemDetails } = itemDetail;
-  //     const rev_no = itemDetails?.rev_no;
-  //     await hexabase.useProject("632ad81082bd898623884d2e")
-  //     const itemUpdated: UpdateItemRes = await hexabase.from('6360deb505cc9cb016fbc53f')
-  //       .updateOne(
-  //         {
-  //           itemId: "63fdd6bf46841e3c4b859448",
-  //           rev_no,
-  //           item: {
-  //             "636343dbeb4e1e3bd91c4a72": [],
-  //             "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4] nguyên mõm update 3",
-  //             "6360deb5990afe5d523ba6b7": "[Title] nguyên mõm update 3"
-  //           },
-  //         }
-  //       );
-  //     console.log('itemUpdated', itemUpdated)
-  //   });
-  // });
-  /*
-  describe('Hexabase SQL', () => {
-    it(`Test function execute update many item`, async () => {
-      jest.useFakeTimers();
+  it('Insert multi', async () => {
+    const query = hexabase.query(projectID);
+    // get randam string
+    const textInputUnique = name();
+    const items = await query
+      .from(datastoreID)
+      .insert([
+        {
+          textInputUnique: name(),
+          number: 100,
+          number2: 200,
+        },
+        {
+          textInputUnique: textInputUnique,
+          number: 100,
+          number2: 200,
+        },
+        {
+          textInputUnique: name(),
+          number: 100,
+          number2: 200,
+        },
+      ]) as Item[];
+    expect(items.length).toEqual(3);
+    expect(items[1].id !== '').toBeTruthy();
+    expect(items[1].get('textInputUnique')).toEqual(textInputUnique);
+  });
 
-      const item = new Item(url, token);
-      const { dsItems, error } = await item.get(params, "6360deb505cc9cb016fbc53f", "632ad81082bd898623884d2e");
-      await hexabase.useProject("632ad81082bd898623884d2e")
-      const itemUpdated: UpdateItemRes[] = await hexabase.from('6360deb505cc9cb016fbc53f')
-        .updateMany([
-          {
-            itemId: dsItems?.items?.[0]?.i_id,
-            rev_no: parseInt(dsItems?.items?.[0]?.rev_no),
-            item: {
-              "636343dbeb4e1e3bd91c4a72": [],
-              "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4]1 nguyên mõm update 1",
-              "6360deb5990afe5d523ba6b7": "[Title]1 nguyên mõm update 1"
-            },
-          },
-          {
-            itemId: dsItems?.items?.[1]?.i_id,
-            rev_no: parseInt(dsItems?.items?.[1]?.rev_no),
-            item: {
-              "636343dbeb4e1e3bd91c4a72": [],
-              "63633c6feb4e1e3bd918b5a4": "[Fld-YPv5JDm4]2 nguyên mõm update 2",
-              "6360deb5990afe5d523ba6b7": "[Title]2 nguyên mõm update 2"
-            },
-          }
-        ]);
-      console.log('itemUpdated', itemUpdated)
+  it('Update one', async () => {
+    const query = hexabase.query(projectID);
+    // get randam string
+    const NUMBER1 = 200;
+    const NUMBER2 = 300;
+    const randamString = Math.random().toString(36).substring(7);
+    const textInputUnique = `${(new Date).toISOString()}-${randamString}`;
+    const item = await query
+      .from(datastoreID)
+      .insert(
+        {
+          textInputUnique,
+          number: 100,
+          number2: 200,
+        }
+      ) as Item;
+    const newName = name();
+    const updatedItems = await query
+      .from(datastoreID)
+      .where(query.condition.equalTo('i_id', item.id))
+      .update({
+        textInputUnique: newName,
+        number: NUMBER1,
+        number2: NUMBER2,
+      });
+    expect(item.id).toEqual(updatedItems[0].id);
+    expect(updatedItems[0].get('textInputUnique')).toEqual(newName);
+    expect(updatedItems[0].get('number')).toEqual(NUMBER1);
+    expect(updatedItems[0].get('number2')).toEqual(NUMBER2);
+  });
+
+  it('Update multiple', async () => {
+    const query = hexabase.query(projectID);
+    // get randam string
+    const NUMBER1 = 510;
+    const NUMBER2 = 610;
+    const params = [1, 2, 3].map(count => {
+      return {
+        textInputUnique: name(),
+        number: NUMBER1,
+        number2: NUMBER2,
+      };
     });
+    await query
+      .from(datastoreID)
+      .insert(params) as Item[];
+    const items = await query
+      .from(datastoreID)
+      .where([
+        query.condition.equalTo('number', NUMBER1),
+        query.condition.equalTo('number2', NUMBER2)
+      ])
+      .select() as Item[];
+    expect(items.length).toEqual(3);
+    await query
+      .from(datastoreID)
+      .where([
+        query.condition.equalTo('number', NUMBER1),
+        query.condition.equalTo('number2', NUMBER2)
+      ])
+      .update({
+        number: NUMBER1 + 10,
+        number2: NUMBER2 + 10,
+      });
+    const updateItems = await query
+      .from(datastoreID)
+      .where([
+        query.condition.equalTo('number', NUMBER1 + 10),
+        query.condition.equalTo('number2', NUMBER2 + 10)
+      ])
+      .select('*') as Item[];
+    expect(updateItems.length).toEqual(items.length);
+    expect(updateItems[0].get('number')).toEqual(NUMBER1 + 10);
+    for (const item of updateItems) {
+      await item.delete();
+    }
   });
-  */
+
+  it('delete one', async () => {
+    const query = hexabase.query(projectID);
+    // get randam string
+    const NUMBER1 = 220;
+    const NUMBER2 = 330;
+    const randamString = Math.random().toString(36).substring(7);
+    const textInputUnique = `${(new Date).toISOString()}-${randamString}`;
+    await query
+      .from(datastoreID)
+      .insert([
+        {
+          textInputUnique,
+          number: NUMBER1,
+          number2: NUMBER2,
+        },
+        {
+          textInputUnique: name(),
+          number: NUMBER1,
+          number2: NUMBER2,
+        },
+        {
+          textInputUnique: name(),
+          number: NUMBER1 + 1,
+          number2: NUMBER2,
+        },
+      ]) as Item;
+    const res = await query
+      .from(datastoreID)
+      .where(query.condition.equalTo('number', NUMBER1))
+      .delete();
+    expect(res).toEqual(true);
+    const num = await query
+      .from(datastoreID)
+      .where(query.condition.equalTo('number2', NUMBER2))
+      .count();
+    expect(num).toEqual(1);
+  });
+
   /*
   describe('Hexabase SQL', () => {
     it(`Test function execute`, async () => {
@@ -407,3 +526,9 @@ describe('Hexabase SQL', () => {
   // });
 
 });
+
+const name = () => {
+  const randamString = Math.random().toString(36).substring(7);
+  const textInputUnique = `${(new Date).toISOString()}-${randamString}`;
+  return textInputUnique;
+};

@@ -53,7 +53,7 @@ import Field from '../field';
 import Action from '../action';
 import Status from '../status';
 import Item from '../item';
-import { GetItemsPl } from '../../types/item';
+import { GetItemsParameters, GetItemsPl } from '../../types/item';
 
 type allArgs = {
   project: Project;
@@ -79,12 +79,25 @@ export default class Datastore extends HxbAbstract {
   showOnlyDevMode = false;
   useBoardView = false;
   useCsvUpdate = false;
-  useExternal_sync = false;
+  useExternalSync = false;
   useGridView = false;
   useGridViewByDefault = false;
   useWrDownload = false;
   useReplaceUpload = false;
   useStatusUpdate = false;
+  useStatusUpdateByDefault = false;
+  displayOrder = 0;
+  externalServiceUrl = '';
+  dataSource: string = '';
+  deleted: boolean;
+  externalServiceData: string;
+  imported: boolean;
+  invisible: boolean;
+  isExternalService: boolean;
+  noStatus: boolean;
+  unread: boolean;
+  uploading: boolean;
+  useQrDownload: boolean;
 
   // Cache
   private _actions: Action[] = [];
@@ -105,7 +118,7 @@ export default class Datastore extends HxbAbstract {
     const res: DtDatastoreRes = await Datastore.request(GET_DATASTORES, {
       projectId: project.id,
     });
-    return res.datastores.map(params => Datastore.fromJson({...project, ...params}) as Datastore);
+    return res.datastores.map(params => Datastore.fromJson({...{ project }, ...params}) as Datastore);
   }
 
   async createItemId(): Promise<string> {
@@ -115,14 +128,81 @@ export default class Datastore extends HxbAbstract {
   set(key: string, value: any): Datastore {
     switch (key) {
       case 'id':
+      case 'd_id':
       case 'datastore_id':
-        if (value.trim() !== '') this.id = value;
+        if (value && value.trim() !== '') this.id = value;
         break;
       case 'project':
         this.project = value;
         break;
       case 'name':
         this.name = value;
+        break;
+      case 'display_id':
+        this.displayId = value;
+        break;
+      case 'dipaly_order':
+        this.displayOrder = value;
+        break;
+      case 'data_source':
+        this.dataSource = value;
+        break;
+      case 'deleted':
+        this.deleted = value;
+        break;
+      case 'external_service_data':
+        this.externalServiceData = value;
+        break;
+      case 'imported':
+        this.imported = value;
+        break;
+      case 'invisible':
+        this.invisible = value;
+        break;
+      case 'is_external_service':
+        this.isExternalService = value;
+        break;
+      case 'no_status':
+        this.noStatus = value;
+        break;
+      case 'show_display_id_to_list':
+        this.showDisplayIdToList = value;
+        break;
+      case 'show_in_menu':
+        this.showInMenu = value;
+        break;
+      case 'show_info_to_list':
+        this.showInfoToList = value;
+        break;
+      case 'show_only_dev_mode':
+        this.showOnlyDevMode = value;
+        break;
+      case 'unread':
+        this.unread = value;
+        break;
+      case 'uploading':
+        this.uploading = value;
+        break;
+      case 'use_board_view':
+        this.useBoardView = value;
+        break;
+      case 'use_csv_update':
+        this.useCsvUpdate = value;
+        break;
+      case 'use_external_sync':
+        this.useExternalSync = value;
+        break;
+      case 'use_grid_view':
+        this.useGridView = value;
+        break;
+      case 'use_grid_view_by_default':
+        this.useGridViewByDefault = value;
+        break;
+      case 'use_qr_download':
+        this.useQrDownload = value;
+        break;
+      case 'use_replace_upload':
+        this.useReplaceUpload = value;
         break;
     }
     return this;
@@ -133,9 +213,13 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId is requirement
    * @returns DatastoreSettingRes
    */
-  async getDetail(): Promise<boolean> {
+  async fetch(): Promise<boolean> {
+    const promises: Promise<any>[] = [];
     // handle call graphql
-    const res: DtDatastoreSettingRes = await this.request(GET_DATASTORE_DETAIL, { datastoreId: this.id });
+    promises.push(this.request(GET_DATASTORE_DETAIL, { datastoreId: this.id }));
+    promises.push(this.fields());
+    const ary = await Promise.all(promises);
+    const res = ary[0] as DtDatastoreSettingRes;
     this.sets(res.datastoreSetting);
     return true;
   }
@@ -203,7 +287,7 @@ export default class Datastore extends HxbAbstract {
       show_only_dev_mode: this.showOnlyDevMode,
       use_board_view: this.useBoardView,
       use_csv_update: this.useCsvUpdate,
-      use_external_sync: this.useExternal_sync,
+      use_external_sync: this.useExternalSync,
       use_grid_view: this.useGridView,
       use_grid_view_by_default: this.useGridViewByDefault,
       use_qr_download: this.useWrDownload,
@@ -233,11 +317,19 @@ export default class Datastore extends HxbAbstract {
    * @returns DsFieldSettingsRes
    */
   async field(id: string): Promise<Field> {
-    const field = this._fields.find(f => f.id === id);
+    const field = this._fields.find(f => f.id === id || f.displayId === id);
     if (field) return field;
     const f = await Field.get(this, id);
-    this._fields.push(f);
+    if (!this._fields.find(f => f.id === id || f.displayId === id)) {
+      this._fields.push(f);
+    }
     return f;
+  }
+
+  fieldSync(id: string): Field {
+    const field = this._fields.find(f => f.id === id || f.displayId === id);
+    if (field) return field;
+    throw new Error(`Field ${id} not found`);
   }
 
   /**
@@ -277,10 +369,6 @@ export default class Datastore extends HxbAbstract {
     // handle call graphql
     const actions = await this.actions();
     return actions.find(a => a.operation === operation);
-    /*
-    const res: DtDsActionSetting = await this.request(DS_ACTION_SETTING, { actionId, datastoreId: this.id });
-    return Action.fromJson(res.datastoreGetActionSetting) as Action;
-    */
   }
 
   /**
@@ -315,21 +403,60 @@ export default class Datastore extends HxbAbstract {
   }
 
   async items(params?: GetItemsPl): Promise<Item[]> {
-    const { items, totalCount } = await this.itemsWithCount(params);
+    const { items } = await this.itemsWithCount(params);
     return items;
   }
 
+  async search(): Promise<Item[]> {
+    const payload: GetItemsParameters = {
+      datastore_id: this.id,
+      project_id: this.project.id,
+      page: 1,
+      per_page: 100,
+    };
+    return Item.search(payload, this);
+  }
+
+  async searchWithCount(options: GetItemsParameters): Promise<{ items: Item[], totalCount: number }> {
+    const payload: GetItemsParameters = {
+      datastore_id: this.id,
+      project_id: this.project.id,
+      page: options.page,
+      per_page: options.per_page,
+      return_count_only: true,
+      conditions: options.conditions,
+      use_or_condition: options.use_or_condition || false,
+      unread_only: options.unread_only || false,
+      sort_fields: options.sort_fields,
+      sort_field_id: options.sort_field_id,
+      sort_order: options.sort_order,
+      use_field_id: options.use_field_id || false,
+      use_display_id: true,
+      include_links: options.include_links || true,
+      include_lookups: options.include_lookups || true,
+      return_number_value: options.return_number_value || true,
+      format: 'map',
+      include_fields_data: options.include_fields_data || true,
+      omit_fields_data: options.omit_fields_data || false,
+      omit_total_items: options.omit_total_items || false,
+      data_result_timeout_sec: options.data_result_timeout_sec || 30,
+      total_count_timeout_sec: options.total_count_timeout_sec || 30,
+      debug_query: false,
+      select_fields: options.select_fields,
+      select_fields_lookup: options.select_fields_lookup,
+    };
+    return Item.searchWithCount(payload, this);
+  }
+
   itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}): Promise<{items: Item[], totalCount: number}> {
-    if (!params.page) params.page = 1;
-    if (!params.per_page) params.per_page = 10;
+    if (typeof params.page === 'undefined') params.page = 1;
+    if (typeof params.per_page === 'undefined') params.per_page = 10;
     return Item.all(params, this);
   }
 
   async item(id?: string): Promise<Item> {
     const item = new Item({ datastore: this, id });
-    if (item.id) {
-      await item.getDetail();
-    }
+    if (id) await item.fetch();
     return item;
   }
 }

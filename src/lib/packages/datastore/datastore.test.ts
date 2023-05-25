@@ -10,34 +10,38 @@ require('dotenv').config();
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
-
 let tokenDs = process.env.TOKEN || '';
 const client = new HexabaseClient;
-const datastoreId = process.env.DATASTOREID || '';
-const projectId = process.env.PROJECT_ID || '';
+const workspaceId = process.env.DEV_WORKSPACE_ID;
+const datastoreId = process.env.DEV_DATASOTRE_ID || '';
+const projectId = process.env.DEV_PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
+
 
 let project: Project;
 let datastore: Datastore;
 
 beforeAll(async () => {
   await client.login({ email, password, token: tokenDs });
-  const workspace = client.currentWorkspace!;
-  const ary = await workspace.projects();
+  client.setWorkspace(workspaceId!)
+  const ary = await client.currentWorkspace!.projects();
   const p = ary.map((project) => {
     const name = project.name as FieldNameENJP;
-    if (name.ja === 'JA Project 3' || name.ja === '新しいプロジェクト') {
+    if (name.ja === 'JA Project' || name.ja === '新しいプロジェクト') {
       return project.delete();
     }
   });
   await Promise.all(p);
-  project = workspace.project();
+  project = await client.currentWorkspace!.project();
   project.name = {
     en: 'EN Project',
     ja: 'JA Project',
   };
   await project.save();
+  datastore = await project.datastore();
+  await datastore.save();
+  await new Promise(resolve => setTimeout(resolve, 5000));
 });
 
 afterAll(async () => {
@@ -49,10 +53,9 @@ describe('Datastore', () => {
     it('should create datastore without error', async () => {
       // jest.useFakeTimers('legacy');
       try {
-        datastore = await project.datastore();
+        const datastore = await project.datastore();
         const bol = await datastore.save();
         expect(bol).toBe(true);
-        await new Promise(resolve => setTimeout(resolve, 5000));
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }
@@ -75,7 +78,9 @@ describe('Datastore', () => {
     it('should get fields without error', async () => {
       // jest.useFakeTimers('legacy');
       try {
-        const bol = await datastore.getDetail();
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(datastoreId);
+        const bol = await datastore.fetch();
         expect(bol).toBe(true);
       } catch (e) {
         throw new Error(`Error: ${e}`);
@@ -87,9 +92,8 @@ describe('Datastore', () => {
     it('should get fields in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = client.currentWorkspace!;
-        const project = workspace.project(projectId);
-        const datastore = project.datastore(datastoreId);
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(datastoreId);
         const fields = await datastore.fields();
         expect(fields[0] instanceof Field).toBe(true);
       } catch (e) {
@@ -102,9 +106,8 @@ describe('Datastore', () => {
     it('should get field setting in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = client.currentWorkspace!;
-        const project = workspace.project(projectId);
-        const datastore = project.datastore(datastoreId);
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(datastoreId);
         const fields = await datastore.fields();
         const field = await datastore.field(fields[0].id);
         expect(field instanceof Field).toBe(true);
@@ -118,10 +121,8 @@ describe('Datastore', () => {
     it('should get actions in Ds', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = client.currentWorkspace!;
-        const project = workspace.project(projectId);
-        const datastore = project.datastore(datastoreId);
-        
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(datastoreId);
         const actions = await datastore.actions();
         const action = actions[0];
         expect(typeof action.name).toBe('string');
@@ -135,9 +136,8 @@ describe('Datastore', () => {
   describe('#getStatuses()', () => {
     it('should get status in Ds', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = client.currentWorkspace!;
-      const project = workspace.project(projectId);
-      const datastore = project.datastore(datastoreId);
+      const project = await client.currentWorkspace!.project(projectId);
+      const datastore = await project.datastore(datastoreId);
       const status = await datastore.statuses();
       expect(typeof status[0].displayId).toBe('string');
       expect(typeof status[0].id).toBe('string');
@@ -147,13 +147,11 @@ describe('Datastore', () => {
   describe('#getAction()', () => {
     it('should get action by Id in Ds', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = client.currentWorkspace!;
-      const project = workspace.project(projectId);
-      const datastore = project.datastore(datastoreId);
+      const project = await client.currentWorkspace!.project(projectId);
+      const datastore = await project.datastore(datastoreId);
       const action = await datastore.action('new');
       expect(typeof action!.id).toBe('string');
-      const name = action!.name as FieldNameENJP;
-      expect(typeof name.ja).toBe('string');
+      expect(typeof action!.name).toBe('string');
     });
   });
   
@@ -161,9 +159,8 @@ describe('Datastore', () => {
     it('should validate display id datastore current without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = client.currentWorkspace!;
-        const project = workspace.project(projectId);
-        const datastore = project.datastore(datastoreId);
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(datastoreId);
         const bol = await datastore.validateDisplayId('dsId_update_001');
         expect(typeof bol).toBe('boolean');
         expect(bol).toBe(false);
@@ -178,9 +175,6 @@ describe('Datastore', () => {
   describe('#updateDatastore()', () => {
     it('should update datastore current without error', async () => {
       jest.useFakeTimers('legacy');
-      const workspace = client.currentWorkspace!;
-      const project = workspace.project(projectId);
-      const datastore = project.datastore(datastoreId);
       datastore.displayId = 'dsId_update_002';
       datastore.name = {
         en: 'EN name update',
@@ -199,9 +193,8 @@ describe('Datastore', () => {
     it('should datastore get field auto number without error', async () => {
       jest.useFakeTimers('legacy');
       try {
-        const workspace = client.currentWorkspace!;
-        const project = workspace.project(projectId);
-        const datastore = project.datastore(datastoreId);
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(datastoreId);
         const number = await datastore.autoNumber('autoNum');
         expect(typeof number).toBe('number');
       } catch (e) {
