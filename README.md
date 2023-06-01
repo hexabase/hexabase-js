@@ -5,7 +5,7 @@
 ### Set env
 
 ```
-npx hx contexts:set dev --server=https://az-api.hexabase.com --sse=https://az-sse.hexabase.com
+npx hx contexts:set dev --server=https://dev-api.hexabase.com --sse=https://dev-sse.hexabase.com
 npx hx contexts:use dev
 ```
 
