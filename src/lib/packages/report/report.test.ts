@@ -32,6 +32,7 @@ describe('#getReportData()', () => {
     const reports = await project!.reports();
     const report = reports[0];
     const data = await report.data();
+    console.log(data);
     expect(data.length > 0).toBe(true);
     expect(typeof data[0].i_id).toBe('string');
   });

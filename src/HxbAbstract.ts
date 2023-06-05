@@ -2,7 +2,7 @@ import { GraphQLClient } from 'graphql-request';
 import HexabaseClient from './HexabaseClient';
 // import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { Buffer, Blob } from 'buffer';
-import fetch, { Response, RequestInit } from 'node-fetch';
+import fetch, { Response, RequestInit, Body } from 'node-fetch';
 import FormData from 'form-data';
 
 export class HxbAbstract {
@@ -74,14 +74,20 @@ export class HxbAbstract {
   async _makeBody(bodies: {[key: string]: any} = {}, binary = false) {
     if (!binary) return bodies;
     const form = new FormData;
-    const { fileName, file } = bodies;
-    const buffer = Buffer.from(await file.arrayBuffer());
-    form.append('file', buffer, {
-      filename: fileName,
-      contentType: file.type,
-      knownLength: buffer.length,
-    });
-    form.append('fileName', fileName);
+    const filename = bodies.fileName || bodies.filename;
+    for (const key in bodies) {
+      const body = bodies[key];
+      if (body instanceof Blob) {
+        const buffer = Buffer.from(await body.arrayBuffer());
+        form.append(key, buffer, {
+          filename,
+          contentType: body.type,
+          knownLength: buffer.length,
+        });
+      } else {
+        form.append(key, body);
+      }
+    }
     return form;
   }
 

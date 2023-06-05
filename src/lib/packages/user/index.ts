@@ -34,6 +34,7 @@ export default class User extends HxbAbstract {
   public profilePicture: string;
   public currentWorkspace: Workspace;
   public isWorkspaceAdmin: boolean;
+  public mediaLink: string;
 
   set(key: string, value: any): User {
     switch (key) {
@@ -60,6 +61,12 @@ export default class User extends HxbAbstract {
       case 'is_ws_admin':
         this.isWorkspaceAdmin = value;
         break;
+      case 'media_link':
+        this.mediaLink = value;
+        break;
+      case 'user_roles':
+        console.log(value);
+        break;
     }
     return this;
   }
@@ -69,46 +76,19 @@ export default class User extends HxbAbstract {
    * @param confirmationId
    * @returns UserRegisterRes
    */
-  async confirm(confirmationId: string): Promise<UserRegisterRes> {
-    const data: UserRegisterRes = {
-      userRegister: undefined,
-      error: undefined,
-    };
-
+  static async confirm(confirmationId: string): Promise<User> {
     // handle call graphql
-    try {
-      const res: DtUserRegister = await this.request(USER_REGISTER, { confirmationId });
-
-      data.userRegister = res.userRegister;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtUserRegister = await this.request(USER_REGISTER, { confirmationId });
+    return new User(res.userRegister.user);
   }
 
   /**
    * function getPasswordExpire: check user password is expiry
    * @returns UserPasswordExpiryRes
    */
-  async getPasswordExpire(): Promise<UserPassExRes> {
-    const data: UserPassExRes = {
-      userPassEx: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtUserPassEx = await this.request(USER_PASSWORD_EXPIRY);
-
-      data.userPassEx = res.userPasswordExpiry;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+  async passwordExpired(): Promise<boolean> {
+    const res: DtUserPassEx = await this.request(USER_PASSWORD_EXPIRY);
+    return res.userPasswordExpiry.is_expired;
   }
 
   /**

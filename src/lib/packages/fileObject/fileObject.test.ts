@@ -1,24 +1,14 @@
 require('dotenv').config();
-import Item from '.';
-import Auth from '../auth';
-import Datastore from '../datastore/index';
-import Workspace from '../workspace';
-import Project from '../project';
-import { CreateDatastoreFromSeedReq, DsAction } from '../../types/datastore';
-import User from '../user';
-import { ArchiveCommentItemsParameters, CreateCommentItemsParameters, UpdateCommentItemsParameters } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
 import FileObject from '.';
 import { Blob } from 'buffer';
-import fs from 'fs';
 
-require('dotenv').config();
 /**
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
 const token = process.env.TOKEN || '';
-const client = new HexabaseClient;
+const client = new HexabaseClient('dev');
 const workspaceId = process.env.DEV_WORKSPACE_ID;
 const datastoreId = process.env.DEV_DATASOTRE_ID || '';
 const projectId = process.env.DEV_PROJECT_ID || '';
@@ -71,6 +61,55 @@ describe('File', () => {
       expect(file.id).toBe(f.id);
       const bol = await file.delete();
       expect(bol).toBe(true);
+    });
+  });
+
+  describe('#uploadFile()', () => {
+    it('should upload the file', async () => {
+      const project = await client.currentWorkspace!.project(projectId);
+      const datastore = await project.datastore(datastoreId);
+      const item = await datastore.item();
+      const file = item.file();
+      const message = 'hello world';
+      const blob = new Blob([message], { type: 'text/plain' });
+      file
+        .set('name', 'test_file.txt')
+        .set('data', blob);
+      const bol = await item
+        .set('test_file', [file])
+        .save();
+      expect(bol).toBe(true);
+      const ary = item.get('test_file') as FileObject[];
+      expect(ary.length).toBe(1);
+      expect(ary[0].name).toBe('test_file.txt');
+      await ary[0].download();
+      const text = await ary[0].data.text();
+      expect(text).toBe(message);
+      await item.delete();
+    });
+
+    it('should upload the files', async () => {
+      const project = await client.currentWorkspace!.project(projectId);
+      const datastore = await project.datastore(datastoreId);
+      const item = await datastore.item();
+      const file = item.file();
+      const message = 'hello world';
+      const blob = new Blob([message], { type: 'text/plain' });
+      file
+        .set('name', 'test_file.txt')
+        .set('data', blob);
+      const file2 = item.file();
+      await file2
+        .set('name', 'test_file2.txt')
+        .set('data', blob);
+      await item
+        .set('test_file', [file])
+        .save();
+      const bol = await item
+        .add('test_file', file2)
+        .save();
+      expect(bol).toBe(true);
+      await item.delete();
     });
   });
 });

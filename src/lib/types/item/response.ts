@@ -196,6 +196,15 @@ export interface DtUpdateItem {
     item: {[key: string]: any};
   };
 }
+
+export interface DtExecuteItemAction {
+  datastoreExecuteItemAction: {
+    error: string
+    item_id?: string;
+    item: {[key: string]: any};
+  }
+}
+
 export interface DtItemDetail {
   getDatastoreItemDetails: ItemDetail;
 }

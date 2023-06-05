@@ -9,6 +9,7 @@ import {
   DELETE_ITEM,
   DELETE_ITEMS,
   DS_ITEMS,
+  EXECUTE_ITEM_ACTION,
   ITEM_DETAIL,
   ITEM_HISTORIES,
   ITEM_LINKED,
@@ -37,6 +38,7 @@ import {
   ConditionDeleteItems,
   DeleteItemsParameters,
   DatastoreDeleteDatastoreItemsRes,
+  DtExecuteItemAction,
 } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
 import Field from '../field';
@@ -47,6 +49,8 @@ import StatusAction from '../statusAction';
 import Link from '../linkItem';
 import LinkItem from '../linkItem';
 import { parseCommandLine } from 'typescript';
+import FileObject from '../fileObject';
+import { DataType } from '../../../lib/types/field';
 
 export default class Item extends HxbAbstract {
   public datastore: Datastore;
@@ -58,6 +62,7 @@ export default class Item extends HxbAbstract {
   public createdBy: string;
   public updatedAt: Date;
   public updatedBy: string;
+  public seedItemId: string;
   public revNo: number;
   public unread: number;
   public pinned: boolean;
@@ -70,6 +75,7 @@ export default class Item extends HxbAbstract {
   public itemActionOrder: string;
   public _status: string | ItemStatus | StatusAction;
   private _updateStatusAction: StatusAction;
+  private _existAttachment = false;
 
   public _linkItems: LinkItem[] = [];
   public _unlinkItems: LinkItem[] = [];
@@ -127,11 +133,16 @@ export default class Item extends HxbAbstract {
       case 'unread':
         this.unread = value as number;
         break;
+      case 'w_id':
+        break;
       case 'i_id':
       case 'id':
         if (value) {
           this.id = value as string;
         }
+        break;
+      case 'seed_i_id':
+        this.seedItemId = value as string;
         break;
       case 'Status':
         this.statusLabel = value as string;
@@ -147,6 +158,9 @@ export default class Item extends HxbAbstract {
         break;
       case 'updated_by':
         this.updatedBy = value as string;
+        break;
+      case 'lookup_items':
+        // console.log(value);
         break;
       case 'item_actions':
         this.actions = Object.keys(value)
@@ -184,11 +198,31 @@ export default class Item extends HxbAbstract {
     return this;
   }
 
+  public add(fieldName: string, value: any): Item {
+    if (Array.isArray(value)) return this.addAll(fieldName, value);
+    if (this.ignoreFieldUpdate) return this;
+    const field = this.datastore.fieldSync(fieldName);
+    if (!field.valid(value)) {
+      throw new Error(`Invalid value ${value} for field key ${field.name}`);
+    }
+    if (this.fields[fieldName]) {
+      this.fields[fieldName].push(field.value(value, { item: this })[0]);
+    } else {
+      this.fields[fieldName] = [field.value(value, { item: this })];
+    }
+    return this;
+  }
+
+  public addAll(fieldName: string, values: any[]): Item {
+    values.forEach(value => this.add(fieldName, value));
+    return this;
+  }
+
   public setFieldValue(fieldName: string, value: any): Item {
     if (this.ignoreFieldUpdate) return this;
     const field = this.datastore.fieldSync(fieldName);
     if (!field.valid(value)) {
-      throw new Error(`Invalid value ${value} for field key ${field.id}`);
+      throw new Error(`Invalid value ${value} for field key ${field.name}`);
     }
     value = field.value(value, { item: this });
     if (field.dataType.toLocaleLowerCase() === 'status') {
@@ -217,6 +251,10 @@ export default class Item extends HxbAbstract {
       datastoreId: datastore.id,
       projectId: datastore.project.id,
     };
+    payload.getItemsParameters.return_number_value = true;
+    // payload.getItemsParameters.include_lookups = true;
+    payload.getItemsParameters.include_links = true;
+    payload.getItemsParameters.format = 'map';
     // handle call graphql
     const res: DtDsItems = await Item.request(DS_ITEMS, payload);
     const items = res.datastoreGetDatastoreItems.items
@@ -278,7 +316,6 @@ export default class Item extends HxbAbstract {
         conditions,
       }
     };
-    console.log(params);
     const res: DatastoreDeleteDatastoreItemsRes = await this.request(DELETE_ITEMS, params);
     return res.datastoreDeleteDatastoreItems.success;
   }
@@ -325,17 +362,55 @@ export default class Item extends HxbAbstract {
       payload,
     });
     if (this.datastore._fields.length === 0) await this.datastore.fields();
-    this.sets(res.datastoreCreateNewItem.item);
+    const params: {[key: string]: any} = {};
+    Object.keys(res.datastoreCreateNewItem.item).forEach((id) => {
+      const field = this.datastore._fields.find((f) => f.id === id || f.displayId === id);
+      if (!field) {
+        params[id] = res.datastoreCreateNewItem.item[id];
+      } else {
+        params[field.displayId] = res.datastoreCreateNewItem.item[id];
+      }
+    });
+    this.sets(params);
+    this._setStatus(this._status);
+    if (this._existAttachment) {
+      await this.update();
+      this._existAttachment = false;
+    }
+    return true;
+  }
+
+  async execute(actionName: string): Promise<boolean> {
+    const action = await this.action(actionName);
+    if (!action) throw new Error(`Action ${actionName} not found`);
+    const params: ItemActionParameters = {
+      rev_no: this.revNo,
+      datastore_id: this.datastore.id,
+      action_id: action.id,
+      is_notify_to_sender: true,
+      ensure_transaction: true,
+      exec_children_post_procs: true,
+      return_item_result: true,
+      item: await this.toJson(),
+    };
+    const res: DtExecuteItemAction = await this.request(EXECUTE_ITEM_ACTION, {
+      actionId: action.id,
+      datastoreId: this.datastore.id,
+      itemId: this.id,
+      projectId: this.datastore.project.id,
+      itemActionParameters: params
+    });
+    this.sets(res.datastoreExecuteItemAction.item)
     this._setStatus(this._status);
     return true;
   }
 
   async update(comment?: string): Promise<boolean> {
-    // const action = this._updateStatusAction ? this._updateStatusAction : await this.action('UpdateItem');
+    const action = await this.action('UpdateItem');
     const params: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
-      // action_id: action.id,
+      action_id: action.id,
       is_notify_to_sender: true,
       ensure_transaction: true,
       exec_children_post_procs: true,
@@ -363,6 +438,11 @@ export default class Item extends HxbAbstract {
     const json: MapType = {};
     for (const key in this.fields) {
       const field = this.datastore.fieldSync(key);
+      if (!field) throw new Error(`Field ${key} is not found`);
+      if (field.dataType === DataType.FILE && this.fields[key] && this.fields[key].length > 0 && !this.id) {
+        this._existAttachment = true;
+        continue;
+      }
       const value = await field.convert(this.fields[key]);
       if (typeof value !== 'undefined' && this.fields[key]) {
         json[key] = value;
@@ -436,10 +516,6 @@ export default class Item extends HxbAbstract {
     return this.actions.find(a => a.displayId.trim().toLowerCase() === actionName.trim().toLocaleLowerCase())!;
   }
 
-  async execute(actionName: string): Promise<any> {
-    return 
-  }
-
   comment(): ItemHistory {
     return new ItemHistory({ item: this });
   }
@@ -489,22 +565,26 @@ export default class Item extends HxbAbstract {
    * @params datastoreId, itemId and linkedDatastoreId is requirement
    * @returns ItemLinkedRes
    */
-  async links(linkedDatastoreId: string): Promise<Item[]> {
+  async links(linkedDatastore: string | Datastore): Promise<Item[]> {
     // handle call graphql
     const res: DtItemLinked = await this.request(ITEM_LINKED, {
       datastoreId: this.datastore.id,
       itemId: this.id,
-      linkedDatastoreId,
+      linkedDatastoreId: typeof linkedDatastore === 'string' ? linkedDatastore : linkedDatastore.id,
     });
     if (res.datastoreGetLinkedItems.items.length === 0) return [];
     const projects = await Item.client.currentWorkspace!.projects();
     const items: Item[] = [];
     for (const params of res.datastoreGetLinkedItems.items) {
       const project = projects.find(p => p.id === params.p_id)!;
-      const datastore = await project.datastore(linkedDatastoreId);
+      const datastore = typeof linkedDatastore === 'string' ? await project.datastore(params.ds_id) : linkedDatastore;
       items.push(new Item({ id: params.i_id, datastore }) as Item);
     }
     await Promise.all(items.map((item: Item) => item.fetch()));
     return items;
+  }
+
+  public file(): FileObject {
+    return new FileObject({item: this});
   }
 }
