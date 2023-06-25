@@ -37,6 +37,9 @@ import {
   SetWsInput,
   WorkspaceSettingPl,
   WorkspaceDetailRes,
+  UserInviteOptions,
+  UserInvitePl,
+  UserInviteResponse,
 } from '../../types/workspace';
 import Language from '../language';
 import PasswordPolicy from '../passwordPolicy';
@@ -69,7 +72,7 @@ export default class Workspace extends HxbAbstract {
   public workspaceUsage: WorkspaceUsage;
   public workspaceAdminUsers: User[];
   public userSession: UserSession;
-  public group: Group;
+  public _groups: Group[] = [];
   // public projects = Project;
 
   /**
@@ -89,7 +92,7 @@ export default class Workspace extends HxbAbstract {
   static async get(id?: string): Promise<Workspace | undefined> {
     if (id) await this._current(id);
     const res = await this.request(WORKSPACE_DETAIL);
-    if (!res.workspace.id) return undefined;
+    // if (!res.workspace.id) throw new Error('Workspace not found');
     return Workspace.fromJson(res.workspace) as Workspace;
   }
 
@@ -134,6 +137,7 @@ export default class Workspace extends HxbAbstract {
    * @returns Workspace
    */
   set(key: string, value: any): Workspace {
+    if (!value) return this;
     switch (key) {
       case 'w_id':
       case 'workspace_id':
@@ -253,17 +257,13 @@ export default class Workspace extends HxbAbstract {
    * function getGroup: get workspace group and their children
    * @returns Group
    */
-  async getGroup(): Promise<Group> {
-    // handle call graphql
-    const res: DtWsGroupChildren = await this.request(WORKSPACE_GROUP_CHILDREN, { workingspaceId: this.id });
-    const { group, children }= res.workspaceGetGroupChildren;
-    if (group) {
-      this.group = Group.fromJson(group) as Group;
-    }
-    if (this.group && children) {
-      this.group.children = children.map((child: any) => Group.fromJson(child) as Group);
-    }
-    return this.group;
+  async group(id: string): Promise<Group> {
+    const g = this._groups.find(g => g.id === id);
+    if (g) return g;
+    const group = new Group({ workspace: this, id });
+    await group.fetch();
+    this._groups.push(group);
+    return group;
   }
 
   /**
@@ -351,5 +351,9 @@ export default class Workspace extends HxbAbstract {
 
   projectTemplates(): Promise<TemplateCategory[]> {
     return Template.all();
+  }
+
+  async invite(emails: string[], domain: string, options?: UserInviteOptions): Promise<UserInviteResponse[]> {
+    return Workspace.client.invite(emails, domain, options, this);
   }
 }

@@ -18,10 +18,7 @@ import {
 import { MapType } from '../../util/type';
 
 import {
-  CreatedItemIdRes,
   CreateNewItemPl,
-  DeleteItemReq,
-  DsItemsRes,
   DtDeleteItem,
   DtDsItems,
   DtItemDetail,
@@ -96,8 +93,8 @@ export default class Item extends HxbAbstract {
         (value as any[]).forEach(params => {
           const datasstore = new Datastore({ project, id: params.d_id });
           (params.i_ids as string[])
-            .forEach(async (i_id) => {
-              const linkedItem = new Item({ datastore: datasstore, id: i_id });
+            .forEach(i_id => {
+              const linkedItem = Item.fromJson({ datastore: datasstore, id: i_id });
               this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
             });
         });
@@ -107,9 +104,9 @@ export default class Item extends HxbAbstract {
         if (value.item_count === 0) break;
         const project = this.datastore.project;
         (value.links as any[]).forEach(params => {
-          const datasstore = new Datastore({ project, id: params.d_id });
+          const datastore = project.datastoreSync(params.d_id);
           (params.items as any[]).forEach(itemParams => {
-            const linkedItem = new Item({ datastore: datasstore, id: itemParams.i_id });
+            const linkedItem = Item.fromJson({ datastore, id: itemParams.i_id });
             this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
           });
         });
@@ -136,7 +133,7 @@ export default class Item extends HxbAbstract {
       case 'w_id':
         break;
       case 'i_id':
-      case 'id':
+      // case 'id':
         if (value) {
           this.id = value as string;
         }
@@ -188,7 +185,16 @@ export default class Item extends HxbAbstract {
         break;
       case 'field_values':
         Object.keys(value).forEach(fieldName => {
-          this.setFieldValue(fieldName, value[fieldName].value);
+          const val = value[fieldName];
+          if (val.dataType === DataType.DSLOOKUP && val.value) {
+            const datastore = this.datastore.project.datastoreSync(val.value.d_id);
+            const params = val.value.lookup_item;
+            params.datastore = datastore;
+            const item = Item.fromJson(params);
+            this.fields[fieldName] = item;
+          } else {
+            this.setFieldValue(fieldName, val.value);
+          }
         });
         break;
       default:
@@ -220,6 +226,7 @@ export default class Item extends HxbAbstract {
 
   public setFieldValue(fieldName: string, value: any): Item {
     if (this.ignoreFieldUpdate) return this;
+    // console.log('setFieldValue', this.datastore._fields, value, fieldName, this.datastore);
     const field = this.datastore.fieldSync(fieldName);
     if (!field.valid(value)) {
       throw new Error(`Invalid value ${value} for field key ${field.name}`);
@@ -232,12 +239,12 @@ export default class Item extends HxbAbstract {
     return this;
   }
 
-  get(name: string): any {
-    if (this.fields[name] && this.fields[name].field) {
-      return this.fields[name].value;
-    } else {
-      return this.fields[name];
+  get(name: string, defaultValue?: any): any {
+    const value = this.fields[name] && this.fields[name].field ? this.fields[name].value : this.fields[name];
+    if (value === undefined || value === null && defaultValue) {
+      return defaultValue;
     }
+    return value;
 	}
 
   /**
@@ -257,6 +264,16 @@ export default class Item extends HxbAbstract {
     payload.getItemsParameters.format = 'map';
     // handle call graphql
     const res: DtDsItems = await Item.request(DS_ITEMS, payload);
+    // check db link
+    for (const item of res.datastoreGetDatastoreItems.items) {
+      if (!item.item_links || item.item_links.length === 0) continue;
+      for (const link of item.item_links.links) {
+        if (!link.d_id) continue;
+        const d = await datastore.project.datastore(link.d_id);
+        await d.fields();
+      }
+    }
+
     const items = res.datastoreGetDatastoreItems.items
       .map((params:any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
     const totalCount = res.datastoreGetDatastoreItems.totalItems;
@@ -480,9 +497,15 @@ export default class Item extends HxbAbstract {
         format: 'map',
         include_linked_items: true,
       },
-    }
+    };
     // handle call graphql
     const res: DtItemDetail = await this.request(ITEM_DETAIL, params);
+    // set db link
+    for (const key in res.getDatastoreItemDetails.field_values) {
+      const field = res.getDatastoreItemDetails.field_values[key];
+      if (field.dataType !== 'dslookup' || !field.value) continue;
+      await this.datastore.project.datastore(field.value.d_id);
+    }
     this.sets(res.getDatastoreItemDetails);
     this._setStatus(this._status);
     return true;

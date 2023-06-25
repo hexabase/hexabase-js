@@ -200,3 +200,17 @@ export interface ArchiveWorkspacePl {
 export interface ArchiveWorkspace {
   payload: ArchiveWorkspacePl;
 }
+
+export interface UserInvitePl extends UserInviteOptions {
+  users: {
+    email: string;
+    exclusive_w_id?: string,
+  }[],
+  domain: string,
+}
+
+export interface UserInviteOptions {
+  sender_address?: string,
+  invitation_path?: string,
+  email_templates_id?: string,
+}

@@ -455,7 +455,7 @@ export default class Datastore extends HxbAbstract {
   }
 
   async item(id?: string): Promise<Item> {
-    const item = new Item({ datastore: this, id });
+    const item = Item.fromJson({ datastore: this, i_id: id }) as Item;
     if (id) await item.fetch();
     return item;
   }

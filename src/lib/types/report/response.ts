@@ -1,4 +1,4 @@
-import { GenericAPIError } from '../../../../src/lib/util/type';
+import { GenericAPIError } from '../../util/type';
 
 export interface ReportListItem {
   rp_id?: string;

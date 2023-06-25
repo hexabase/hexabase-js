@@ -72,7 +72,7 @@ export class HxbAbstract {
   }
 
   async _makeBody(bodies: {[key: string]: any} = {}, binary = false) {
-    if (!binary) return bodies;
+    if (!binary) return JSON.stringify(bodies);
     const form = new FormData;
     const filename = bodies.fileName || bodies.filename;
     for (const key in bodies) {

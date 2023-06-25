@@ -1,6 +1,8 @@
 import { TokenModel } from '../../util/type/response';
+import { SearchCondition, SortField } from '../item';
 import { SortOrder, TypeOrder } from './input';
 /** Data response from request graphql */
+/*
 export interface DtLogin {
   login: TokenModel;
 }
@@ -9,6 +11,7 @@ export interface SortField {
   id?: string;
   order?: TypeOrder;
 }
+*/
 
 export interface SearchParameter {
   project_id?: string;
@@ -39,6 +42,7 @@ export interface SearchParameter {
 }
 
 /** export response */
+/*
 export interface SearchCondition {
   search_value?: (string | number | null)[];
   id?: string;
@@ -55,6 +59,7 @@ export interface SearchCondition {
   // per_page?: number;
   // isArray?: boolean;
 }
+*/
 
 export type PostgrestError = {
   message: string
