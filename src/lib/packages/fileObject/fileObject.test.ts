@@ -1,18 +1,8 @@
 require('dotenv').config();
-import Item from '.';
-import Auth from '../auth';
-import Datastore from '../datastore/index';
-import Workspace from '../workspace';
-import Project from '../project';
-import { CreateDatastoreFromSeedReq, DsAction } from '../../types/datastore';
-import User from '../user';
-import { ArchiveCommentItemsParameters, CreateCommentItemsParameters, UpdateCommentItemsParameters } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
 import FileObject from '.';
 import { Blob } from 'buffer';
-import fs from 'fs';
 
-require('dotenv').config();
 /**
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
@@ -119,7 +109,7 @@ describe('File', () => {
         .add('test_file', file2)
         .save();
       expect(bol).toBe(true);
-      // await item.delete();
+      await item.delete();
     });
   });
 });

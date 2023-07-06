@@ -16,9 +16,7 @@ export default class Auth {
   // public urlGr: string;
   public client: GraphQLClient;
 
-  constructor(
-    protected urlGraphql: string,
-  ) {
+  constructor(protected urlGraphql: string) {
     // this.urlGr = urlGraphql;
     this.client = new GraphQLClient(urlGraphql);
   }
@@ -37,7 +35,7 @@ export default class Auth {
    * function logout: log out user
    * @returns ModelRes
    */
-  async logout(token: string): Promise<boolean> {
+  async logout(): Promise<boolean> {
     // handle call graphql
     const res: DtLogOut = await this.client.request(LOG_OUT);
     return res.logout.success;
@@ -47,23 +45,16 @@ export default class Auth {
    * Receive a notification every time an auth event happens.
    * @returns {Subscription} A subscription object which can be used to unsubscribe itself.
    */
-  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): {
-    data: Subscription | undefined,
-    error: ApiError | undefined
-  } {
-    try {
-      const id: string = uuid();
-      const subscription: Subscription = {
-        id,
-        callback,
-        unsubscribe: () => {
-          this.stateChangeEmitters.delete(id);
-        },
-      };
-      this.stateChangeEmitters.set(id, subscription);
-      return { data: subscription, error: undefined };
-    } catch (e) {
-      return { data: undefined, error: e as ApiError };
-    }
+  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): Subscription {
+    const id: string = uuid();
+    const subscription: Subscription = {
+      id,
+      callback,
+      unsubscribe: () => {
+        this.stateChangeEmitters.delete(id);
+      },
+    };
+    this.stateChangeEmitters.set(id, subscription);
+    return subscription;
   }
 }

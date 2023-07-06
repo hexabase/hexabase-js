@@ -1,4 +1,4 @@
-import { GetFieldSettingsRes } from "../../../lib/types/filedOption";
+import { GetFieldSettingsRes } from "../../types/fieldOption";
 import { HxbAbstract } from "../../../HxbAbstract";
 import Field from "../field";
 import { FieldNameENJP } from "../../../lib/util/type";

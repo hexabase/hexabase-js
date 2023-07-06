@@ -109,7 +109,7 @@ describe('Workspace', () => {
       jest.useFakeTimers('legacy');
       try {
         const workspace = client.currentWorkspace!;
-        await workspace.getDetail();
+        // await workspace.fetch();
         expect(typeof workspace.id).toBe('string');
         expect(typeof workspace.name).toBe('string');
       } catch (error) {

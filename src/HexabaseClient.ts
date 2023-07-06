@@ -10,6 +10,7 @@ import HexabaseSQL from './lib/sql';
 import { HxbAbstract } from './HxbAbstract';
 import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
+import { UserInviteOptions, UserInvitePl, UserInviteResponse } from './lib/types/workspace';
 
 /**
  * ログインパラメータを表すオブジェクトの型
@@ -105,11 +106,18 @@ export default class HexabaseClient {
     return true;
   }
 
+  public async logout(): Promise<boolean> {
+    return await this.auth.logout();
+  }
+
   public async setWorkspace(workspace?: Workspace | string): Promise<boolean> {
-    if (workspace) {
-      await Workspace.current(typeof workspace === 'string' ? workspace : workspace.id);
+    const id = workspace ? (typeof workspace === 'string' ? workspace : workspace.id) : undefined;
+    if (id) {
+      this.currentWorkspace = await Workspace.current(id);
     }
-    this.currentWorkspace = await Workspace.get();
+    if (!this.currentWorkspace!.id) {
+      this.currentWorkspace = Workspace.fromJson({ w_id: id }) as Workspace;
+    }
     return true;
   }
 
@@ -166,5 +174,19 @@ export default class HexabaseClient {
   public file(id?: string): FileObject {
     const f = new FileObject({ id });
     return f;
+  }
+
+  async invite(emails: string[], domain: string, options?: UserInviteOptions, workspace?: Workspace): Promise<UserInviteResponse[]> {
+    const params: UserInvitePl = {domain, ...{
+      users: emails.map(email => {
+        if (workspace) {
+          return { email, exclusive_w_id: workspace.id };
+        } else {
+          return { email };
+        }
+      }),
+    }, ...options};
+		const res = this.currentWorkspace!.rest('post', '/api/v0/userinvite', {}, params) as unknown;
+    return res as UserInviteResponse[];
   }
 }

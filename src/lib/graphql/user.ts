@@ -38,6 +38,14 @@ export const USER_REGISTER = gql`
   }
 `;
 
+export const USER_REGISTER_CONFIRM = gql`
+  mutation UserRegisterConfirm($confirmRegisterUserInput: ConfirmRegisterUser!) {
+    userRegisterConfirm(confirmRegisterUserInput: $confirmRegisterUserInput) {
+      token
+    }
+  }
+`;
+
 export const USER_PASSWORD_EXPIRY = gql`
   query UserPasswordExpiry {
     userPasswordExpiry {
@@ -81,26 +89,6 @@ export const LOG_OUT = gql`
     logout {
       data
       success
-    }
-  }
-`;
-
-export const USERNAME_EXITS = gql`
-  mutation UsernameExists($payload: UsernameExistsPl!) {
-    usernameExists(payload: $payload) {
-      added
-      exists
-      user_profile {
-        confirmed
-        email
-        email_sent
-        profile_pics {
-          mediaLink
-        }
-        u_id
-        user_code
-        username
-      }
     }
   }
 `;

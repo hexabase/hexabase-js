@@ -132,7 +132,7 @@ export default class FileObject extends HxbAbstract {
 	}
 
 	async download(): Promise<Blob> {
-		if (this.data instanceof Blob) return this.data;
+		if (this.data) return this.data;
 		const res = await this.rest('get', `/api/v0/files/${this.id}`, {}, {}, {response: 'blob'});
 		this.set('data', res as Blob);
 		return res;

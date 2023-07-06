@@ -110,6 +110,15 @@ export default class Project extends HxbAbstract {
     return datastore;
   }
 
+  datastoreSync(id?: string): Datastore {
+    if (!id) {
+      return new Datastore({ project: this, id });
+    }
+    const datastore = this._datastores.find(datastore => datastore.id === id);
+    if (!datastore) throw new Error(`Datastore ${id} not found`);
+    return datastore;
+  }
+
   async reports(): Promise<Report[]> {
     return Report.all(this);
   }

@@ -7,9 +7,9 @@ export interface UserInfo {
   u_id: string;
   current_workspace_id: string;
   is_ws_admin: string;
-  user_roles: [UserRoles];
+  user_roles: UserRole[];
 }
-export interface UserRoles {
+export interface UserRole {
   r_id: string;
   role_name: string;
   role_id: string;
@@ -139,4 +139,8 @@ export interface UsernameExistsResp {
 export interface PostInviteUsersResp {
   postInviteUsers?: PostInviteUsers[];
   error?: string;
+}
+
+export interface UserRegisterConfirmRes {
+  token?: string;
 }

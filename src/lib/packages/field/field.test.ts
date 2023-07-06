@@ -228,9 +228,12 @@ describe('Item', () => {
 		const field = await datastore.field(ITEM_FIELD);
 		item.set(FILE_FIELD, null);
 		expect(item.get(FILE_FIELD)).toEqual(null);
+		const file = item.file();
 		const data = new Blob(['test'], { type: 'text/plain' });
-		const file = new FileObject({ data, fileName: 'test.txt'});
-		item.set(FILE_FIELD, file);
+		file
+			.set('data', data)
+			.set('name','test.txt');
+		item.set(FILE_FIELD, [file]);
 		expect(item.get(FILE_FIELD)).toEqual([file]);
 		const NO_VALUE = 'NO_VALUE';
 		try {
