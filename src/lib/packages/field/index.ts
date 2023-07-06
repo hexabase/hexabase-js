@@ -7,25 +7,10 @@ import { FieldNameENJP } from "../../util/type";
 import UserRole from "../userRole";
 import Project from "../project";
 import Item from "../item";
-import ItemStatus from "../itemStatus";
-
-enum DataType {
-	TEXT = 'text',
-	NUMBER = 'number',
-	STATUS = 'status',
-	AUTONUM = 'autonum',
-	TEXTAREA = 'textarea',
-	SELECT = 'select',
-	FILE = 'file',
-	RADIO = 'radio',
-	CHECKBOX = 'checkbox',
-	CALC = 'calc',
-	DATETIME = 'datetime',
-	USERS = 'users',
-	DSLOOKUP = 'dslookup',
-	LABEL = 'label',
-	SEPARATOR = 'separator',
-};
+import FileObject from "../fileObject";
+import FieldOption from "../fieldOption";
+import User from "../user";
+import { DataType } from "../../../lib/types/field";
 
 export default class Field extends HxbAbstract {
 	datastore: Datastore;
@@ -52,6 +37,7 @@ export default class Field extends HxbAbstract {
 	sizeY: number;
 	col: number;
 	row: number;
+	_options: FieldOption[] = [];
 
   set(key: string, value: any): Field {
     switch (key) {
@@ -124,7 +110,8 @@ export default class Field extends HxbAbstract {
 				this.row = value;
 				break;
 			case 'roles':
-				this.roles = (value as any[]).map(role => UserRole.fromJson({...{ project: this.datastore.project}, ...role}) as UserRole);
+				this.roles = (value as any[])
+					.map(role => UserRole.fromJson({...{ project: this.datastore.project}, ...role}) as UserRole);
 				break;
 		}
 		return this;
@@ -138,36 +125,134 @@ export default class Field extends HxbAbstract {
     // handle call graphql
     const res: DtDatastoreGetFieldsRes = await this.request(DS_FIELDS, params);
     const data = res.datastoreGetFields!;
-    const fields = Object.keys(data.fields).map(id => Field.fromJson({...{datastore: this}, ...data.fields[id]}) as Field);
+    const fields = Object.keys(data.fields).map(id => Field.fromJson({...{ datastore }, ...data.fields[id]}) as Field);
     Object.keys(data.field_layout).forEach((key: string) => {
       const field = fields.find(f => f.id === key)!;
       const fieldLayout = FieldLayout.fromJson({...{ field }, ...data.field_layout[key]}) as FieldLayout;
       field.layout = fieldLayout;
     });
+		await Promise.all(fields.map(field => field.options()));
 		return fields;
 	}
 
 	valid(value: any): boolean {
-		if (this.dataType === 'text') {
-			return typeof value === 'string' || value === null;
+		if (value === null) return true;
+    switch (this.dataType.toLocaleLowerCase()) {
+      case DataType.TEXT:
+			case DataType.TEXTAREA:
+				return typeof value === 'string';
+			case DataType.NUMBER:
+				return typeof value === 'number';
+			case DataType.FILE:
+				if (value === '') return true;
+				if (value instanceof FileObject) return true;
+				if (typeof value === 'string') return true;
+				if (Array.isArray(value)) return true;
+				return false;
+			case DataType.DATETIME:
+				if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/)) {
+					return true;
+				}
+				return value instanceof Date;
+			case DataType.SELECT:
+			case DataType.RADIO:
+				if (typeof value !== 'string') return false;
+				return !!this._findOption(value);
+			case DataType.CHECKBOX:
+				if (typeof value === 'string') {
+					value = value.split(',');
+				}
+				return (value as any[])
+					.every((v: any) => this._findOption(v));
+			case DataType.USERS:
+				if (typeof value === 'string') {
+					value = value.split(',');
+				}
+				return (value as any[])
+					.every(v => v instanceof User || (v.email && v.user_id) || typeof v === 'string');
+			case DataType.DSLOOKUP:
+				if (value === null) return true;
+				if (value instanceof Item) return true;
+				if (typeof value === 'string') return true;
+				if (typeof value !== 'object') return false;
+				if (value.item_id && value.title) return true;
+			case DataType.AUTONUM:
+			case DataType.CALC:
+			case DataType.LABEL:
+			case DataType.SEPARATOR:
+			case DataType.STATUS:
+			default:
 		}
 		return true;
 	}
 
+	_findOption(value: any): FieldOption | undefined {
+		if (value === null) return undefined;
+		if (typeof value === 'string') {
+			return this._options.find(o => o.displayId === value || o.value.en === value || o.value.ja === value);
+		} else {
+			return this._options.find(o => o.value === value);
+		}
+	}
+
 	value(value: any, options: {[key: string]: any}): any {
-		if (this.dataType === 'dslookup' && value) {
-			value = this._valueDsLookup(value, options);
+		if (value === null) return null;
+    switch (this.dataType.toLocaleLowerCase()) {
+      case DataType.DSLOOKUP:
+				// ignore the value if value is only string
+				if (typeof value === 'string') return null;
+				return this._valueDsLookup(value, options);
+			case DataType.FILE:
+				if (value === '') return value;
+				if (value instanceof FileObject) return [value];
+				if (!Array.isArray(value) && typeof value === 'string') {
+					value = value.split(',');
+				}
+				return (value as any[]).map((file: any) => {
+					if (file instanceof FileObject) return file;
+					if (typeof file === 'object') return FileObject.fromJson(file);
+					if (file.match(/^[a-zA-Z0-9]+$/)) return new FileObject({ id: file });
+				});
+			case DataType.DATETIME:
+				if (value instanceof Date) return value;
+				return new Date(value);
+			case DataType.CHECKBOX:
+				if (!Array.isArray(value)) {
+					value = [value];
+				}
+				return value.map((v: any) => {
+					const option = this._findOption(v);
+					return option ? option.value : null;
+				});
+			case DataType.SELECT:
+			case DataType.RADIO:
+				const option = this._findOption(value);
+				return option ? option.value : null;
+			case DataType.USERS:
+				if (!Array.isArray(value)) {
+					value = [value];
+				}
+				return (value as any[])
+					.map((params: any) => (params instanceof User) ? params : (User.fromJson(params) as User));
+			case DataType.FILE:
+				if (!Array.isArray(value)) {
+					value = [value];
+				}
+				return (value as any[])
+					.map((params: any) => FileObject.fromJson(params) as FileObject);
+			default:
 		}
 		return value;
 	}
 
-	_valueDsLookup(value: any, options: {[key: string]: any}): any {
+	_valueDsLookup(value: any, options: {[key: string]: any}): Item {
+		if (value instanceof Item) return value;
 		const project = new Project({workspace: options.item.datastore.project.workspace, id: value.p_id});
 		const datastore = new Datastore({project, id: value.d_id});
 		return new Item({datastore, id: value.i_id});
 	}
 
-	convert(value: any): any {
+	async convert(value: any): Promise<any> {
     switch (this.dataType.toLocaleLowerCase()) {
       case DataType.TEXT:
 			case DataType.TEXTAREA:
@@ -177,6 +262,7 @@ export default class Field extends HxbAbstract {
       case DataType.DSLOOKUP:
 				if (value === null) return value;
         if (value instanceof Item) {
+					if (!value.id) await value.save();
           return value.id;
         }
 				throw new Error(`Field ${this.name} is not Item (${value})`);
@@ -184,13 +270,43 @@ export default class Field extends HxbAbstract {
 				if (value === null) return null;
 				if (typeof value === 'number') return value;
 				throw new Error(`Field ${this.name} is not number (${value})`);
-			case DataType.AUTONUM:
-			case DataType.CHECKBOX:
-			case DataType.SELECT:
-			case DataType.RADIO:
-			case DataType.USERS:
 			case DataType.FILE:
+				if (value === null) return null;
+				if (value instanceof FileObject) {
+					value = [value];
+				}
+				if (Array.isArray(value)) {
+					const res = await Promise.all(value.map((file: FileObject) => {
+						return file.save(this)
+					}));
+					return res.map((file: FileObject) => file.id);
+				} else {
+					throw new Error(`Field ${this.name} is not FileObject (${value})`);
+				}
+			case DataType.CHECKBOX: {
+				if (!value) return null;
+				if (!Array.isArray(value)) {
+					value = [value];
+				}
+				value.map((v: any) => {
+					const option = this._findOption(v);
+					if (!option) throw new Error(`Field ${this.name} has not option (${v})`);
+					return option.displayId;
+				});
+			}
+			case DataType.SELECT:
+			case DataType.RADIO: {
+				if (value === null) return null;
+				const option = this._findOption(value);
+				if (!option) throw new Error(`Field ${this.name} has not option (${value})`);
+			}
+			case DataType.USERS:
+				if (value === null) return null;
+				return value;
 			case DataType.DATETIME:
+				if (value === null) return null;
+				return (value as Date).toISOString();
+			case DataType.AUTONUM:
 				return value;
 			case DataType.CALC:
 			case DataType.LABEL:
@@ -204,7 +320,16 @@ export default class Field extends HxbAbstract {
 
 	static async get(datastore: Datastore, fieldId: string): Promise<Field> {
 		const res: DtDsFieldSettings = await this.request(DS_FIELD_SETTING, { fieldId, datastoreId: datastore.id });
-		console.log({...{datastore}, ...res.datastoreGetFieldSettings});
 		return Field.fromJson({...{datastore}, ...res.datastoreGetFieldSettings}) as Field;
+	}
+
+	async options(): Promise<FieldOption[] | null> {
+		if (this.dataType !== DataType.SELECT &&
+			this.dataType !== DataType.RADIO &&
+			this.dataType !== DataType.CHECKBOX
+		) return null;
+		if (this._options.length > 0) return this._options;
+		this._options = await FieldOption.all(this);
+		return this._options;
 	}
 }

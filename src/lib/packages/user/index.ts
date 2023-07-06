@@ -34,6 +34,7 @@ export default class User extends HxbAbstract {
   public profilePicture: string;
   public currentWorkspace: Workspace;
   public isWorkspaceAdmin: boolean;
+  public mediaLink: string;
 
   set(key: string, value: any): User {
     switch (key) {
@@ -59,6 +60,9 @@ export default class User extends HxbAbstract {
         break;
       case 'is_ws_admin':
         this.isWorkspaceAdmin = value;
+        break;
+      case 'media_link':
+        this.mediaLink = value;
         break;
     }
     return this;
