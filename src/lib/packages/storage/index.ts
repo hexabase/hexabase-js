@@ -1,4 +1,4 @@
-import { DELETE_STORAGE, FILE_ATTACHMENT, GET_DOWNLOAD_FILE } from '../../graphql/storage';
+import { DELETE_STORAGE, FILE_ATTACHMENT, GET_DOWNLOAD_FILE } from '../../graphql/fileObject';
 import { HxbAbstract } from '../../../HxbAbstract';
 import { ModelRes } from '../../util/type';
 import { DtGetDownloadFile, DtItemFileAttachment, DtStorage, GetDownloadFileRes, ItemFileAttachmentPl, ItemFileAttachmentRes } from '../../types/storage';
