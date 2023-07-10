@@ -50,8 +50,8 @@ export default class HexabaseClient {
         break;
       case 'dev':
         this.urlHxb = 'https://hxb-graph.hexabase.com/graphql';
-        this.restHxb = 'https://az-api.hexabase.com';
-        this.sseHxb = 'https://az-sse.hexabase.com';
+        this.restHxb = 'https://dev-api.hexabase.com';
+        this.sseHxb = 'https://dev-sse.hexabase.com';
         break;
       default:
         if (!urlHxb || urlHxb?.trim() === '') throw new Error('urlHxb is required.');
