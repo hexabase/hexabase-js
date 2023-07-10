@@ -204,13 +204,13 @@ export interface ArchiveWorkspace {
 export interface UserInvitePl extends UserInviteOptions {
   users: {
     email: string;
-    exclusive_w_id?: string,
-  }[],
-  domain: string,
+    exclusive_w_id?: string;
+  }[];
+  domain: string;
 }
 
 export interface UserInviteOptions {
-  sender_address?: string,
-  invitation_path?: string,
-  email_templates_id?: string,
+  sender_address?: string;
+  invitation_path?: string;
+  email_templates_id?: string;
 }

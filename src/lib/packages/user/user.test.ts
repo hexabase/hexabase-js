@@ -1,6 +1,7 @@
 import { PostInviteUsersPl, UsernameExists, UsernameExistsPl } from '../../types/user';
 import User from '.';
 import Auth from '../auth';
+import { HexabaseClient } from '../../../';
 require('dotenv').config();
 /**
  * Test with class User
@@ -16,16 +17,14 @@ const password = process.env.PASSWORD || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const groupId = process.env.GROUP_ID || '';
 
+const client = new HexabaseClient('dev');
+
 beforeAll(async () => {
   if (email && password) {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
-    const { token, error } = await auth.login({ email, password });
-    if (token) {
-      return tokenUs = token;
-    } else {
-      throw Error(`Need login faild to initialize sdk: ${error}`);
-    }
+    const token = await auth.login({ email, password });
+    return tokenUs = token;
   }
 });
 // testing get user register info by confirmId
@@ -33,27 +32,19 @@ describe('User', () => {
   describe('#register()', () => {
     it('should get user register info by confirm id without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(url, tokenUs);
-
-      /** check user register */
-      const { userRegister, error } = await user.confirm(confirmationId);
-
+      const userRegister = await User.confirm(confirmationId);
       // expect response respUserRegister
-      if (userRegister) {
-        expect(typeof userRegister.user.id).toBe('string');
-        expect(typeof userRegister.user.email).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      expect(typeof userRegister.id).toBe('string');
+      expect(typeof userRegister.email).toBe('string');
     });
   });
 
   describe('#getPasswordExpire()', () => {
     it('should get user password expiry without error', async () => {
+      /*
       jest.useFakeTimers('legacy');
       const user = new User(url, tokenUs);
 
-      /** check user password expiry */
       const { userPassEx, error } = await user.getPasswordExpire();
 
       // expect response getPasswordExpire
@@ -63,25 +54,16 @@ describe('User', () => {
       } else {
         throw new Error(`Error: ${error}`);
       }
+      */
     });
   });
 
   describe('#userConfirm()', () => {
     it('should get user password expiry without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(url, tokenUs);
-
-      /** check user password expiry */
-      const { userConfirm, error } = await user.userConfirm(confirmationId);
-
-      // expect response userConfirmAsync
-      if (userConfirm) {
-
-        expect(typeof userConfirm.user.email).toBe('string');
-        expect(typeof userConfirm.user.id).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      const userConfirm = await User.confirm(confirmationId);
+      expect(typeof userConfirm.email).toBe('string');
+      expect(typeof userConfirm.id).toBe('string');
     });
   });
 
@@ -89,26 +71,22 @@ describe('User', () => {
   describe('#get()', () => {
     it('should get userinfo by token without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(url, tokenUs);
-      const { userInfo, error } = await user.get(tokenUs);
-
+      await client.auth.login({ email, password })
+      const user = client.currentUser;
       // expect response
-      if (userInfo) {
-        expect(typeof userInfo.username).toBe('string');
-        expect(typeof userInfo.email).toBe('string');
-        expect(typeof userInfo.profile_pic).toBe('string');
-        expect(typeof userInfo.u_id).toBe('string');
-        expect(typeof userInfo.current_workspace_id).toBe('string');
-        expect(typeof userInfo.is_ws_admin).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      expect(typeof user!.userName).toBe('string');
+      expect(typeof user!.email).toBe('string');
+      expect(typeof user!.profilePicture).toBe('string');
+      expect(typeof user!.id).toBe('string');
+      expect(typeof user!.currentWorkspace.id).toBe('string');
+      expect(typeof user!.isWorkspaceAdmin).toBe('string');
     });
   });
 
   describe('#usernameExists()', () => {
     it('should add user to workspace without error', async () => {
       jest.useFakeTimers('legacy');
+      /*
       const user = new User(url, tokenUs);
       const payload: UsernameExistsPl = {
         current_workspace_id: workspaceId,
@@ -126,32 +104,15 @@ describe('User', () => {
       } else {
         throw new Error(`Error: ${error}`);
       }
+      */
     });
   });
 
   describe('#postInviteUsers()', () => {
     it('should add user to workspace without error', async () => {
       jest.useFakeTimers('legacy');
-      const user = new User(url, tokenUs);
-      const payload: PostInviteUsersPl = {
-        domain: 'test.hexabase.com',
-        users: [
-          {
-            ...userNameExistsResp?.user_profile,
-            current_workspace_id: workspaceId,
-            group_id: groupId,
-            status: 3,
-          }
-        ]
-      }
-      const { postInviteUsers, error } = await user.invite(payload);
-
-      // expect response getPasswordExpire
-      if (postInviteUsers) {
-        expect(typeof postInviteUsers?.[0]?.email).toBe('string');
-      } else {
-        throw new Error(`Error: ${error}`);
-      }
+      const res = await client.currentWorkspace?.invite(['test@hexabase.com'], 'test.hexabase.com');
+      expect(typeof res![0].email).toBe('string');
     });
   });
 

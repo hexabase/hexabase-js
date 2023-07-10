@@ -62,31 +62,34 @@ export interface SearchCondition {
 */
 
 export type PostgrestError = {
-  message: string
-  details: string
-  hint: string
-  code: string
-}
+  message: string;
+  details: string;
+  hint: string;
+  code: string;
+};
+
 interface PostgrestResponseBase {
-  status: number
-  statusText: string
-}
-export interface PostgrestResponseSuccess<T> extends PostgrestResponseBase {
-  error: null
-  data: T
-  count: number | null
-}
-export interface PostgrestResponseFailure extends PostgrestResponseBase {
-  error: PostgrestError
-  data: null
-  count: null
+  status: number;
+  statusText: string;
 }
 
-// TODO: in v3:
-// - remove PostgrestResponse and PostgrestMaybeSingleResponse
-// - rename PostgrestSingleResponse to PostgrestResponse
+export interface PostgrestResponseSuccess<T> extends PostgrestResponseBase {
+  error: null;
+  data: T;
+  count: number | null;
+}
+
+export interface PostgrestResponseFailure extends PostgrestResponseBase {
+  error: PostgrestError;
+  data: null;
+  count: null;
+}
+
+// TODO: in v3:;
+// - remove PostgrestResponse and PostgrestMaybeSingleResponse;
+// - rename PostgrestSingleResponse to PostgrestResponse;
 export type PostgrestSingleResponse<T> =
   | PostgrestResponseSuccess<T>
-  | PostgrestResponseFailure
-export type PostgrestMaybeSingleResponse<T> = PostgrestSingleResponse<T | null>
-export type PostgrestResponse<T> = PostgrestSingleResponse<T[]>
+  | PostgrestResponseFailure;
+export type PostgrestMaybeSingleResponse<T> = PostgrestSingleResponse<T | null>;
+export type PostgrestResponse<T> = PostgrestSingleResponse<T[]>;

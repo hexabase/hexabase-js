@@ -17,11 +17,11 @@ export type TypeOrder = 'asc' | 'desc';
 
 export interface SortOrder {
   [k: string]: TypeOrder;
-};
+}
 
 
 export interface QueryParameter {
-  client: HexabaseClient,
-  datastoreId?: string,
-  projectId?: string,
+  client: HexabaseClient;
+  datastoreId?: string;
+  projectId?: string;
 }

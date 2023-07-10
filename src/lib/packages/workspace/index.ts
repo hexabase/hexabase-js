@@ -257,9 +257,11 @@ export default class Workspace extends HxbAbstract {
    * function getGroup: get workspace group and their children
    * @returns Group
    */
-  async group(id: string): Promise<Group> {
-    const g = this._groups.find(g => g.id === id);
-    if (g) return g;
+  async group(id?: string): Promise<Group> {
+    if (id) {
+      const g = this._groups.find(g => g.id === id);
+      if (g) return g;
+    }
     const group = new Group({ workspace: this, id });
     await group.fetch();
     this._groups.push(group);

@@ -159,7 +159,6 @@ export default class HexabaseClient {
    * initialize query method
    * @returns new Storage
    */
-  
   public query(projectId: string): HexabaseSQL {
     return new HexabaseSQL({ projectId });
   }

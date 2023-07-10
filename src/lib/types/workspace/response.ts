@@ -284,8 +284,7 @@ export interface WorkspaceIDRes {
   error?: string;
 }
 
-
 export interface UserInviteResponse {
-  email: string,
-  stats: number,
+  email: string;
+  stats: number;
 }
