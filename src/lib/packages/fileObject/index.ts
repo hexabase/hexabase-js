@@ -1,11 +1,11 @@
-import { HxbAbstract } from "../../../HxbAbstract";
+import { HxbAbstract } from '../../../HxbAbstract';
 import { Blob } from 'buffer';
 
 import { UploadFileParameters, UploadFileRes, DeleteFileRes, UploadItemFileParameters } from '../../types/fileObject/';
 import { DELETE_STORAGE } from '../../graphql/fileObject';
-import Datastore from "../datastore";
-import Item from "../item";
-import Field from "../field";
+import Datastore from '../datastore';
+import Item from '../item';
+import Field from '../field';
 
 export default class FileObject extends HxbAbstract {
 	public item: Item;
@@ -101,7 +101,7 @@ export default class FileObject extends HxbAbstract {
 			file: this.data,
 			application_id: this.item.datastore.project.id,
 			datastore_id: this.item.datastore.id,
-		}
+		};
 		const path = `/api/v0/items/${this.item.id}/fields/${field.id}/attachments`;
 		const res = await this.rest('post', path, {}, params, {binary: true}) as UploadFileRes;
 		this.set('id', res.file_id);
@@ -112,7 +112,7 @@ export default class FileObject extends HxbAbstract {
 		if (this.id) return this;
 		const params: UploadFileParameters = {
 			fileName: this.name, file: this.data
-		}
+		};
 		const path = '/api/v0/files';
 		const res = await this.rest('post', path, {}, params, {binary: true}) as UploadFileRes;
 		this.set('id', res.file_id);

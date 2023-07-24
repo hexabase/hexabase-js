@@ -1,5 +1,5 @@
-import { DtItemWithSearch, GetItemsParameters } from "../types/item";
-import HexabaseClient from "../../HexabaseClient";
+import { DtItemWithSearch, GetItemsParameters } from '../types/item';
+import HexabaseClient from '../../HexabaseClient';
 export default class HexabaseBuilder  {
   url: URL;
   constructor(

@@ -1,6 +1,6 @@
-import { HxbAbstract } from "../../../HxbAbstract";
-import Project from "../project";
-import Template from "../template";
+import { HxbAbstract } from '../../../HxbAbstract';
+import Project from '../project';
+import Template from '../template';
 
 export default class TemplateCategory extends HxbAbstract {
 	name: string;

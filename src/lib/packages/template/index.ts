@@ -1,7 +1,7 @@
-import { DtTemplates } from "../../types/project";
-import { HxbAbstract } from "../../../HxbAbstract";
-import TemplateCategory from "../templateCategory";
-import { GET_TEMPLATES } from "../../graphql/project";
+import { DtTemplates } from '../../types/project';
+import { HxbAbstract } from '../../../HxbAbstract';
+import TemplateCategory from '../templateCategory';
+import { GET_TEMPLATES } from '../../graphql/project';
 
 export default class Template extends HxbAbstract {
 	id: string;
@@ -13,7 +13,7 @@ export default class Template extends HxbAbstract {
 		super();
 		this.category = category;
 	}
-	
+
   set(key: string, value: any): Template {
     switch (key) {
 			case 'tp_id':

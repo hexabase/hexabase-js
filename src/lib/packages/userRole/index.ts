@@ -1,4 +1,4 @@
-import { HxbAbstract } from "../../../HxbAbstract";
+import { HxbAbstract } from '../../../HxbAbstract';
 
 export default class UserRole extends HxbAbstract {
 	canExecute: boolean;

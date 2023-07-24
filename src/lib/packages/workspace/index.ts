@@ -332,7 +332,7 @@ export default class Workspace extends HxbAbstract {
     const payload = {
       w_id: this.id,
       archived: true,
-    }
+    };
     const res: ResponseErrorNull = await this.request(ARCHIVE_WORKSPACE, { payload });
     return !res.error;
   }

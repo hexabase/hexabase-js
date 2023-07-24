@@ -1,7 +1,7 @@
-import { GetFieldSettingsRes } from "../../types/fieldOption";
-import { HxbAbstract } from "../../../HxbAbstract";
-import Field from "../field";
-import { FieldNameENJP } from "../../../lib/util/type";
+import { GetFieldSettingsRes } from '../../types/fieldOption';
+import { HxbAbstract } from '../../../HxbAbstract';
+import Field from '../field';
+import { FieldNameENJP } from '../../../lib/util/type';
 
 export default class FieldOption extends HxbAbstract {
 	public field: Field;
@@ -53,7 +53,7 @@ export default class FieldOption extends HxbAbstract {
 	static async all(field: Field): Promise<FieldOption[]> {
 		const { datastore } = field;
 		const path = `/api/v0/applications/${datastore.project.id}/datastores/${datastore.id}/fields/${field.id}`;
-		const res: GetFieldSettingsRes = await this.rest('GET', path, {with_options: "true"});
+		const res: GetFieldSettingsRes = await this.rest('GET', path, {with_options: 'true'});
 		return res.options
 			.map(params => FieldOption.fromJson({...{ field }, ...params}) as FieldOption);
 	}

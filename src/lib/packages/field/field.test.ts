@@ -232,7 +232,7 @@ describe('Item', () => {
 		const data = new Blob(['test'], { type: 'text/plain' });
 		file
 			.set('data', data)
-			.set('name','test.txt');
+			.set('name', 'test.txt');
 		item.set(FILE_FIELD, [file]);
 		expect(item.get(FILE_FIELD)).toEqual([file]);
 		const NO_VALUE = 'NO_VALUE';

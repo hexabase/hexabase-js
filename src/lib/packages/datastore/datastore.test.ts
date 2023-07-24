@@ -10,7 +10,7 @@ require('dotenv').config();
  * Test with class Datastore
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
-let tokenDs = process.env.TOKEN || '';
+const tokenDs = process.env.TOKEN || '';
 const client = new HexabaseClient;
 const workspaceId = process.env.DEV_WORKSPACE_ID;
 const datastoreId = process.env.DEV_DATASOTRE_ID || '';
@@ -24,7 +24,7 @@ let datastore: Datastore;
 
 beforeAll(async () => {
   await client.login({ email, password, token: tokenDs });
-  client.setWorkspace(workspaceId!)
+  client.setWorkspace(workspaceId!);
   const ary = await client.currentWorkspace!.projects();
   const p = ary.map((project) => {
     const name = project.name as FieldNameENJP;
@@ -73,7 +73,7 @@ describe('Datastore', () => {
       }
     });
   });
-  
+
   describe('#getDetail()', () => {
     it('should get fields without error', async () => {
       // jest.useFakeTimers('legacy');
@@ -87,7 +87,7 @@ describe('Datastore', () => {
       }
     });
   });
-  
+
   describe('#getFields()', () => {
     it('should get fields in Ds', async () => {
       jest.useFakeTimers('legacy');
@@ -101,7 +101,7 @@ describe('Datastore', () => {
       }
     });
   });
-  
+
   describe('#getField()', () => {
     it('should get field setting in Ds', async () => {
       jest.useFakeTimers('legacy');
@@ -116,7 +116,7 @@ describe('Datastore', () => {
       }
     });
   });
-  
+
   describe('#getActions()', () => {
     it('should get actions in Ds', async () => {
       jest.useFakeTimers('legacy');
@@ -132,7 +132,7 @@ describe('Datastore', () => {
       }
     });
   });
-  
+
   describe('#getStatuses()', () => {
     it('should get status in Ds', async () => {
       jest.useFakeTimers('legacy');
@@ -143,7 +143,7 @@ describe('Datastore', () => {
       expect(typeof status[0].id).toBe('string');
     });
   });
-  
+
   describe('#getAction()', () => {
     it('should get action by Id in Ds', async () => {
       jest.useFakeTimers('legacy');
@@ -154,7 +154,7 @@ describe('Datastore', () => {
       expect(typeof action!.name).toBe('string');
     });
   });
-  
+
   describe('#validateDatastoreDisplayID()', () => {
     it('should validate display id datastore current without error', async () => {
       jest.useFakeTimers('legacy');
@@ -171,7 +171,7 @@ describe('Datastore', () => {
       }
     });
   });
-  
+
   describe('#updateDatastore()', () => {
     it('should update datastore current without error', async () => {
       jest.useFakeTimers('legacy');

@@ -1,16 +1,16 @@
-import { DtDatastoreGetFieldsRes, DtDsFieldSettings } from "../../types/datastore";
-import { HxbAbstract } from "../../../HxbAbstract";
-import Datastore from "../datastore";
-import FieldLayout from "../fieldLayout";
-import { DS_FIELDS, DS_FIELD_SETTING } from "../../graphql/datastore";
-import { FieldNameENJP } from "../../util/type";
-import UserRole from "../userRole";
-import Project from "../project";
-import Item from "../item";
-import FileObject from "../fileObject";
-import FieldOption from "../fieldOption";
-import User from "../user";
-import { DataType } from "../../../lib/types/field";
+import { DtDatastoreGetFieldsRes, DtDsFieldSettings } from '../../types/datastore';
+import { HxbAbstract } from '../../../HxbAbstract';
+import Datastore from '../datastore';
+import FieldLayout from '../fieldLayout';
+import { DS_FIELDS, DS_FIELD_SETTING } from '../../graphql/datastore';
+import { FieldNameENJP } from '../../util/type';
+import UserRole from '../userRole';
+import Project from '../project';
+import Item from '../item';
+import FileObject from '../fileObject';
+import FieldOption from '../fieldOption';
+import User from '../user';
+import { DataType } from '../../../lib/types/field';
 
 export default class Field extends HxbAbstract {
 	datastore: Datastore;
@@ -277,7 +277,7 @@ export default class Field extends HxbAbstract {
 				}
 				if (Array.isArray(value)) {
 					const res = await Promise.all(value.map((file: FileObject) => {
-						return file.save(this)
+						return file.save(this);
 					}));
 					return res.map((file: FileObject) => file.id);
 				} else {

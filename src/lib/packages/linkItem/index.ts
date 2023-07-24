@@ -1,7 +1,7 @@
-import { ADD_ITEM_LINK, DELETE_ITEM_LINK } from "../../graphql/item";
-import { HxbAbstract } from "../../../HxbAbstract";
-import Item from "../item";
-import { DtAddItemLink, DtDeleteItemLink } from "../../types/item";
+import { ADD_ITEM_LINK, DELETE_ITEM_LINK } from '../../graphql/item';
+import { HxbAbstract } from '../../../HxbAbstract';
+import Item from '../item';
+import { DtAddItemLink, DtDeleteItemLink } from '../../types/item';
 
 export default class LinkItem extends HxbAbstract {
 	item: Item;

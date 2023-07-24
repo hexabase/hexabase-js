@@ -1,6 +1,6 @@
 export interface AddUserResponse {
-  added: boolean
-  exists: boolean
+  added: boolean;
+  exists: boolean;
   user_profile: {
 		confirmed: boolean
 		email: string
@@ -10,5 +10,5 @@ export interface AddUserResponse {
 		}[],
 		u_id: string
 		username: string
-	}
+	};
 }

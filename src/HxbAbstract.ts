@@ -59,7 +59,7 @@ export class HxbAbstract {
     if (!options.binary) {
       params.headers = {...params.headers, ...{
         'Content-Type': 'application/json',
-      }}; 
+      }};
     }
     if (['get', 'delete'].indexOf(method.toLocaleLowerCase()) > -1) {
       return fetch(url, params);

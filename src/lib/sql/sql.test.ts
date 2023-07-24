@@ -5,7 +5,7 @@ import { NewItems, UpdateItemRes } from '../types/item';
 require('dotenv').config();
 jest.useRealTimers();
 
-let token = process.env.TOKEN || '';
+const token = process.env.TOKEN || '';
 const hexabase = new HexabaseClient();
 const url = process.env.URL || '';
 const taskId = process.env.TASKID || '';

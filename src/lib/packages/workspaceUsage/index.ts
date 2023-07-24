@@ -1,5 +1,5 @@
-import { HxbAbstract } from "../../../HxbAbstract";
-import Workspace from "../workspace";
+import { HxbAbstract } from '../../../HxbAbstract';
+import Workspace from '../workspace';
 
 export default class WorkspaceUsage extends HxbAbstract {
 	workspace: Workspace;

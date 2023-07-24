@@ -275,11 +275,11 @@ export default class Item extends HxbAbstract {
       }
     }
     const items = res.datastoreGetDatastoreItems.items
-      .map((params:any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
+      .map((params: any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
     const totalCount = res.datastoreGetDatastoreItems.totalItems;
     return {
       totalCount, items,
-    }
+    };
   }
 
   static async search(payload: GetItemsParameters, datastore: Datastore): Promise<Item[]> {
@@ -419,7 +419,7 @@ export default class Item extends HxbAbstract {
       projectId: this.datastore.project.id,
       itemActionParameters: params
     });
-    this.sets(res.datastoreExecuteItemAction.item)
+    this.sets(res.datastoreExecuteItemAction.item);
     this._setStatus(this._status);
     return true;
   }
@@ -440,7 +440,7 @@ export default class Item extends HxbAbstract {
       params.history = {
         comment,
         datastore_id: this.datastore.id,
-      }
+      };
     }
     const res: DtUpdateItem = await this.request(DATASTORE_UPDATE_ITEM, {
       datastoreId: this.datastore.id,
@@ -575,7 +575,7 @@ export default class Item extends HxbAbstract {
       datastoreId: this.datastore.id,
       itemId: this.id,
       getHistoryParamQueries,
-    }
+    };
     const res: DtItemHistories = await this.request(ITEM_HISTORIES, params);
     const histories = res.getHistories.histories
       .map((history: any) => ItemHistory.fromJson({...{item: this}, ...history}) as ItemHistory);
@@ -584,7 +584,7 @@ export default class Item extends HxbAbstract {
       histories,
     };
   }
-  
+
   /**
    * function getItemRelated: get item related in datastore
    * @params datastoreId, itemId and linkedDatastoreId is requirement

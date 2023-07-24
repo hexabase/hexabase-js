@@ -1,5 +1,5 @@
-import { FieldNameENJP } from "../../util/type";
-import { HxbAbstract } from "../../../HxbAbstract";
+import { FieldNameENJP } from '../../util/type';
+import { HxbAbstract } from '../../../HxbAbstract';
 export default class Status extends HxbAbstract {
 	id: string;
 	displayId: string;

@@ -1,4 +1,4 @@
-import { HxbAbstract } from "../../../HxbAbstract";
+import { HxbAbstract } from '../../../HxbAbstract';
 
 import {
 	DeveloperFunctions,
@@ -6,12 +6,12 @@ import {
 	NewWorkspaces,
 	TaskQueue,
 	WsSettings
-} from "../../types/workspace";
-import Workspace from "../workspace";
+} from '../../types/workspace';
+import Workspace from '../workspace';
 
 export default class WorkspaceFunction extends HxbAbstract {
 	workspace: Workspace;
-	wsSettings:{
+	wsSettings: {
 		disableArchive?: boolean;
 		disableChangeName?: boolean;
 		disableChangeLogo?: boolean;
@@ -19,13 +19,13 @@ export default class WorkspaceFunction extends HxbAbstract {
 		disablePasswordPolicy?: boolean;
 		disableManageAdmins?: boolean;
 	} = {};
-	taskQueue:{
+	taskQueue: {
 		showTaskList?: number
 	} = {};
-	newWorkspaces:{
+	newWorkspaces: {
 		newWorkspace?: number;
 	} = {};
-	groupSettings:{
+	groupSettings: {
 		disableGroupImport?: boolean;
 		disableUserImport?: boolean;
 		disableNewGroup?: boolean;

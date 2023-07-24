@@ -1,4 +1,4 @@
-import { SearchCondition } from '../types/item'
+import { SearchCondition } from '../types/item';
 
 export default class QueryCondition {
   static or(conditions: SearchCondition[]): SearchCondition {

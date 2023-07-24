@@ -1,4 +1,4 @@
-import { HxbAbstract } from "../../../HxbAbstract";
+import { HxbAbstract } from '../../../HxbAbstract';
 
 export default class Redirect extends HxbAbstract {
 	redirectUrl: string;

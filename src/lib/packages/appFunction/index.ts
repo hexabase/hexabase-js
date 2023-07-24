@@ -1,4 +1,4 @@
-import { HxbAbstract } from "../../../HxbAbstract";
+import { HxbAbstract } from '../../../HxbAbstract';
 
 export default class AppFunction extends HxbAbstract {
 	name: string;
@@ -36,7 +36,7 @@ export default class AppFunction extends HxbAbstract {
 		enableActionValidation: false,
 	};
 
-	csvImport:{
+	csvImport: {
 		useQrDownload: boolean;
 		disableCsvUpdate: boolean;
 		disableReplaceImport: boolean;
@@ -46,7 +46,7 @@ export default class AppFunction extends HxbAbstract {
 		disableReplaceImport: false,
 	};
 
-	dataReports:{
+	dataReports: {
 		disableSaveReports: boolean;
 		disableCsvDownloads: boolean;
 		disableEditReports: boolean;
@@ -55,8 +55,8 @@ export default class AppFunction extends HxbAbstract {
 		disableCsvDownloads: false,
 		disableEditReports: false,
 	};
-	
-	itemView:{
+
+	itemView: {
 		disablePinItems: boolean;
 		disableEditFields: boolean;
 		disableEditStatuses: boolean;

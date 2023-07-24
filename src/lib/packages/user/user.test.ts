@@ -71,7 +71,7 @@ describe('User', () => {
   describe('#get()', () => {
     it('should get userinfo by token without error', async () => {
       jest.useFakeTimers('legacy');
-      await client.auth.login({ email, password })
+      await client.auth.login({ email, password });
       const user = client.currentUser;
       // expect response
       expect(typeof user!.userName).toBe('string');

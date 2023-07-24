@@ -14,4 +14,4 @@ export enum DataType {
 	DSLOOKUP = 'dslookup',
 	LABEL = 'label',
 	SEPARATOR = 'separator',
-};
+}

@@ -1,5 +1,5 @@
-import { HxbAbstract } from "../../../HxbAbstract";
-import Item from "../item";
+import { HxbAbstract } from '../../../HxbAbstract';
+import Item from '../item';
 
 export default class StatusAction extends HxbAbstract {
 	item: Item;

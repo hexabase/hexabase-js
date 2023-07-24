@@ -1,7 +1,7 @@
-import { FieldNameENJP } from "../../util/type";
-import { HxbAbstract } from "../../../HxbAbstract";
-import Datastore from "../datastore";
-import UserRole from "../userRole";
+import { FieldNameENJP } from '../../util/type';
+import { HxbAbstract } from '../../../HxbAbstract';
+import Datastore from '../datastore';
+import UserRole from '../userRole';
 
 export default class Action extends HxbAbstract {
 	datastore: Datastore;

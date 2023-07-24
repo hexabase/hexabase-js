@@ -1,17 +1,17 @@
-import { HxbAbstract } from "../../../HxbAbstract";
-import Item from "../item";
-import User from "../user";
+import { HxbAbstract } from '../../../HxbAbstract';
+import Item from '../item';
+import User from '../user';
 import { UpdateCommentItemsParameters, DtDatastoreDeleteCommentItem,
 	ArchiveCommentItemsParameters,
 	DtDatastoreCreateCommentItem,
 	CreateCommentItemsParameters,
 	DtDatastoreUpdateCommentItem,
-} from "../../types/item";
+} from '../../types/item';
 import {
 	POST_UPDATE_ITEM_HISTORY,
 	POST_DELETE_ITEM_HISTORY,
 	POST_NEW_ITEM_HISTORY
-} from "../../graphql/item";
+} from '../../graphql/item';
 
 export default class ItemHistory extends HxbAbstract {
 	id: string;
