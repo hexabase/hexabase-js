@@ -5,7 +5,6 @@ export * from './datastore';
 export * from './project';
 export * from './sql';
 export * from './workspace';
-export * from './storage';
 export * from './item';
 export * from './fileObject';
 export * from './fieldOption';

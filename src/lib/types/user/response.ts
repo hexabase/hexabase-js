@@ -1,4 +1,4 @@
-import { ProfilePic } from "./input";
+import { ProfilePic } from './input';
 
 export interface UserInfo {
   username: string;

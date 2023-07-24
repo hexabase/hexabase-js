@@ -78,18 +78,18 @@ export interface PostInviteUsersPl {
 }
 
 export interface UserRegisterPl {
-  confirmation_id: string,
-  email: string,
-  username: string,
-  password: string,
-  workspace: string,
+  confirmation_id: string;
+  email: string;
+  username: string;
+  password: string;
+  workspace: string;
 }
 
 export interface ConfirmRegisterUserPl {
-  confirmation_id: string,
-  email: string,
-  username?: string,
-  password?: string,
-  workspace?: string,
-  additional_info?: {[key: string]: any},
+  confirmation_id: string;
+  email: string;
+  username?: string;
+  password?: string;
+  workspace?: string;
+  additional_info?: {[key: string]: any};
 }

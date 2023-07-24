@@ -317,21 +317,21 @@ export interface ItemWithSearchRes {
 }
 
 export interface ItemWithSearchResItem {
-  Id: string
-  Status: string
-  Title: string
-  a_id: string
-  created_at: string
-  created_by: string
-  d_id: string
-  i_id: string
-  p_id: string
-  rev_no: string
-  status_id: string
-  title?: string
-  unread: string
-  updated_at: string
-  updated_by: string
+  Id: string;
+  Status: string;
+  Title: string;
+  a_id: string;
+  created_at: string;
+  created_by: string;
+  d_id: string;
+  i_id: string;
+  p_id: string;
+  rev_no: string;
+  status_id: string;
+  title?: string;
+  unread: string;
+  updated_at: string;
+  updated_by: string;
 }
 
 export interface DatastoreDeleteDatastoreItemsRes {

@@ -235,16 +235,17 @@ export default class Item extends HxbAbstract {
     if (field.dataType.toLocaleLowerCase() === 'status') {
       this._status = value;
     }
-    this.fields[fieldName] = value;
+    this.fields[field.displayId] = value;
     return this;
   }
 
-  get(name: string, defaultValue?: any): any {
+  get<T>(name: string, defaultValue?: T): T | undefined {
     const value = this.fields[name] && this.fields[name].field ? this.fields[name].value : this.fields[name];
     if (value === undefined || value === null && defaultValue) {
       return defaultValue;
     }
-    return value;
+    if (!value) return undefined;
+    return value as T;
 	}
 
   /**
@@ -266,14 +267,13 @@ export default class Item extends HxbAbstract {
     const res: DtDsItems = await Item.request(DS_ITEMS, payload);
     // check db link
     for (const item of res.datastoreGetDatastoreItems.items) {
-      if (!item.item_links || item.item_links.length === 0) continue;
+      if (!item.item_links || !item.item_links.links || item.item_links.length === 0) continue;
       for (const link of item.item_links.links) {
         if (!link.d_id) continue;
         const d = await datastore.project.datastore(link.d_id);
         await d.fields();
       }
     }
-
     const items = res.datastoreGetDatastoreItems.items
       .map((params:any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
     const totalCount = res.datastoreGetDatastoreItems.totalItems;
@@ -366,10 +366,12 @@ export default class Item extends HxbAbstract {
       is_notify_to_sender: true,
       ensure_transaction: false,
       exec_children_post_procs: true,
+      /*
       access_key_updates: {
-        overwrite: true,
+        overwrite: false,
         ignore_action_settings: true,
       },
+      */
       item: await this.toJson(),
     };
     // handle call graphql

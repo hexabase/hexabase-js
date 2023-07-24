@@ -31,8 +31,8 @@ import { HxbAbstract } from "../../../HxbAbstract";
 import Workspace from '../workspace';
 export default class User extends HxbAbstract {
   public id: string;
-  public user_name: string;
-  public access_key: string;
+  public userName: string;
+  public accessKey: string;
   public email: string;
   public profilePicture: string;
   public currentWorkspace: Workspace;
@@ -43,10 +43,10 @@ export default class User extends HxbAbstract {
     switch (key) {
       case 'user_name':
       case 'username':
-        this.user_name = value;
+        this.userName = value;
         break;
       case 'access_key':
-        this.access_key = value;
+        this.accessKey = value;
         break;
       case 'email':
         this.email = value;
@@ -137,7 +137,6 @@ export default class User extends HxbAbstract {
     // handle call graphql
     try {
       const res: DtPostInviteUsersRes = await this.request(POST_INVITE_USERS, { payload });
-
       data.postInviteUsers = res?.postInviteUsers;
     } catch (error: any) {
       data.error = JSON.stringify(error.response.errors);

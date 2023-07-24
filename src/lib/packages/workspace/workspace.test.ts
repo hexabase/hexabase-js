@@ -25,7 +25,7 @@ const updateWorkspaceSettingsInput: any = {
   payload: {}
 };
 
-const client = new HexabaseClient;
+const client = new HexabaseClient('dev');
 
 /** run first testing  */
 beforeAll(async () => {
@@ -179,7 +179,7 @@ describe('Workspace', () => {
       // const workspace = await client.workspaces.getCurrent();
       const workspace = await client.workspace('62bac0f0a65b33ec0c212a67');
       try {
-        const group = await workspace.getGroup();
+        const group = await workspace.group();
         // expect response
         if (group) {
           expect(typeof group.children.length).toBe('number');
