@@ -92,10 +92,10 @@ export class HxbAbstract {
   }
 
   static fromJson(json: {[key: string]: any}): HxbAbstract {
-		const obj = new this;
-		obj.sets(json);
-		return obj;
-	}
+    const obj = new this;
+    obj.sets(json);
+    return obj;
+  }
 
   sets(params: {[key: string]: any}): HxbAbstract {
     if (params.workspace) this.set('workspace', params.workspace);

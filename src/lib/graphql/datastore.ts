@@ -140,53 +140,53 @@ export const GET_DATASTORES = gql`
 `;
 
 export const GET_DATASTORE_DETAIL = gql`
-	query DatastoreSetting($datastoreId: String!) {
-		datastoreSetting(datastoreId: $datastoreId) {
+  query DatastoreSetting($datastoreId: String!) {
+    datastoreSetting(datastoreId: $datastoreId) {
       display_id
       names
-		  id
-			field_layout {
-				display_id
-				col
-				id
-				row
-				size_x
-				size_y
-			}
-			fields {
-				as_title
-				data_type
-				display_id
-				display_name
-				field_index
-				full_text
-				id
-				max_value
-				min_value
-				names
-				options {
-					o_id
-					_key
-				  fieldID
-				}
-				show_list
-			  search
-				status
-				title_order
-				unique
-			}
-			roles {
-				name
-				id
-				display_id
-			}
-			statuses {
-				names
-				display_id
-			  id
-			}
-		}
-	}
+      id
+      field_layout {
+        display_id
+        col
+        id
+        row
+        size_x
+        size_y
+      }
+      fields {
+        as_title
+        data_type
+        display_id
+        display_name
+        field_index
+        full_text
+        id
+        max_value
+        min_value
+        names
+        options {
+          o_id
+          _key
+          fieldID
+        }
+        show_list
+        search
+        status
+        title_order
+        unique
+      }
+      roles {
+        name
+        id
+        display_id
+      }
+      statuses {
+        names
+        display_id
+        id
+      }
+    }
+  }
 `;
 
 export const CREATE_DATASTORE_FROM_TEMPLATE = gql`

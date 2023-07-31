@@ -246,7 +246,7 @@ export default class Item extends HxbAbstract {
     }
     if (!value) return undefined;
     return value as T;
-	}
+  }
 
   /**
    * function get: get items in datastore
