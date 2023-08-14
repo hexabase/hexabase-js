@@ -92,16 +92,16 @@ export interface DeleteItemReq {
 }
 
 export interface DeleteItem {
-  projectId: string,
-  datastoreId: string,
-  itemId: string,
+  projectId: string;
+  datastoreId: string;
+  itemId: string;
   deleteItemReq: DeleteItemReq
 }
 
 export interface DeleteItemParameter {
-  deleteLinkedItems?: boolean,
-  targetDatastores?: any,
-  useDisplayId?: boolean,
+  deleteLinkedItems?: boolean;
+  targetDatastores?: any;
+  useDisplayId?: boolean;
 }
 
 export interface ConditionDeleteItems {
@@ -110,14 +110,14 @@ export interface ConditionDeleteItems {
 }
 
 export interface DeleteItemsParameter {
-  conditions?: ConditionDeleteItems[],
-  use_display_id?: boolean,
+  conditions?: ConditionDeleteItems[];
+  use_display_id?: boolean;
 }
 
 export interface DeleteItemsParameters {
-  datastoreId: string,
-  projectId?: string,
-  deleteItemsParameters?: DeleteItemsParameter,
+  datastoreId: string;
+  projectId?: string;
+  deleteItemsParameters?: DeleteItemsParameter;
 }
 
 export interface GetItemDetailPl {

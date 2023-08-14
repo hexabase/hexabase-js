@@ -200,7 +200,9 @@ export default class Field extends HxbAbstract {
     switch (this.dataType.toLocaleLowerCase()) {
       case DataType.DSLOOKUP:
 				// ignore the value if value is only string
-				if (typeof value === 'string') return null;
+				if (typeof value === 'string') {
+					return value;
+				}
 				return this._valueDsLookup(value, options);
 			case DataType.FILE:
 				if (value === '') return value;
@@ -277,7 +279,7 @@ export default class Field extends HxbAbstract {
 				}
 				if (Array.isArray(value)) {
 					const res = await Promise.all(value.map((file: FileObject) => {
-						return file.save(this)
+						return file.id ? file : file.save(this)
 					}));
 					return res.map((file: FileObject) => file.id);
 				} else {
