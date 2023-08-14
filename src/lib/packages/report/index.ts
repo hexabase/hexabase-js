@@ -32,9 +32,9 @@ export default class Report extends HxbAbstract {
       case 'hide_menu':
         this.hideMenu = value;
         break;
-		}
-		return this;
-	}
+    }
+    return this;
+  }
 
   /**
    * function getReports: get reports list in project

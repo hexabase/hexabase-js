@@ -20,7 +20,7 @@ export default class HexabaseSQL extends HxbAbstract {
     }
     return this;
   }
-  
+
   from(datastoreId: string): Query {
     this.set('datastoreId', datastoreId);
     return new Query({ queryClient: this });

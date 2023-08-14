@@ -44,7 +44,7 @@ describe('ItemLink', () => {
     });
   });
 
-  
+
   describe('#deleteLink()', () => {
     it('should delete item link in datastore', async () => {
       jest.useFakeTimers('legacy');
@@ -98,7 +98,7 @@ describe('ItemLink', () => {
         .link(item3)
         .save();
       expect(bol).toBe(true);
-      
+
       const items = await item1.links(linkedDatastoreId);
       expect(items[0].datastore.id).toBe(linkedDatastoreId);
     });

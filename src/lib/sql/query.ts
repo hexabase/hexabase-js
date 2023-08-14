@@ -3,7 +3,7 @@ import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
 import { CREATE_NEW_ITEM, DATASTORE_UPDATE_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
 import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems, UpdateCurrentItem, UpdateItemRes, ItemWithSearch, DeleteItemReq, DtItemWithSearch, SearchCondition, ConditionDeleteItems, SortField } from '../types/item';
-import { SearchParameter } from '../types/sql'
+import { SearchParameter } from '../types/sql';
 import { QueryParameter, SortOrder } from '../types/sql/input';
 import { ModelRes } from '../util/type';
 import Item from '../packages/item';
@@ -23,7 +23,7 @@ export default class Query extends HxbAbstract {
   // projectId?: string;
   // datastoreId?: string;
   public useDisplayId = true;
-  
+
   set(key: string, value: any): this {
     switch (key) {
       case 'queryClient':
@@ -55,7 +55,7 @@ export default class Query extends HxbAbstract {
 
   order<SortOrders extends SortOrder>(values: SortOrders): this {
     const sortFields: SortField[] = [];
-    const entries = Object.entries(values)
+    const entries = Object.entries(values);
     entries.map(([key, val]) => {
       sortFields.push({ id: key, order: val });
     });
@@ -89,7 +89,7 @@ export default class Query extends HxbAbstract {
   }
 
   private async _execute(options: MapType = {}): Promise<{ items: Item[], totalCount: number}> {
-    const project = await Query.client.currentWorkspace?.project(this.queryClient.projectId)
+    const project = await Query.client.currentWorkspace?.project(this.queryClient.projectId);
     const datastore = await project?.datastore(this.queryClient.datastoreId)!;
     const payload = this._baseParams();
     if (this.query.conditions) {
@@ -126,7 +126,7 @@ export default class Query extends HxbAbstract {
       item.save()
         .then(() => resolve(item))
         .catch(reject);
-    })
+    });
   }
 
   async update(params: MapType): Promise<Item[]> {
@@ -141,7 +141,7 @@ export default class Query extends HxbAbstract {
       item.save()
         .then(() => resolve(item))
         .catch(reject);
-    })
+    });
   }
 
   async delete(): Promise<boolean> {

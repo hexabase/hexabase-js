@@ -185,7 +185,7 @@ export default class HexabaseClient {
         }
       }),
     }, ...options};
-		const res = this.currentWorkspace!.rest('post', '/api/v0/userinvite', {}, params) as unknown;
+    const res = this.currentWorkspace!.rest('post', '/api/v0/userinvite', {}, params) as unknown;
     return res as UserInviteResponse[];
   }
 }

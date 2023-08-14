@@ -27,7 +27,7 @@ import {
   ConfirmRegisterUserPl
 } from '../../types/user';
 
-import { HxbAbstract } from "../../../HxbAbstract";
+import { HxbAbstract } from '../../../HxbAbstract';
 import Workspace from '../workspace';
 export default class User extends HxbAbstract {
   public id: string;
@@ -121,7 +121,7 @@ export default class User extends HxbAbstract {
     return user;
   }
 
-  
+
 
   /**
    * function postInviteUsers: invite user to workspace

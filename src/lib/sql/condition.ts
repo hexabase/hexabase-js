@@ -1,10 +1,10 @@
-import { SearchCondition } from '../types/item'
+import { SearchCondition } from '../types/item';
 
 export default class QueryCondition {
   static or(conditions: SearchCondition[]): SearchCondition {
     const result: SearchCondition = {};
-		result.conditions = [...conditions];
-		result.use_or_condition = true;
+    result.conditions = [...conditions];
+    result.use_or_condition = true;
     return result;
   }
 

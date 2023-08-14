@@ -95,7 +95,7 @@ export interface DeleteItem {
   projectId: string;
   datastoreId: string;
   itemId: string;
-  deleteItemReq: DeleteItemReq
+  deleteItemReq: DeleteItemReq;
 }
 
 export interface DeleteItemParameter {

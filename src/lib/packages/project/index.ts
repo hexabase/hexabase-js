@@ -183,7 +183,7 @@ export default class Project extends HxbAbstract {
       project_name: this.name,
       project_displayid: this.displayId,
       theme: this.theme,
-    }
+    };
     // handle call graphql
     const res: DtUpdateNameProject = await this.request(UPDATE_PROJECT_NAME, { payload });
     return res.updateProjectName.success;
@@ -210,7 +210,7 @@ export default class Project extends HxbAbstract {
   async delete(): Promise<boolean> {
     const payload: DeleteParamsProject = {
       project_id: this.id,
-    }
+    };
     // handle call graphql
     const res: DtDeleteProject = await this.request(DELETE_PROJECT, { payload });
     return res.deleteProject.success;
