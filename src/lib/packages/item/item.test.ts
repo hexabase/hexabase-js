@@ -28,7 +28,7 @@ describe('Item', () => {
       expect(typeof totalCount).toBe('number');
     });
   });
-  
+
   describe('#createItemId()', () => {
     it('should create new item id', async () => {
       jest.useFakeTimers('legacy');
@@ -38,7 +38,7 @@ describe('Item', () => {
       expect(typeof itemId).toBe('string');
     });
   });
-  
+
   describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
@@ -85,7 +85,7 @@ describe('Item', () => {
     });
   });
 
-  
+
   describe('#update()', () => {
     it('should update item in datastore', async () => {
       jest.useFakeTimers('legacy');
@@ -102,7 +102,7 @@ describe('Item', () => {
       expect(item.revNo).toBe(2);
     });
   });
-  
+
   describe('#execute()', () => {
     it('should execute action for item in datastore', async () => {
       jest.useFakeTimers('legacy');

@@ -21,8 +21,8 @@ beforeAll(async () => {
 
 describe('UserRole', () => {
   describe('#get()', () => {
-		it('should get user role', async () => {
-			console.log(client.currentUser);
-		});
-	});
+    it('should get user role', async () => {
+      console.log(client.currentUser);
+    });
+  });
 });

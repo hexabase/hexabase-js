@@ -1,13 +1,13 @@
 import { Blob } from 'buffer';
 
 export interface UploadFileParameters {
-	file: Blob;
-	fileName: string;
+  file: Blob;
+  fileName: string;
 }
 
 export interface UploadItemFileParameters {
-	file: Blob;
-	filename: string;
-	datastore_id: string;
-	application_id: string;
+  file: Blob;
+  filename: string;
+  datastore_id: string;
+  application_id: string;
 }

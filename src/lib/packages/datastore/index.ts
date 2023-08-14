@@ -57,7 +57,7 @@ import { GetItemsParameters, GetItemsPl } from '../../types/item';
 
 type allArgs = {
   project: Project;
-}
+};
 
 const DEFAULT_TEXTAREA_LENGTH = 2000;
 
@@ -70,7 +70,7 @@ export default class Datastore extends HxbAbstract {
   public _fields: Field[] = [];
   // public fields = Field;
   // Update
-  displayId: string
+  displayId: string;
   extendLimitEextareaLength = DEFAULT_TEXTAREA_LENGTH;
   ignoreSaveTemplate = false;
   showDisplayIdToList = false;
@@ -245,7 +245,7 @@ export default class Datastore extends HxbAbstract {
       template_name: this.templateName,
       workspace_id: this.project.workspace.id,
       user_id: user.id,
-    }
+    };
     // handle call graphql
     const res: DtCreateDatastoreFromSeed = await this.request(CREATE_DATASTORE_FROM_TEMPLATE, { payload });
     this.id = res?.createDatastoreFromTemplate?.datastoreId!;
@@ -337,7 +337,7 @@ export default class Datastore extends HxbAbstract {
    * @params datastoreId are requirement
    * @returns DsActionRes
    */
-  
+
   async actions(): Promise<Action[]> {
     if (this._actions.length > 0) return this._actions;
     // handle call graphql
@@ -346,7 +346,7 @@ export default class Datastore extends HxbAbstract {
       .map((action: DsAction) => Action.fromJson({...{ datastore: this }, ...action}) as Action);
     return this._actions;
   }
-  
+
 
   /**
    * function getStatuses: get statuses in Ds

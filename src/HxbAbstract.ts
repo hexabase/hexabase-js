@@ -59,7 +59,7 @@ export class HxbAbstract {
     if (!options.binary) {
       params.headers = {...params.headers, ...{
         'Content-Type': 'application/json',
-      }}; 
+      }};
     }
     if (['get', 'delete'].indexOf(method.toLocaleLowerCase()) > -1) {
       return fetch(url, params);
@@ -92,10 +92,10 @@ export class HxbAbstract {
   }
 
   static fromJson(json: {[key: string]: any}): HxbAbstract {
-		const obj = new this;
-		obj.sets(json);
-		return obj;
-	}
+    const obj = new this;
+    obj.sets(json);
+    return obj;
+  }
 
   sets(params: {[key: string]: any}): HxbAbstract {
     if (params.workspace) this.set('workspace', params.workspace);

@@ -9,7 +9,7 @@ require('dotenv').config();
  */
 
 const url = process.env.URL || '';
-let tokenWs = process.env.TOKEN || '';
+const tokenWs = process.env.TOKEN || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
@@ -172,7 +172,7 @@ describe('Workspace', () => {
       expect(typeof wsUsage.datastores).toBe('number');
     });
   });
-  
+
   describe('#getGroupChildren()', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
@@ -189,7 +189,7 @@ describe('Workspace', () => {
       }
     });
   });
-  
+
   /*
   TODO: need type of taskQueueList
   describe('#getTaskQueueList()', () => {

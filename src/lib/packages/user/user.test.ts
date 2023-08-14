@@ -8,9 +8,9 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/user/user.test.ts
  */
 
-let userNameExistsResp: any;
+// let userNameExistsResp: any;
 const url = process.env.URL || '';
-let tokenUs = process.env.TOKEN || '';
+// let tokenUs = process.env.TOKEN || '';
 const confirmationId = process.env.CONFIRMATIONID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
@@ -24,7 +24,7 @@ beforeAll(async () => {
     console.log('[email, password]: ', email, password);
     const auth = new Auth(url);
     const token = await auth.login({ email, password });
-    return tokenUs = token;
+    return token;
   }
 });
 // testing get user register info by confirmId
@@ -71,7 +71,7 @@ describe('User', () => {
   describe('#get()', () => {
     it('should get userinfo by token without error', async () => {
       jest.useFakeTimers('legacy');
-      await client.auth.login({ email, password })
+      await client.auth.login({ email, password });
       const user = client.currentUser;
       // expect response
       expect(typeof user!.userName).toBe('string');

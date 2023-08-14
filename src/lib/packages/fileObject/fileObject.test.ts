@@ -24,7 +24,7 @@ describe('File', () => {
     it('should upload the text file', async () => {
       jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
-			const attachment = new Blob(['Hello, world!'], { type: 'text/plain' });
+      const attachment = new Blob(['Hello, world!'], { type: 'text/plain' });
       const file = await client.upload('test.txt', attachment);
       expect(typeof file.id).toBe('string');
     });
@@ -36,7 +36,7 @@ describe('File', () => {
       await client.setWorkspace(workspaceId!);
       const str = 'Hello, world!';
       const type = 'text/plain';
-			const attachment = new Blob([str], { type });
+      const attachment = new Blob([str], { type });
       const file = await client.upload('test.txt', attachment);
       expect(typeof file.id).toBe('string');
       const f = await client.download(file.id);
@@ -54,7 +54,7 @@ describe('File', () => {
       await client.setWorkspace(workspaceId!);
       const str = 'Hello, world!';
       const type = 'text/plain';
-			const attachment = new Blob([str], { type });
+      const attachment = new Blob([str], { type });
       const f = await client.upload('test.txt', attachment);
       expect(typeof f.id).toBe('string');
       const file = await client.file(f.id);

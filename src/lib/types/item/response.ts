@@ -202,7 +202,7 @@ export interface DtExecuteItemAction {
     error: string
     item_id?: string;
     item: {[key: string]: any};
-  }
+  };
 }
 
 export interface DtItemDetail {
@@ -273,7 +273,7 @@ export interface UpdateItemRes {
 }
 
 export interface NewItems {
-  data?: NewItem[]
+  data?: NewItem[];
   error?: string[];
 }
 
@@ -338,5 +338,5 @@ export interface DatastoreDeleteDatastoreItemsRes {
   datastoreDeleteDatastoreItems: {
     data?: any;
     success: boolean;
-  }
+  };
 }

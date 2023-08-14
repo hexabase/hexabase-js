@@ -10,9 +10,9 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/project/project.test.ts
  */
 
-let projectId = process.env.APPLICATIONID || '';
-let tokenApp = process.env.TOKEN || '';
-let workspaceId = process.env.WORKSPACEID || '';
+const projectId = process.env.APPLICATIONID || '';
+const tokenApp = process.env.TOKEN || '';
+const workspaceId = process.env.WORKSPACEID || '';
 const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
