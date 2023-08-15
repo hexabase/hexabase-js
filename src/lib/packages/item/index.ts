@@ -91,10 +91,10 @@ export default class Item extends HxbAbstract {
       case 'links': {
         const project = this.datastore.project;
         (value as any[]).forEach(params => {
-          const datasstore = new Datastore({ project, id: params.d_id });
+          const datasstore = project.datastoreSync(params.d_id);
           (params.i_ids as string[])
             .forEach(i_id => {
-              const linkedItem = Item.fromJson({ datastore: datasstore, id: i_id });
+              const linkedItem = Item.fromJson({ datastore: datasstore, i_id: i_id });
               this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
             });
         });
@@ -106,7 +106,7 @@ export default class Item extends HxbAbstract {
         (value.links as any[]).forEach(params => {
           const datastore = project.datastoreSync(params.d_id);
           (params.items as any[]).forEach(itemParams => {
-            const linkedItem = Item.fromJson({ datastore, id: itemParams.i_id });
+            const linkedItem = Item.fromJson({ datastore, i_id: itemParams.i_id });
             this._linkItems.push(new LinkItem({item: this, linkedItem, saved: true}));
           });
         });
@@ -226,7 +226,6 @@ export default class Item extends HxbAbstract {
 
   public setFieldValue(fieldName: string, value: any): Item {
     if (this.ignoreFieldUpdate) return this;
-    // console.log('setFieldValue', this.datastore._fields, value, fieldName, this.datastore);
     const field = this.datastore.fieldSync(fieldName);
     if (!field.valid(value)) {
       throw new Error(`Invalid value ${value} for field key ${field.name}`);
@@ -306,6 +305,7 @@ export default class Item extends HxbAbstract {
     payload.datastore_id = datastore.id;
     payload.project_id = datastore.project.id;
     const res: DtItemWithSearch = await this.request(ITEM_WITH_SEARCH, { payload });
+    console.log(res);
     const items = res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
     const totalCount = res.itemWithSearch.totalItems;
     return {
@@ -390,6 +390,14 @@ export default class Item extends HxbAbstract {
         params[field.displayId] = res.datastoreCreateNewItem.item[id];
       }
     });
+    // Check db lookup item
+    for (const key in params) {
+      if (!params[key].d_id) continue;
+      const datastore = this.datastore.project.datastoreSync(params[key].d_id);
+      if (datastore) {
+        params[key] = await datastore.item(params[key].item_id);
+      }
+    }
     this.sets(params);
     this._setStatus(this._status);
     if (this._existAttachment) {
@@ -429,7 +437,7 @@ export default class Item extends HxbAbstract {
     const params: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
-      action_id: action.id,
+      action_id: action && action.id,
       is_notify_to_sender: true,
       ensure_transaction: true,
       exec_children_post_procs: true,
@@ -458,9 +466,13 @@ export default class Item extends HxbAbstract {
     for (const key in this.fields) {
       const field = this.datastore.fieldSync(key);
       if (!field) throw new Error(`Field ${key} is not found`);
-      if (field.dataType === DataType.FILE && this.fields[key] && this.fields[key].length > 0 && !this.id) {
-        this._existAttachment = true;
-        continue;
+      if (!this.id && field.dataType === DataType.FILE && this.fields[key] && this.fields[key].length > 0) {
+        const files = this.fields[key] as FileObject[];
+        const file = files.find(f => !f.id); // find new file
+        if (file) {
+          this._existAttachment = true;
+          continue;
+        }
       }
       const value = await field.convert(this.fields[key]);
       if (typeof value !== 'undefined' && this.fields[key]) {
@@ -602,8 +614,8 @@ export default class Item extends HxbAbstract {
     const items: Item[] = [];
     for (const params of res.datastoreGetLinkedItems.items) {
       const project = projects.find(p => p.id === params.p_id)!;
-      const datastore = typeof linkedDatastore === 'string' ? await project.datastore(params.ds_id) : linkedDatastore;
-      items.push(new Item({ id: params.i_id, datastore }) as Item);
+      const datastore = typeof linkedDatastore === 'string' ? await project.datastore(params.d_id) : linkedDatastore;
+      items.push(await datastore.item(params.i_id));
     }
     await Promise.all(items.map((item: Item) => item.fetch()));
     return items;
