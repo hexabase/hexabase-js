@@ -199,53 +199,53 @@ export default class Field extends HxbAbstract {
     if (value === null) return null;
     switch (this.dataType.toLocaleLowerCase()) {
       case DataType.DSLOOKUP:
-				// ignore the value if value is only string
-				if (typeof value === 'string') {
-					return value;
-				}
-				return this._valueDsLookup(value, options);
-			case DataType.FILE:
-				if (value === '') return value;
-				if (value instanceof FileObject) return [value];
-				if (!Array.isArray(value) && typeof value === 'string') {
-					value = value.split(',');
-				}
-				return (value as any[]).map((file: any) => {
-					if (file instanceof FileObject) return file;
-					if (typeof file === 'object') return FileObject.fromJson(file);
-					if (file.match(/^[a-zA-Z0-9]+$/)) return new FileObject({ id: file });
-				});
-			case DataType.DATETIME:
-				if (value instanceof Date) return value;
-				return new Date(value);
-			case DataType.CHECKBOX:
-				if (!Array.isArray(value)) {
-					value = [value];
-				}
-				return value.map((v: any) => {
-					const option = this._findOption(v);
-					return option ? option.value : null;
-				});
-			case DataType.SELECT:
-			case DataType.RADIO:
-				const option = this._findOption(value);
-				return option ? option.value : null;
-			case DataType.USERS:
-				if (!Array.isArray(value)) {
-					value = [value];
-				}
-				return (value as any[])
-					.map((params: any) => (params instanceof User) ? params : (User.fromJson(params) as User));
-			case DataType.FILE:
-				if (!Array.isArray(value)) {
-					value = [value];
-				}
-				return (value as any[])
-					.map((params: any) => FileObject.fromJson(params) as FileObject);
-			default:
-		}
-		return value;
-	}
+        // ignore the value if value is only string
+        if (typeof value === 'string') {
+          return value;
+        }
+        return this._valueDsLookup(value, options);
+      case DataType.FILE:
+        if (value === '') return value;
+        if (value instanceof FileObject) return [value];
+        if (!Array.isArray(value) && typeof value === 'string') {
+          value = value.split(',');
+        }
+        return (value as any[]).map((file: any) => {
+          if (file instanceof FileObject) return file;
+          if (typeof file === 'object') return FileObject.fromJson(file);
+          if (file.match(/^[a-zA-Z0-9]+$/)) return new FileObject({ id: file });
+        });
+      case DataType.DATETIME:
+        if (value instanceof Date) return value;
+        return new Date(value);
+      case DataType.CHECKBOX:
+        if (!Array.isArray(value)) {
+          value = [value];
+        }
+        return value.map((v: any) => {
+          const option = this._findOption(v);
+          return option ? option.value : null;
+        });
+      case DataType.SELECT:
+      case DataType.RADIO:
+        const option = this._findOption(value);
+        return option ? option.value : null;
+      case DataType.USERS:
+        if (!Array.isArray(value)) {
+          value = [value];
+        }
+        return (value as any[])
+          .map((params: any) => (params instanceof User) ? params : (User.fromJson(params) as User));
+      case DataType.FILE:
+        if (!Array.isArray(value)) {
+          value = [value];
+        }
+        return (value as any[])
+          .map((params: any) => FileObject.fromJson(params) as FileObject);
+      default:
+    }
+    return value;
+  }
 
   _valueDsLookup(value: any, options: {[key: string]: any}): Item {
     if (value instanceof Item) return value;
@@ -267,58 +267,58 @@ export default class Field extends HxbAbstract {
           if (!value.id) await value.save();
           return value.id;
         }
-				throw new Error(`Field ${this.name} is not Item (${value})`);
-			case DataType.NUMBER:
-				if (value === null) return null;
-				if (typeof value === 'number') return value;
-				throw new Error(`Field ${this.name} is not number (${value})`);
-			case DataType.FILE:
-				if (value === null) return null;
-				if (value instanceof FileObject) {
-					value = [value];
-				}
-				if (Array.isArray(value)) {
-					const res = await Promise.all(value.map((file: FileObject) => {
-						return file.id ? file : file.save(this)
-					}));
-					return res.map((file: FileObject) => file.id);
-				} else {
-					throw new Error(`Field ${this.name} is not FileObject (${value})`);
-				}
-			case DataType.CHECKBOX: {
-				if (!value) return null;
-				if (!Array.isArray(value)) {
-					value = [value];
-				}
-				value.map((v: any) => {
-					const option = this._findOption(v);
-					if (!option) throw new Error(`Field ${this.name} has not option (${v})`);
-					return option.displayId;
-				});
-			}
-			case DataType.SELECT:
-			case DataType.RADIO: {
-				if (value === null) return null;
-				const option = this._findOption(value);
-				if (!option) throw new Error(`Field ${this.name} has not option (${value})`);
-			}
-			case DataType.USERS:
-				if (value === null) return null;
-				return value;
-			case DataType.DATETIME:
-				if (value === null) return null;
-				return (value as Date).toISOString();
-			case DataType.AUTONUM:
-				return value;
-			case DataType.CALC:
-			case DataType.LABEL:
-			case DataType.SEPARATOR:
-			case DataType.STATUS:
-				return undefined;
-			default:
-				throw new Error(`Field ${this.name} doesn't support (${value})`);
-		}
-	}
+        throw new Error(`Field ${this.name} is not Item (${value})`);
+      case DataType.NUMBER:
+        if (value === null) return null;
+        if (typeof value === 'number') return value;
+        throw new Error(`Field ${this.name} is not number (${value})`);
+      case DataType.FILE:
+        if (value === null) return null;
+        if (value instanceof FileObject) {
+          value = [value];
+        }
+        if (Array.isArray(value)) {
+          const res = await Promise.all(value.map((file: FileObject) => {
+            return file.id ? file : file.save(this);
+          }));
+          return res.map((file: FileObject) => file.id);
+        } else {
+          throw new Error(`Field ${this.name} is not FileObject (${value})`);
+        }
+      case DataType.CHECKBOX: {
+        if (!value) return null;
+        if (!Array.isArray(value)) {
+          value = [value];
+        }
+        value.map((v: any) => {
+          const option = this._findOption(v);
+          if (!option) throw new Error(`Field ${this.name} has not option (${v})`);
+          return option.displayId;
+        });
+      }
+      case DataType.SELECT:
+      case DataType.RADIO: {
+        if (value === null) return null;
+        const option = this._findOption(value);
+        if (!option) throw new Error(`Field ${this.name} has not option (${value})`);
+      }
+      case DataType.USERS:
+        if (value === null) return null;
+        return value;
+      case DataType.DATETIME:
+        if (value === null) return null;
+        return (value as Date).toISOString();
+      case DataType.AUTONUM:
+        return value;
+      case DataType.CALC:
+      case DataType.LABEL:
+      case DataType.SEPARATOR:
+      case DataType.STATUS:
+        return undefined;
+      default:
+        throw new Error(`Field ${this.name} doesn't support (${value})`);
+    }
+  }
 
   static async get(datastore: Datastore, fieldId: string): Promise<Field> {
     const res: DtDsFieldSettings = await this.request(DS_FIELD_SETTING, { fieldId, datastoreId: datastore.id });
