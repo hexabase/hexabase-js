@@ -1,6 +1,6 @@
 {
   "name": "@hexabase/hexabase-js",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "main": "dist/index.js",
   "license": "MIT",
   "publishConfig": {
@@ -24,25 +24,30 @@
     "test:project": "yarn jest src/lib/packages/project/project.test.ts",
     "test:datastore": "yarn jest src/lib/packages/datastore/datastore.test.ts",
     "test:item": "yarn jest src/lib/packages/item/item.test.ts",
-    "test:storage": "yarn jest src/lib/packages/storage/storage.test.ts"
+    "test:storage": "yarn jest src/lib/packages/storage/storage.test.ts",
+    "test:file": "yarn jest src/lib/packages/fileObject/fileObject.test.ts",
+    "test:sql": "yarn jest src/lib/sql/sql.test.ts"
   },
   "dependencies": {
-    "dotenv": "^16.0.0",
+    "form-data": "^4.0.0",
     "graphql-request": "^4.2.0",
-    "nodemon": "^2.0.15",
-    "typescript": "^4.6.3"
+    "node-fetch": "^2.6.9"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.11",
-    "@babel/preset-react": "^7.16.7",
+    "@types/eventsource": "^1.1.11",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",
+    "@types/node-fetch": "^2.6.3",
     "concurrently": "^7.4.0",
+    "dotenv": "^16.0.0",
     "graphql": "^16.3.0",
+    "hexabase-cli": "^0.3.19",
     "jest": "^27.5.1",
+    "nodemon": "^2.0.15",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
     "tslint": "^6.1.3",
+    "typescript": "^4.6.3",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"
   }

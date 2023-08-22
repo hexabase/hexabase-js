@@ -1,5 +1,6 @@
 import { ItemHistory } from './input';
-import { FieldNameENJP, ResponseErrorNull, ResponseOkModel } from '../../util/type';
+import { FieldNameENJP, GenericAPIError, ResponseErrorNull, ResponseOkModel } from '../../util/type';
+import Item from '../../packages/item';
 
 export interface DsItems {
   items: any;
@@ -160,6 +161,14 @@ export interface DatastoreCreateCommentItem {
 }
 
 
+export interface ItemWithSearch {
+  errors: [GenericAPIError];
+  totalItems: number;
+  items: [ItemWithSearchResItem];
+  fields: any;
+}
+
+
 /** Data response from request graphql */
 export interface DtDsItems {
   datastoreGetDatastoreItems: DsItems;
@@ -177,11 +186,25 @@ export interface DtItemLinked {
   datastoreGetLinkedItems: ItemLinked;
 }
 export interface DtDeleteItem {
-  datastoreDeleteItem: ResponseOkModel;
+  datastoreDeleteItem: {
+    error: any;
+  };
 }
 export interface DtUpdateItem {
-  datastoreUpdateItem: ResponseOkModel;
+  datastoreUpdateItem: {
+    error: string;
+    item: {[key: string]: any};
+  };
 }
+
+export interface DtExecuteItemAction {
+  datastoreExecuteItemAction: {
+    error: string
+    item_id?: string;
+    item: {[key: string]: any};
+  };
+}
+
 export interface DtItemDetail {
   getDatastoreItemDetails: ItemDetail;
 }
@@ -211,9 +234,13 @@ export interface DtDatastoreDeleteCommentItem {
   archiveItemHistory: ResponseErrorNull;
 }
 
+export interface DtItemWithSearch {
+  itemWithSearch: ItemWithSearch;
+}
+
 /** export response */
 export interface DsItemsRes {
-  dsItems?: DsItems;
+  items?: Item[];
   error?: string;
 }
 export interface ItemHistoriesRes {
@@ -227,6 +254,27 @@ export interface CreatedItemIdRes {
 export interface NewItemRes {
   itemNew?: ItemNew;
   error?: string;
+}
+
+export interface NewItem {
+  data?: ItemNew;
+  error?: string;
+}
+
+export interface ItemUpdatedSuccess {
+  error: string;
+  itemHistory: ItemHistoryComment;
+  rev_no: RevNo;
+}
+
+export interface UpdateItemRes {
+  data?: ItemUpdatedSuccess;
+  error?: string;
+}
+
+export interface NewItems {
+  data?: NewItem[];
+  error?: string[];
 }
 
 export interface ItemLinkedRes {
@@ -261,4 +309,34 @@ export interface DtUpdateItemRes {
 export interface DatastoreCreateCommentItemRes {
   postNewItemHistory?: DatastoreCreateCommentItem;
   error?: any;
+}
+
+export interface ItemWithSearchRes {
+  items?: Item[];
+  errors?: any;
+}
+
+export interface ItemWithSearchResItem {
+  Id: string;
+  Status: string;
+  Title: string;
+  a_id: string;
+  created_at: string;
+  created_by: string;
+  d_id: string;
+  i_id: string;
+  p_id: string;
+  rev_no: string;
+  status_id: string;
+  title?: string;
+  unread: string;
+  updated_at: string;
+  updated_by: string;
+}
+
+export interface DatastoreDeleteDatastoreItemsRes {
+  datastoreDeleteDatastoreItems: {
+    data?: any;
+    success: boolean;
+  };
 }

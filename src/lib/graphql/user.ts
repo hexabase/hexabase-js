@@ -38,6 +38,14 @@ export const USER_REGISTER = gql`
   }
 `;
 
+export const USER_REGISTER_CONFIRM = gql`
+  mutation UserRegisterConfirm($confirmRegisterUserInput: ConfirmRegisterUser!) {
+    userRegisterConfirm(confirmRegisterUserInput: $confirmRegisterUserInput) {
+      token
+    }
+  }
+`;
+
 export const USER_PASSWORD_EXPIRY = gql`
   query UserPasswordExpiry {
     userPasswordExpiry {
@@ -81,6 +89,15 @@ export const LOG_OUT = gql`
     logout {
       data
       success
+    }
+  }
+`;
+
+export const POST_INVITE_USERS = gql`
+  mutation PostInviteUsers($payload: PostInviteUsersPl!) {
+    postInviteUsers(payload: $payload) {
+      email
+      stats
     }
   }
 `;

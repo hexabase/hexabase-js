@@ -66,12 +66,12 @@ export const CREATE_ITEMID = gql`
 
 export const CREATE_NEW_ITEM = gql`
   mutation DatastoreCreateNewItem(
-    $newItemActionParameters: NewItemActionParameters!
+    $payload: NewItemActionParameters!
     $datastoreId: String!
     $projectId: String!
   ) {
     datastoreCreateNewItem(
-      newItemActionParameters: $newItemActionParameters
+      newItemActionParameters: $payload
       datastoreId: $datastoreId
       projectId: $projectId
     ) {
@@ -385,6 +385,32 @@ export const POST_DELETE_ITEM_HISTORY = gql`
   mutation ArchiveItemHistory($payload: ArchiveCommentItemsParameters!) {
     archiveItemHistory(payload: $payload) {
       error
+    }
+  }
+`;
+
+export const ITEM_WITH_SEARCH = gql`
+  mutation ItemWithSearch($payload: GetItemsParameters!) {
+    itemWithSearch(getItemsParameters: $payload) {
+      fields
+      items
+      errors {
+        reference_id
+        error_level
+        error_code
+        error
+        description
+      }
+      totalItems
+    }
+  }
+`;
+
+export const DELETE_ITEMS = gql`
+  mutation DatastoreDeleteDatastoreItems($datastoreId: String!, $projectId: String, $payload: DeleteItemsParameters) {
+    datastoreDeleteDatastoreItems(datastoreId: $datastoreId, projectId: $projectId, deleteItemsParameters: $payload) {
+      data
+      success
     }
   }
 `;

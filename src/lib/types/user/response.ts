@@ -1,3 +1,5 @@
+import { ProfilePic } from './input';
+
 export interface UserInfo {
   username: string;
   email: string;
@@ -5,9 +7,9 @@ export interface UserInfo {
   u_id: string;
   current_workspace_id: string;
   is_ws_admin: string;
-  user_roles: [UserRoles];
+  user_roles: UserRole[];
 }
-export interface UserRoles {
+export interface UserRole {
   r_id: string;
   role_name: string;
   role_id: string;
@@ -62,6 +64,27 @@ export interface UserConfirmations {
   user: ConfirmationsFullInfo;
 }
 
+export interface UserProfile {
+  confirmed?: boolean;
+  email: string;
+  email_sent: boolean;
+  profile_pics: ProfilePic[];
+  u_id: string;
+  user_code: string;
+  username: string;
+}
+
+export interface UsernameExists {
+  added?: boolean;
+  exists?: boolean;
+  user_profile?: UserProfile;
+}
+
+export interface PostInviteUsers {
+  email?: string;
+  stats?: number;
+}
+
 /** Data response from request graphql */
 export interface DtUserInfo {
   userInfo: UserInfo;
@@ -77,6 +100,14 @@ export interface DtUserPassEx {
 
 export interface DtUserConfirm {
   userConfirmations: UserConfirmations;
+}
+
+export interface DtUsernameExistsRes {
+  usernameExists: UsernameExists;
+}
+
+export interface DtPostInviteUsersRes {
+  postInviteUsers: PostInviteUsers[];
 }
 
 /** export response */
@@ -100,3 +131,16 @@ export interface UserConfirmRes {
   error?: string;
 }
 
+export interface UsernameExistsResp {
+  usernameExists?: UsernameExists;
+  error?: string;
+}
+
+export interface PostInviteUsersResp {
+  postInviteUsers?: PostInviteUsers[];
+  error?: string;
+}
+
+export interface UserRegisterConfirmRes {
+  token?: string;
+}

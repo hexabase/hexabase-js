@@ -13,85 +13,48 @@ import { uuid } from '../../util/helper';
 export default class Auth {
   protected stateChangeEmitters: Map<string, Subscription> = new Map();
 
-  public urlGr: string;
+  // public urlGr: string;
   public client: GraphQLClient;
 
-  constructor(
-    protected urlGraphql: string,
-  ) {
-    this.urlGr = urlGraphql;
-    this.client = new GraphQLClient(this.urlGr);
+  constructor(protected urlGraphql: string) {
+    // this.urlGr = urlGraphql;
+    this.client = new GraphQLClient(urlGraphql);
   }
 
   /**
    * function login: get user info by token
    * @returns TokenModel
    */
-  async login(loginInput: LoginPayload): Promise<LoginRes> {
-    const data: LoginRes = {
-      token: undefined,
-      error: undefined,
-    };
-
+  async login(loginInput: LoginPayload): Promise<string> {
     // handle call graphql
-    try {
-      const res: DtLogin = await this.client.request(LOGIN, { loginInput });
-      data.token = res.login.token;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtLogin = await this.client.request(LOGIN, { loginInput });
+    return res.login.token;
   }
 
   /**
    * function logout: log out user
    * @returns ModelRes
    */
-  async logout(token: string): Promise<ModelRes> {
-    const data: ModelRes = {
-      data: undefined,
-      error: undefined,
-    };
-
+  async logout(): Promise<boolean> {
     // handle call graphql
-    try {
-      this.client.setHeader(
-        'authorization', `Bearer ${token}`
-      );
-      const res: DtLogOut = await this.client.request(LOG_OUT);
-
-      data.data = res.logout;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
+    const res: DtLogOut = await this.client.request(LOG_OUT);
+    return res.logout.success;
   }
 
   /**
    * Receive a notification every time an auth event happens.
    * @returns {Subscription} A subscription object which can be used to unsubscribe itself.
    */
-  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): {
-    data: Subscription | undefined,
-    error: ApiError | undefined
-  } {
-    try {
-      const id: string = uuid();
-      const subscription: Subscription = {
-        id,
-        callback,
-        unsubscribe: () => {
-          this.stateChangeEmitters.delete(id);
-        },
-      };
-      this.stateChangeEmitters.set(id, subscription);
-      return { data: subscription, error: undefined };
-    } catch (e) {
-      return { data: undefined, error: e as ApiError };
-    }
+  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session) => void): Subscription {
+    const id: string = uuid();
+    const subscription: Subscription = {
+      id,
+      callback,
+      unsubscribe: () => {
+        this.stateChangeEmitters.delete(id);
+      },
+    };
+    this.stateChangeEmitters.set(id, subscription);
+    return subscription;
   }
 }

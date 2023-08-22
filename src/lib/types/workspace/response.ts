@@ -283,3 +283,8 @@ export interface WorkspaceIDRes {
   w_id?: string;
   error?: string;
 }
+
+export interface UserInviteResponse {
+  email: string;
+  stats: number;
+}
