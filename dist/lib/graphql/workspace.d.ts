@@ -1,0 +1,13 @@
+export declare const WORKSPACES: string;
+export declare const WORKSPACE_DETAIL: string;
+export declare const WORKSPACE_CURRENT: string;
+export declare const WORKSPACE_PASSWORD_POLICY: string;
+export declare const WORKSPACE_FUNCTIONALITY: string;
+export declare const WORKSPACE_USAGE: string;
+export declare const WORKSPACE_GROUP_CHILDREN: string;
+export declare const TASK_QUEUE_LIST: string;
+export declare const TASK_QUEUE_STATUS: string;
+export declare const CREATE_WORKSPACE: string;
+export declare const SET_CURRENT_WORKSPACE: string;
+export declare const UPDATE_WORKSPACE_SETTINGS: string;
+export declare const ARCHIVE_WORKSPACE: string;

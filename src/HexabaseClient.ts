@@ -28,7 +28,7 @@ type InitializeOptions = {
   url?: string;
   rest?: string;
   sse?: string;
-}
+};
 
 export default class HexabaseClient {
   public auth: Auth;

@@ -1,0 +1,12 @@
+export declare const DS_FIELDS: string;
+export declare const DS_FIELD_SETTING: string;
+export declare const DS_ACTIONS: string;
+export declare const DS_STATUS: string;
+export declare const DS_ACTION_SETTING: string;
+export declare const GET_DATASTORES: string;
+export declare const GET_DATASTORE_DETAIL: string;
+export declare const CREATE_DATASTORE_FROM_TEMPLATE: string;
+export declare const VALIDATE_DS_DISPLAY_ID: string;
+export declare const UPDATE_DATASTORE_SETTING: string;
+export declare const DELETE_DATASTORE: string;
+export declare const DATASTORE_GET_FIELD_AUTO_NUMBER: string;
