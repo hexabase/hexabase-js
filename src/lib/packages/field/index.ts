@@ -301,6 +301,7 @@ export default class Field extends HxbAbstract {
         if (value === null) return null;
         const option = this._findOption(value);
         if (!option) throw new Error(`Field ${this.name} has not option (${value})`);
+        return option.displayId;
       }
       case DataType.USERS:
         if (value === null) return null;

@@ -33,7 +33,9 @@ const createClient = async ({
     throw Error('Need token or email and password to initialize sdk');
   }
   const tokenHx = (email && password) ? await auth.login({ email, password }) : token;
-  return new HexabaseClient('', tokenHx, url);
+  const client = new HexabaseClient({ url });
+  await client.setToken(tokenHx);
+  return client;
 };
 
 export * from './lib/types';

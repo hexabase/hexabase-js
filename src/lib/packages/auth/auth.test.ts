@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({env: 'dev'});
 
 describe('Auth', () => {
   describe('#login()', () => {

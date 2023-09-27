@@ -4,7 +4,7 @@ import { Blob } from 'buffer';
 import FileObject from '../fileObject';
 
 const token = process.env.TOKEN || '';
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({ env: 'dev' });
 const workspaceId = process.env.DEV_WORKSPACE_ID;
 const datastoreId = process.env.DEV_DATASOTRE_ID || '';
 const linkedDatastoreId = process.env.DEV_RELATED_DATASOTRE_ID || '';

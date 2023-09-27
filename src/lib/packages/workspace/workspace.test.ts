@@ -25,7 +25,7 @@ const updateWorkspaceSettingsInput: any = {
   payload: {}
 };
 
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({ env: 'dev' });
 
 /** run first testing  */
 beforeAll(async () => {
