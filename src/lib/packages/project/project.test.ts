@@ -17,7 +17,7 @@ const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
-const client = new HexabaseClient();
+const client = new HexabaseClient({ env: 'dev' });
 
 // local variable in file for testing
 beforeAll(async () => {

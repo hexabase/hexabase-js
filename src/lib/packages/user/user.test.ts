@@ -17,7 +17,7 @@ const password = process.env.PASSWORD || '';
 const workspaceId = process.env.WORKSPACEID || '';
 const groupId = process.env.GROUP_ID || '';
 
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({ env: 'dev' });
 
 beforeAll(async () => {
   if (email && password) {

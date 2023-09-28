@@ -6,7 +6,7 @@ require('dotenv').config();
 jest.useRealTimers();
 
 const token = process.env.TOKEN || '';
-const hexabase = new HexabaseClient();
+const hexabase = new HexabaseClient({ env: 'dev' });
 const url = process.env.URL || '';
 const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';

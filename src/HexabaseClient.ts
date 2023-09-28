@@ -23,6 +23,13 @@ type LoginParams = {
   token?: string;
 };
 
+type InitializeOptions = {
+  env?: string;
+  url?: string;
+  rest?: string;
+  sse?: string;
+};
+
 export default class HexabaseClient {
   public auth: Auth;
   public users: typeof User;
@@ -36,35 +43,29 @@ export default class HexabaseClient {
   private _workspaces: Workspace[];
 
   constructor(
-    env = 'prod',
-    tokenHxb?: string,
-    urlHxb?: string,
-    restHxb?: string,
-    sseHxb?: string,
+    options: InitializeOptions = {},
   ) {
-    switch (env) {
-      case 'prod':
+    switch (options.env) {
+      case 'dev':
+        this.urlHxb = 'https://stg-hxb-graph.hexabase.com/graphql';
+        this.restHxb = 'https://stg-api.hexabase.com';
+        this.sseHxb = 'https://dev-sse.hexabase.com';
+        break;
+      default:
         this.urlHxb = 'https://graphql.hexabase.com/graphql';
         this.restHxb = 'https://api.hexabase.com';
         this.sseHxb = 'https://sse.hexabase.com';
         break;
-      case 'dev':
-        this.urlHxb = 'https://hxb-graph.hexabase.com/graphql';
-        this.restHxb = 'https://dev-api.hexabase.com';
-        this.sseHxb = 'https://dev-sse.hexabase.com';
-        break;
-      default:
-        if (!urlHxb || urlHxb?.trim() === '') throw new Error('urlHxb is required.');
-        if (!restHxb || restHxb?.trim() === '') throw new Error('restHxb is required.');
-        if (!sseHxb || sseHxb?.trim() === '') throw new Error('sseHxb is required.');
-        this.urlHxb = urlHxb;
-        this.restHxb = restHxb;
-        this.sseHxb = sseHxb;
-        break;
     }
-    if (tokenHxb) {
-      this.tokenHxb = tokenHxb;
-      this._init();
+    const { url, sse, rest } = options;
+    if (url && url.trim() !== '') {
+      this.urlHxb = url;
+    }
+    if (rest && rest.trim() !== '') {
+      this.restHxb = rest;
+    }
+    if (sse && sse.trim() !== '') {
+      this.sseHxb = sse;
     }
     this.auth = this._initAuth();
   }
