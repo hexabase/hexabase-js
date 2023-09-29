@@ -8,7 +8,7 @@ import { Blob } from 'buffer';
  * @cmdruntest yarn jest src/lib/packages/datastore/datastore.test.ts
  */
 const token = process.env.TOKEN || '';
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({ env: 'dev' });
 const workspaceId = process.env.DEV_WORKSPACE_ID;
 const datastoreId = process.env.DEV_DATASOTRE_ID || '';
 const projectId = process.env.DEV_PROJECT_ID || '';

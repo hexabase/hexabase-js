@@ -337,8 +337,8 @@ export default class Item extends HxbAbstract {
     return res.datastoreDeleteDatastoreItems.success;
   }
 
-  async save(comment?: string): Promise<boolean> {
-    await (!this.id ? this.create() : this.update(comment));
+  async save(comment?: string, actionName?: string): Promise<boolean> {
+    await (!this.id ? this.create(actionName) : this.update(comment, actionName));
     await this.fetch();
     await Promise.all(this._linkItems.map(linkItem => linkItem.create()));
     await Promise.all(this._unlinkItems.map(linkItem => linkItem.delete()));
@@ -357,21 +357,15 @@ export default class Item extends HxbAbstract {
     return this;
   }
 
-  async create(): Promise<boolean> {
+  async create(actionName: string = 'CreateItem'): Promise<boolean> {
     if (!this.datastore) throw new Error('Datastore is required');
-    // const action = await this.datastore.action('new');
+    const action = await this.actionOrStatusAction(actionName);
     const payload: CreateNewItemPl = {
-      // action_id: action!.id,
+      action_id: action && action.id,
       return_item_result: true,
       is_notify_to_sender: true,
       ensure_transaction: false,
       exec_children_post_procs: true,
-      /*
-      access_key_updates: {
-        overwrite: false,
-        ignore_action_settings: true,
-      },
-      */
       item: await this.toJson(),
     };
     // handle call graphql
@@ -408,12 +402,12 @@ export default class Item extends HxbAbstract {
   }
 
   async execute(actionName: string): Promise<boolean> {
-    const action = await this.action(actionName);
+    const action = await this.actionOrStatusAction(actionName);
     if (!action) throw new Error(`Action ${actionName} not found`);
     const params: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
-      action_id: action.id,
+      action_id: action && action.id,
       is_notify_to_sender: true,
       ensure_transaction: true,
       exec_children_post_procs: true,
@@ -432,8 +426,15 @@ export default class Item extends HxbAbstract {
     return true;
   }
 
-  async update(comment?: string): Promise<boolean> {
-    const action = await this.action('UpdateItem');
+  async actionOrStatusAction(actionName: string): Promise<ItemAction | StatusAction | undefined> {
+    const action = await this.action(actionName);
+    if (action) return action;
+    const statusAction = await this.statusActions.find(a => a.displayId === actionName || a.id === actionName || a.name === actionName);
+    if (statusAction) return statusAction;
+  }
+
+  async update(comment?: string, actionName = 'UpdateItem'): Promise<boolean> {
+    const action = await this.actionOrStatusAction(actionName);
     const params: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,

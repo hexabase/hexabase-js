@@ -1,7 +1,20 @@
 {
   "name": "@hexabase/hexabase-js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/index.js",
+  "description": "Javascript client for Hexabase",
+  "keywords": [
+    "javascript",
+    "typescript",
+    "hexabase"
+  ],
+  "homepage": "https://github.com/hexabase/hexabase-js",
+  "bugs": "https://github.com/hexabase/hexabase-js/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hexabase/hexabase-js.git"
+  },
+  "author": "Hexabase",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

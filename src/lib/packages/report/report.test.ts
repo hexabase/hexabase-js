@@ -10,7 +10,7 @@ const projectId = process.env.DEV_PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({ env: 'dev' });
 
 beforeAll(async () => {
   await client.login({ email, password, token });

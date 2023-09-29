@@ -12,7 +12,7 @@ const email = process.env.STAG_EMAIL || '';
 const password = process.env.STAG_PASSWORD || '';
 const token = process.env.PROD_TOKEN || '';
 
-const client = new HexabaseClient('dev');
+const client = new HexabaseClient({ env: 'dev' });
 
 // testing createClient
 describe('Hexabase', () => {
