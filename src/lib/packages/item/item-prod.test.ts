@@ -13,7 +13,7 @@ const password = process.env.PROD_PASSWORD || '';
 
 beforeAll(async () => {
   await client.login({ email, password });
-	client.setWorkspace(workspaceId!);
+  client.setWorkspace(workspaceId!);
 });
 
 describe('Item', () => {

@@ -14,7 +14,7 @@ const id = '652c5bf3b50ee245fa9f4a68';
 
 beforeAll(async () => {
   await client.login({ email, password });
-	client.setWorkspace(workspaceId!);
+  client.setWorkspace(workspaceId!);
 });
 
 describe('Item', () => {

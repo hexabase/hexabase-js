@@ -637,7 +637,7 @@ export default class Item extends HxbAbstract {
     return new FileObject({item: this});
   }
 
-  public async subscribe(event: string, func:(message: ItemSubscription) => void): Promise<void> {
+  public async subscribe(event: string, func: (message: ItemSubscription) => void): Promise<void> {
     await Item.client.connectSse();
     const eventID = this.getEventName(event);
     Item.client.connection?.on(eventID, (msg: SubscriptionUpdateItem) => {
@@ -649,7 +649,6 @@ export default class Item extends HxbAbstract {
       if (msg.ok === 200) return;
       console.log({ msg });
     });
-    
   }
 
   public async unsubscribe(): Promise<boolean> {

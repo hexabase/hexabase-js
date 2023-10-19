@@ -352,7 +352,7 @@ export interface SubscriptionUpdateItem {
   i_id: string;
   is_fetchreplymail: boolean;
   is_notify: boolean;
-  ischanged: boolean
+  ischanged: boolean;
   isnotifytosender: boolean;
   issenditemunread: boolean;
   post_for_rel: boolean;
