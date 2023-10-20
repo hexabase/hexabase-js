@@ -340,3 +340,27 @@ export interface DatastoreDeleteDatastoreItemsRes {
     success: boolean;
   };
 }
+
+export interface SubscriptionUpdateItem {
+  actionname: string;
+  comment: string;
+  created_at: string;
+  datastore_id: string;
+  displayorder: number;
+  email: string;
+  file_ids: string[] | null;
+  i_id: string;
+  is_fetchreplymail: boolean;
+  is_notify: boolean;
+  ischanged: boolean;
+  isnotifytosender: boolean;
+  issenditemunread: boolean;
+  post_for_rel: boolean;
+  post_mode: string;
+  project_id: string;
+  user_id: string;
+  user_obj_id: string;
+  username: string;
+  workspace_id: string;
+  _id: string;
+}

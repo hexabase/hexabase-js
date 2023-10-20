@@ -36,6 +36,7 @@ import {
   DeleteItemsParameters,
   DatastoreDeleteDatastoreItemsRes,
   DtExecuteItemAction,
+  SubscriptionUpdateItem,
 } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
 import Field from '../field';
@@ -48,6 +49,8 @@ import LinkItem from '../linkItem';
 import { parseCommandLine } from 'typescript';
 import FileObject from '../fileObject';
 import { DataType } from '../../../lib/types/field';
+import Action from '../action';
+import ItemSubscription from '../itemSubscription/itemSubscription';
 
 export default class Item extends HxbAbstract {
   public datastore: Datastore;
@@ -305,7 +308,6 @@ export default class Item extends HxbAbstract {
     payload.datastore_id = datastore.id;
     payload.project_id = datastore.project.id;
     const res: DtItemWithSearch = await this.request(ITEM_WITH_SEARCH, { payload });
-    console.log(res);
     const items = res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
     const totalCount = res.itemWithSearch.totalItems;
     return {
@@ -338,7 +340,11 @@ export default class Item extends HxbAbstract {
   }
 
   async save(comment?: string, actionName?: string): Promise<boolean> {
-    await (!this.id ? this.create(actionName) : this.update(comment, actionName));
+    if (!this.id || this.id === '') {
+      await this.create(actionName);
+    } else {
+      await this.update(comment, actionName);
+    }
     await this.fetch();
     await Promise.all(this._linkItems.map(linkItem => linkItem.create()));
     await Promise.all(this._unlinkItems.map(linkItem => linkItem.delete()));
@@ -426,7 +432,7 @@ export default class Item extends HxbAbstract {
     return true;
   }
 
-  async actionOrStatusAction(actionName: string): Promise<ItemAction | StatusAction | undefined> {
+  async actionOrStatusAction(actionName: string): Promise<ItemAction | StatusAction | Action | undefined> {
     const action = await this.action(actionName);
     if (action) return action;
     const statusAction = await this.statusActions.find(a => a.displayId === actionName || a.id === actionName || a.name === actionName);
@@ -545,8 +551,13 @@ export default class Item extends HxbAbstract {
     return !res.datastoreDeleteItem.error;
   }
 
-  async action(actionName: string): Promise<ItemAction> {
+  async action(actionName: string): Promise<ItemAction | Action> {
     if (this.actions.length === 0) {
+      if (!this.id) {
+        // new item
+        const actions = await this.datastore.actions();
+        return actions.find(a => a.displayId.trim().toLowerCase() === actionName.trim().toLocaleLowerCase())!;
+      }
       this.ignoreFieldUpdate = true;
       await this.fetch();
       this.ignoreFieldUpdate = false;
@@ -577,7 +588,7 @@ export default class Item extends HxbAbstract {
    * @params projectId, datastoreId and itemId are requirement, historyParams is option
    * @returns ItemHistoriesRes
    */
-  async histories(getHistoryParamQueries?: GetHistoryPl): Promise<any> {
+  async histories(getHistoryParamQueries?: GetHistoryPl): Promise<ItemHistory[]> {
     const res = await this.historiesWithUnread();
     return res.histories;
   }
@@ -624,5 +635,34 @@ export default class Item extends HxbAbstract {
 
   public file(): FileObject {
     return new FileObject({item: this});
+  }
+
+  public async subscribe(event: string, func: (message: ItemSubscription) => void): Promise<void> {
+    await Item.client.connectSse();
+    const eventID = this.getEventName(event);
+    Item.client.connection?.on(eventID, (msg: SubscriptionUpdateItem) => {
+      const data = new ItemSubscription(msg);
+      data.item = this;
+      func(data);
+    });
+    Item.client.connection?.on('messagereceived', (msg: {[key: string]: any}) => {
+      if (msg.ok === 200) return;
+      console.log({ msg });
+    });
+  }
+
+  public async unsubscribe(): Promise<boolean> {
+    await Item.client.closeSse();
+    return true;
+  }
+
+  public getEventName(event: string): string {
+    switch (event.toUpperCase()) {
+      case 'UPDATE':
+        const user = Item.client.currentUser;
+        return `item_view_${this.id}_${user?.id}`;
+      default:
+    }
+    return '';
   }
 }

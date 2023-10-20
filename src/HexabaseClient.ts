@@ -11,6 +11,7 @@ import { HxbAbstract } from './HxbAbstract';
 import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
 import { UserInviteOptions, UserInvitePl, UserInviteResponse } from './lib/types/workspace';
+import * as signalR from '@microsoft/signalr';
 
 /**
  * ログインパラメータを表すオブジェクトの型
@@ -39,7 +40,7 @@ export default class HexabaseClient {
   public urlHxb: string;
   public restHxb: string;
   public sseHxb: string;
-
+  public connection?: signalR.HubConnection;
   private _workspaces: Workspace[];
 
   constructor(
@@ -54,7 +55,7 @@ export default class HexabaseClient {
       default:
         this.urlHxb = 'https://graphql.hexabase.com/graphql';
         this.restHxb = 'https://api.hexabase.com';
-        this.sseHxb = 'https://sse.hexabase.com';
+        this.sseHxb = 'https://pubsub.hexabase.com/hub';
         break;
     }
     const { url, sse, rest } = options;
@@ -123,9 +124,7 @@ export default class HexabaseClient {
   }
 
   public sseUrl(): string {
-    const user = this.currentUser!;
-    const workspace = this.currentWorkspace!;
-    return `https://app.hexabase.com/sse?channel=user_${user.id}_${workspace.id}`;
+    return `${this.sseHxb}?token=${this.tokenHxb}`;
   }
 
   /**
@@ -188,5 +187,28 @@ export default class HexabaseClient {
     }, ...options};
     const res = this.currentWorkspace!.rest('post', '/api/v0/userinvite', {}, params) as unknown;
     return res as UserInviteResponse[];
+  }
+
+  async connectSse(): Promise<boolean> {
+    if (this.connection) {
+      return true;
+    }
+    this.connection = new signalR.HubConnectionBuilder()
+      .withUrl(this.sseUrl(), {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+    await this.connection.start();
+    return true;
+  }
+
+  async closeSse(): Promise<boolean> {
+    if (!this.connection) return true;
+    await this.connection.stop();
+    this.connection = undefined;
+    return true;
   }
 }

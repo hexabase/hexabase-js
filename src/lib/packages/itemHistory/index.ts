@@ -30,6 +30,11 @@ export default class ItemHistory extends HxbAbstract {
   updatedAt: Date;
   mediaLink: string;
   isUpdated: boolean;
+  constructor(params: any) {
+    super(params);
+    this.user = new User;
+  }
+
   set(key: string, value: any): ItemHistory {
     switch (key) {
       case 'history_id':
@@ -79,6 +84,21 @@ export default class ItemHistory extends HxbAbstract {
         break;
       case 'is_updated':
         this.isUpdated = value;
+        break;
+      case 'user_id':
+        this.user.id = value;
+        break;
+      case 'email':
+        this.user.email = value;
+        break;
+      case 'username':
+        this.user.userName = value;
+        break;
+      case 'datastore_name':
+      case 'datastore_id':
+        break;
+      default:
+        console.log({ key, value});
         break;
     }
     return this;
