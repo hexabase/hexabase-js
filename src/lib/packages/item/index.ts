@@ -427,8 +427,9 @@ export default class Item extends HxbAbstract {
       projectId: this.datastore.project.id,
       itemActionParameters: params
     });
-    this.sets(res.datastoreExecuteItemAction.item);
-    this._setStatus(this._status);
+    // this.sets(res.datastoreExecuteItemAction.item);
+    // this._setStatus(this._status);
+    await this.fetch();
     return true;
   }
 

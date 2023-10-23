@@ -11,10 +11,9 @@ require('dotenv').config();
 // let userNameExistsResp: any;
 const url = process.env.URL || '';
 // let tokenUs = process.env.TOKEN || '';
-const confirmationId = process.env.CONFIRMATIONID || '';
+const confirmationId = process.env.CONFIRMATION_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
-const workspaceId = process.env.WORKSPACEID || '';
 const groupId = process.env.GROUP_ID || '';
 
 const client = new HexabaseClient({ env: 'dev' });

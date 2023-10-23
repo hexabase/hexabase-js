@@ -1,43 +1,32 @@
-import { HexabaseClient, createClient } from './index';
-import Auth from './lib/packages/auth';
-import Workspace from './lib/packages/workspace';
 require('dotenv').config();
-jest.useRealTimers();
-/**
- * Test with class Hexabase
- * @cmdruntest yarn jest src/hexabase.test.ts
- */
 
-const email = process.env.STAG_EMAIL || '';
-const password = process.env.STAG_PASSWORD || '';
-const token = process.env.PROD_TOKEN || '';
+import { HexabaseClient } from './index';
 
-const client = new HexabaseClient({ env: 'dev' });
+const email = process.env.EMAIL;
+const password = process.env.PASSWORD;
+const token = process.env.TOKEN;
+const client = new HexabaseClient();
 
-// testing createClient
-describe('Hexabase', () => {
-  describe('#createClient()', () => {
-    it('get createClient and testing with url, email, password', async () => {
-      jest.useFakeTimers();
-      await client.login({ email, password, token});
-      expect(client.currentWorkspace instanceof Workspace).toBe(true);
+describe('HexabaseClient', () => {
+  describe('login function', () => {
+    it('should login by email and password', async () => {
+      const result = await client.login({ email, password });
+      expect(result).toBe(true);
     });
   });
 
-
-  describe('#createClient()', () => {
-    it('get createClient and testing with url and token', async () => {
-      jest.useFakeTimers();
-      await client.login({ token});
-      expect(client.currentWorkspace instanceof Workspace).toBe(true);
+  describe('login function', () => {
+    it('should login by token', async () => {
+      const result = await client.login({ token });
+      expect(result).toBe(true);
     });
   });
 
-  describe('#createClient()', () => {
-    it('get createClient and testing with email, password', async () => {
-      jest.useFakeTimers();
+  describe('logout function', () => {
+    it('should logout after login', async () => {
       await client.login({ email, password });
-      expect(client.currentWorkspace instanceof Workspace).toBe(true);
+      const result = await client.logout();
+      expect(result).toBe(true);
     });
   });
 });

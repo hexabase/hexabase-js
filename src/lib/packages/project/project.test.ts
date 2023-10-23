@@ -12,8 +12,6 @@ require('dotenv').config();
 
 const projectId = process.env.APPLICATIONID || '';
 const tokenApp = process.env.TOKEN || '';
-const workspaceId = process.env.WORKSPACEID || '';
-const url = process.env.URL || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
