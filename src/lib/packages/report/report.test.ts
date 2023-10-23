@@ -3,7 +3,6 @@ import Auth from '../auth';
 import HexabaseClient from '../../../HexabaseClient';
 require('dotenv').config();
 
-const url = process.env.URL || '';
 const token = process.env.TOKEN || '';
 const workspaceId = process.env.DEV_WORKSPACE_ID || '';
 const projectId = process.env.DEV_PROJECT_ID || '';
