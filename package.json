@@ -25,7 +25,7 @@
     "build": "run-s tslint build:*",
     "build:ts": "tsc -d",
     "build:umd": "webpack",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch:ts\" \"npm run watch:node\"",
     "watch:ts": "tsc -d -w",
     "watch:node": "sleep 1 && nodemon dist/index.js",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
