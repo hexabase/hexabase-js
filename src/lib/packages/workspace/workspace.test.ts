@@ -8,9 +8,7 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/workspace/workspace.test.ts
  */
 
-const url = process.env.URL || '';
 const tokenWs = process.env.TOKEN || '';
-const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 

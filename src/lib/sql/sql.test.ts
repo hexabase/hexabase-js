@@ -7,8 +7,6 @@ jest.useRealTimers();
 
 const token = process.env.TOKEN || '';
 const hexabase = new HexabaseClient({ env: 'dev' });
-const url = process.env.URL || '';
-const taskId = process.env.TASKID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const datastoreID = process.env.DEV_DATASOTRE_ID || '';
