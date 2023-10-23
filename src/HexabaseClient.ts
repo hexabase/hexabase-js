@@ -109,6 +109,7 @@ export default class HexabaseClient {
   }
 
   public async logout(): Promise<boolean> {
+    this.auth.client.setHeaders({ authorization: `Bearer ${this.tokenHxb}` });
     return await this.auth.logout();
   }
 
