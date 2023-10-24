@@ -2,13 +2,14 @@ const webpack = require('webpack')
 const path = require('path')
 
 module.exports = {
+  mode: 'production',
   entry: './src/index.ts',
   output: {
-    path: path.resolve(__dirname, 'dist/'),
-    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist/umd/'),
+    filename: 'hexabase.js',
     library: {
-      type: 'hxb',
-      name: 'index',
+      type: 'umd',
+      name: 'hexabase',
     },
   },
   module: {
@@ -30,4 +31,6 @@ module.exports = {
       process: 'process/browser',
     }),
   ],
+  jsdelivr: 'dist/umd/hexabase.js',
+  unpkg: 'dist/umd/hexabase.js',
 }
