@@ -1,45 +1,39 @@
-import { assert } from 'console';
-import Auth from '.';
-import User from '../user';
-import { HexabaseClient } from '../../../';
 require('dotenv').config();
-/**
- * Test with class Auth
- * @cmdruntest yarn jest src/lib/packages/auth/auth.test.ts
- */
+
+import Auth from '.';
+import { HexabaseClient } from '../../../';
 
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const client = new HexabaseClient({env: 'dev'});
 
 describe('Auth', () => {
-  describe('#login()', () => {
-    it('should get field setting in Ds', async () => {
-      jest.useFakeTimers('legacy');
-      const bol = await client.login({ email, password });
-      expect(typeof bol).toBe('boolean');
+  describe('login function', () => {
+    it('should login by email and password', async () => {
+      const auth = new Auth(client.urlHxb);
+      const result = await auth.login({ email, password });
+      expect(typeof result).toBe('string');
     });
   });
 
-  // logout without error
-  describe('#logout()', () => {
-    it('should get logout user', async () => {
-      jest.useFakeTimers('legacy');
-      const bol = await client.login({ email, password });
-      expect(typeof bol).toBe('boolean');
-      const bol2 = await client.logout();
-      expect(typeof bol2).toBe(true);
+  describe('logout function', () => {
+    it('should logout', async () => {
+      const auth = new Auth(client.urlHxb);
+      const resultLogin = await auth.login({ email, password });
+      expect(typeof resultLogin).toBe('string');
+      auth.client.setHeaders({ authorization: `Bearer ${resultLogin}` });
+      const resultLogout = await auth.logout();
+      expect(resultLogout).toBe(true);
     });
   });
 
-  // Auth state change without error
-  describe('#onAuthStateChange()', () => {
+  describe('onAuthStateChange function', () => {
     it('should onAuthStateChange', async () => {
-      jest.useFakeTimers('legacy');
-      await client.login({ email, password });
-      const id = client.auth.onAuthStateChange((event, session) => {
+      const auth = new Auth(client.urlHxb);
+      await auth.login({ email, password });
+      const id = auth.onAuthStateChange((event, session) => {
       });
-      expect(typeof id).toBe('string');
+      expect(typeof id).toBe('object');
     });
   });
 });
