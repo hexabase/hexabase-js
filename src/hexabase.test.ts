@@ -5,7 +5,7 @@ import { HexabaseClient } from './index';
 const email = process.env.EMAIL;
 const password = process.env.PASSWORD;
 const token = process.env.TOKEN;
-const client = new HexabaseClient();
+const client = new HexabaseClient({env: 'dev'});
 
 describe('HexabaseClient', () => {
   describe('login function', () => {
