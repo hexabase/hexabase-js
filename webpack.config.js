@@ -31,4 +31,6 @@ module.exports = {
       process: 'process/browser',
     }),
   ],
+  jsdelivr: 'dist/umd/hexabase.js',
+  unpkg: 'dist/umd/hexabase.js',
 }
