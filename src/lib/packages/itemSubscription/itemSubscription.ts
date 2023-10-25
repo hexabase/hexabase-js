@@ -85,7 +85,7 @@ export default class ItemSubscription extends HxbAbstract {
       case 'datastore_id':
       case 'i_id':
         break;
-     }
+    }
     return this;
   }
 }

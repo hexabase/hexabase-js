@@ -255,7 +255,7 @@ export default class Item extends HxbAbstract {
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  static async all(params: GetItemsPl, datastore: Datastore): Promise<{ items: Item[], totalCount: number}> {
+  static async all(params: GetItemsPl, datastore: Datastore): Promise<{ items: Item[]; totalCount: number}> {
     const payload = {
       getItemsParameters: params,
       datastoreId: datastore.id,
@@ -296,7 +296,7 @@ export default class Item extends HxbAbstract {
     return res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
   }
 
-  static async searchWithCount(payload: GetItemsParameters, datastore: Datastore): Promise<{items: Item[], totalCount: number}> {
+  static async searchWithCount(payload: GetItemsParameters, datastore: Datastore): Promise<{items: Item[]; totalCount: number}> {
     if (typeof payload.page === 'undefined') payload.page = 1;
     if (typeof payload.per_page === 'undefined') payload.per_page = 100;
     payload.include_lookups = true;
@@ -594,7 +594,7 @@ export default class Item extends HxbAbstract {
     return res.histories;
   }
 
-  async historiesWithUnread(getHistoryParamQueries?: GetHistoryPl): Promise<{ unread: number, histories: ItemHistory[]}> {
+  async historiesWithUnread(getHistoryParamQueries?: GetHistoryPl): Promise<{ unread: number; histories: ItemHistory[]}> {
     const params = {
       projectId: this.datastore.project.id,
       datastoreId: this.datastore.id,
