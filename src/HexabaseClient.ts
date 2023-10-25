@@ -50,7 +50,7 @@ export default class HexabaseClient {
       case 'dev':
         this.urlHxb = 'https://stg-hxb-graph.hexabase.com/graphql';
         this.restHxb = 'https://stg-api.hexabase.com';
-        this.sseHxb = 'https://dev-sse.hexabase.com';
+        this.sseHxb = 'https://stg-pubsub.hexabase.com/hub';
         break;
       default:
         this.urlHxb = 'https://graphql.hexabase.com/graphql';
