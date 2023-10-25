@@ -11,7 +11,7 @@ slack-fail-post-step: &slack-fail-post-step
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:8.9.1
+    - image: cimg/node:18.16.0
 
 orbs:
   slack: circleci/slack@4.4.2
