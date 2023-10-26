@@ -76,37 +76,33 @@ export default class Workspace extends HxbAbstract {
   // public projects = Project;
 
   /**
-   * static function all: get workspaces
+   * static function all: get all workspaces
    * @returns Workspace[]
    */
   static async all(): Promise<Workspace[]> {
-    // handle call graphql
     const res = await Workspace.allWithCurrent();
     return res.workspaces;
   }
 
   /**
-   * static function get: get a workspace
+   * static function get: get a workspace by id
+   * @param id 
    * @returns Workspace
    */
-  static async get(id?: string): Promise<Workspace | undefined> {
-    if (id) await this._current(id);
+  static async get(id: string): Promise<Workspace | undefined> {
+    await this._current(id);
     const res = await this.request(WORKSPACE_DETAIL);
-    // if (!res.workspace.id) throw new Error('Workspace not found');
     return Workspace.fromJson(res.workspace) as Workspace;
   }
 
   /**
-   * static function setCurrent: set workspace current with id
-   * @param: option: workspaceId: workspace id
-   * @returns boolean
+   * static function get: get a workspace by id
+   * @param workspaceId 
+   * @returns 
    */
-  static async current(workspaceId?: string): Promise<Workspace | undefined> {
-    if (workspaceId) {
-      const bol = await this._current(workspaceId);
-      if (!bol) throw new Error('Set current workspace failed');
-    }
-    return this.get();
+  static async current(workspaceId: string): Promise<Workspace | undefined> {
+    await this._current(workspaceId);
+    return this.get(workspaceId);
   }
 
   static async _current(workspaceId: string): Promise<boolean> {
