@@ -6,7 +6,7 @@ export interface AddUserResponse {
     email: string;
     email_sent: boolean;
     profile_pics: {
-      mediaLink: string
+      mediaLink: string;
     }[];
     u_id: string;
     username: string;

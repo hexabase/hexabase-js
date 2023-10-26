@@ -6,17 +6,17 @@ export default class AppFunction extends HxbAbstract {
     disableEditDashItems: boolean;
     disableEditDashboards: boolean;
   } = {
-    disableEditDashItems: false,
-    disableEditDashboards: false,
-  };
+      disableEditDashItems: false,
+      disableEditDashboards: false,
+    };
 
   appTemplates: {
     disableNewApplication: boolean;
     disableSaveTemplates: boolean;
   } = {
-    disableNewApplication: false,
-    disableSaveTemplates: false,
-  };
+      disableNewApplication: false,
+      disableSaveTemplates: false,
+    };
 
   appSettings: {
     disableRoleSettings: boolean;
@@ -27,34 +27,34 @@ export default class AppFunction extends HxbAbstract {
     enableFieldValuesValidation: boolean;
     enableActionValidation: boolean;
   } = {
-    disableRoleSettings: false,
-    disableProgramExtension: false,
-    disableLeftMenuExtension: false,
-    disableDeleteApplication: false,
-    disableChangeName: false,
-    enableFieldValuesValidation: false,
-    enableActionValidation: false,
-  };
+      disableRoleSettings: false,
+      disableProgramExtension: false,
+      disableLeftMenuExtension: false,
+      disableDeleteApplication: false,
+      disableChangeName: false,
+      enableFieldValuesValidation: false,
+      enableActionValidation: false,
+    };
 
   csvImport: {
     useQrDownload: boolean;
     disableCsvUpdate: boolean;
     disableReplaceImport: boolean;
   } = {
-    useQrDownload: false,
-    disableCsvUpdate: false,
-    disableReplaceImport: false,
-  };
+      useQrDownload: false,
+      disableCsvUpdate: false,
+      disableReplaceImport: false,
+    };
 
   dataReports: {
     disableSaveReports: boolean;
     disableCsvDownloads: boolean;
     disableEditReports: boolean;
   } = {
-    disableSaveReports: false,
-    disableCsvDownloads: false,
-    disableEditReports: false,
-  };
+      disableSaveReports: false,
+      disableCsvDownloads: false,
+      disableEditReports: false,
+    };
 
   itemView: {
     disablePinItems: boolean;
@@ -65,14 +65,14 @@ export default class AppFunction extends HxbAbstract {
     disableEditActions: boolean;
     hideLinkItems: boolean;
   } = {
-    disablePinItems: false,
-    disableEditFields: false,
-    disableEditStatuses: false,
-    disablePagination: false,
-    disableChangeLayouts: false,
-    disableEditActions: false,
-    hideLinkItems: false,
-  };
+      disablePinItems: false,
+      disableEditFields: false,
+      disableEditStatuses: false,
+      disablePagination: false,
+      disableChangeLayouts: false,
+      disableEditActions: false,
+      hideLinkItems: false,
+    };
 
   datastores: {
     disableStatusUpdate: boolean;
@@ -81,12 +81,12 @@ export default class AppFunction extends HxbAbstract {
     disableDbSettings: boolean;
     disableBoradView: boolean;
   } = {
-    disableStatusUpdate: false,
-    disableGridView: false,
-    disableQuery: false,
-    disableDbSettings: false,
-    disableBoradView: false,
-  };
+      disableStatusUpdate: false,
+      disableGridView: false,
+      disableQuery: false,
+      disableDbSettings: false,
+      disableBoradView: false,
+    };
 
   set(group: string, params: {[key: string]: boolean}): AppFunction {
     switch (group) {

@@ -20,7 +20,7 @@ export default class WorkspaceFunction extends HxbAbstract {
     disableManageAdmins?: boolean;
   } = {};
   taskQueue: {
-    showTaskList?: number
+    showTaskList?: number;
   } = {};
   newWorkspaces: {
     newWorkspace?: number;

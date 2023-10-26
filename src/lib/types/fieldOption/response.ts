@@ -4,8 +4,8 @@ export interface GetFieldSettingsRes {
   datastore_id: string;
   field_id: string;
   name: {
-    en: string
-    ja: string
+    en: string;
+    ja: string;
   };
   display_id: string;
   dataType: string;
@@ -43,7 +43,7 @@ export interface FieldOption {
   sort_id: number;
   updated_at: string;
   value: {
-    en: string
-    ja: string
+    en: string;
+    ja: string;
   };
 }

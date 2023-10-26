@@ -88,7 +88,7 @@ export default class Query extends HxbAbstract {
     return totalCount;
   }
 
-  private async _execute(options: MapType = {}): Promise<{ items: Item[], totalCount: number}> {
+  private async _execute(options: MapType = {}): Promise<{ items: Item[]; totalCount: number}> {
     const project = await Query.client.currentWorkspace?.project(this.queryClient.projectId);
     const datastore = await project?.datastore(this.queryClient.datastoreId)!;
     const payload = this._baseParams();

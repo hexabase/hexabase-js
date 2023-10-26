@@ -417,7 +417,7 @@ export default class Datastore extends HxbAbstract {
     return Item.search(payload, this);
   }
 
-  async searchWithCount(options: GetItemsParameters): Promise<{ items: Item[], totalCount: number }> {
+  async searchWithCount(options: GetItemsParameters): Promise<{ items: Item[]; totalCount: number }> {
     const payload: GetItemsParameters = {
       datastore_id: this.id,
       project_id: this.project.id,
@@ -448,7 +448,7 @@ export default class Datastore extends HxbAbstract {
     return Item.searchWithCount(payload, this);
   }
 
-  itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}): Promise<{items: Item[], totalCount: number}> {
+  itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}): Promise<{items: Item[]; totalCount: number}> {
     if (typeof params.page === 'undefined') params.page = 1;
     if (typeof params.per_page === 'undefined') params.per_page = 10;
     return Item.all(params, this);

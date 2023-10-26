@@ -199,7 +199,7 @@ export interface DtUpdateItem {
 
 export interface DtExecuteItemAction {
   datastoreExecuteItemAction: {
-    error: string
+    error: string;
     item_id?: string;
     item: {[key: string]: any};
   };

@@ -20,7 +20,7 @@ export default class FieldOption extends HxbAbstract {
     switch (key) {
       case '_id':
       case 'o_id':
-          this.id = value;
+        this.id = value;
         break;
       case 'color':
         this.color = value;
