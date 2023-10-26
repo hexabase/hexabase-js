@@ -86,41 +86,30 @@ export default class Workspace extends HxbAbstract {
 
   /**
    * static function get: get a workspace by id
-   * @param id 
+   * @param id
    * @returns Workspace
    */
-  static async get(id: string): Promise<Workspace | undefined> {
-    await this._current(id);
+  static async get(id?: string): Promise<Workspace | undefined> {
+    await this._current(id!);
     const res = await this.request(WORKSPACE_DETAIL);
     return Workspace.fromJson(res.workspace) as Workspace;
   }
 
   /**
    * static function get: get a workspace by id
-   * @param workspaceId 
-   * @returns 
+   * @param workspaceId
+   * @returns Workspace
    */
-  static async current(workspaceId: string): Promise<Workspace | undefined> {
-    await this._current(workspaceId);
+  static async current(workspaceId?: string): Promise<Workspace | undefined> {
+    await this._current(workspaceId!);
     return this.get(workspaceId);
   }
 
-  static async _current(workspaceId: string): Promise<boolean> {
-    // handle call graphql
-    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, {
-      setCurrentWorkSpaceInput: {
-        workspace_id: workspaceId,
-      }
-    });
-    return res.setCurrentWorkSpace!.success;
-  }
-
   /**
-   * static function all: get workspaces and current workspace id
-   * @returns workspaces: Workspace[], workspace: Workspace
+   * static function all: get workspaces and current workspaces
+   * @returns Workspace[]
    */
   static async allWithCurrent(): Promise<{ workspaces: Workspace[]; workspace: Workspace}> {
-    // handle call graphql
     const res: DtWorkspaces = await this.request(WORKSPACES);
     const { workspaces, current_workspace_id } = res.workspaces;
     const ary = workspaces
@@ -331,6 +320,15 @@ export default class Workspace extends HxbAbstract {
     };
     const res: ResponseErrorNull = await this.request(ARCHIVE_WORKSPACE, { payload });
     return !res.error;
+  }
+
+  static async _current(workspaceId: string): Promise<boolean> {
+    const res: DtCurrentWs = await this.request(SET_CURRENT_WORKSPACE, {
+      setCurrentWorkSpaceInput: {
+        workspace_id: workspaceId,
+      }
+    });
+    return res.setCurrentWorkSpace!.success;
   }
 
   async project(id?: string): Promise<Project> {
