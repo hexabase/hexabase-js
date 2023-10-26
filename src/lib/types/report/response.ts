@@ -8,10 +8,10 @@ export interface ReportListItem {
 }
 
 export interface NumInfoReportFields {
-    prefix: string;
-    suffix: string;
-    no_comma: boolean;
-  }
+  prefix: string;
+  suffix: string;
+  no_comma: boolean;
+}
 
 export interface GetReportsRes {
   reports?: [ReportListItem];
@@ -26,20 +26,20 @@ export interface MergeCells {
 }
 
 export interface ConditionsReportFields {
-    cond_rpf_id: string;
-    condition: string;
-    cond_type: string;
-    value: any;
-    bg_color: string;
-    ft_color: string;
-    apply_row: boolean;
-    use_field_ref: boolean;
-    value_rpf_id: string;
-    font_size: string;
-    font_style: string;
-    font_weight: string;
-    negative_sign_type: string;
-    num_format: string;
+  cond_rpf_id: string;
+  condition: string;
+  cond_type: string;
+  value: any;
+  bg_color: string;
+  ft_color: string;
+  apply_row: boolean;
+  use_field_ref: boolean;
+  value_rpf_id: string;
+  font_size: string;
+  font_style: string;
+  font_weight: string;
+  negative_sign_type: string;
+  num_format: string;
 }
 
 export interface ReportUIField {
@@ -81,17 +81,17 @@ export interface ReportDataRes {
 }
 
 export interface DtGetReports {
-    getReports: [ReportListItem];
+  getReports: [ReportListItem];
 }
 
 export interface DtReportData {
-    reportData: ReportDefaultData;
+  reportData: ReportDefaultData;
 }
 
 export interface GetReportsRes {
-    reports?: [ReportListItem];
-    error?: string;
-  }
+  reports?: [ReportListItem];
+  error?: string;
+}
 
 export interface ReportDataRes {
   dataReport?: ReportDefaultData;

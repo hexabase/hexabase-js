@@ -128,7 +128,7 @@ export default class Project extends HxbAbstract {
    * @params workspaceId
    * @returns AppAndDsRes
    */
-  static async allWithDatastores(workspace: Workspace): Promise<{ projects: Project[], datastores: Datastore[]}> {
+  static async allWithDatastores(workspace: Workspace): Promise<{ projects: Project[]; datastores: Datastore[]}> {
     // handle call graphql
     const res: DtAppAndDs = await this.request(GET_APPLICATION_AND_DATASTORE, { workspaceId: workspace.id });
     // data.appAndDs = res.getApplicationAndDataStore;

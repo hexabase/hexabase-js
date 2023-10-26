@@ -123,7 +123,7 @@ export default class Workspace extends HxbAbstract {
    * static function all: get workspaces and current workspace id
    * @returns workspaces: Workspace[], workspace: Workspace
    */
-  static async allWithCurrent(): Promise<{ workspaces: Workspace[], workspace: Workspace}> {
+  static async allWithCurrent(): Promise<{ workspaces: Workspace[]; workspace: Workspace}> {
     // handle call graphql
     const res: DtWorkspaces = await this.request(WORKSPACES);
     const { workspaces, current_workspace_id } = res.workspaces;
@@ -141,7 +141,7 @@ export default class Workspace extends HxbAbstract {
     switch (key) {
       case 'w_id':
       case 'workspace_id':
-          this.id = value;
+        this.id = value;
         break;
       case 'ws_key':
         this.wsKey = value;
@@ -198,7 +198,7 @@ export default class Workspace extends HxbAbstract {
         this.workspaceUsage = WorkspaceUsage.fromJson(value) as WorkspaceUsage;
         this.workspaceUsage.workspace = this;
         break;
-      }
+    }
     return this;
   }
 
@@ -347,7 +347,7 @@ export default class Workspace extends HxbAbstract {
     return Project.all(this);
   }
 
-  projectsAndDatastores(): Promise<{ projects: Project[], datastores: Datastore[]}> {
+  projectsAndDatastores(): Promise<{ projects: Project[]; datastores: Datastore[]}> {
     return Project.allWithDatastores(this);
   }
 

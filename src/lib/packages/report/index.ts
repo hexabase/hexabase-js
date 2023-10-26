@@ -75,7 +75,7 @@ export default class Report extends HxbAbstract {
    * @params projectId, reportId, reportDataPayload
    * @returns ReportDataRes
    */
-    /*
+  /*
   async getReport(projectId: string, reportId: string, reportDataPayload?: ReportDataPayload): Promise<ReportDataRes> {
     const data: ReportDataRes = {
       Report: undefined,

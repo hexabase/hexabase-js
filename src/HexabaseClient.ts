@@ -102,7 +102,7 @@ export default class HexabaseClient {
     }
     const res = await this.auth.login({ email, password });
     if (!res) {
-      throw Error(`Need login failed to initialize sdk`);
+      throw Error('Need login failed to initialize sdk');
     }
     await this.setToken(res);
     return true;
@@ -142,7 +142,7 @@ export default class HexabaseClient {
     return this._workspaces;
   }
 
-  public async workspacesWithCurrent(): Promise<{workspaces: Workspace[], workspace: Workspace}> {
+  public async workspacesWithCurrent(): Promise<{workspaces: Workspace[]; workspace: Workspace}> {
     if (this._workspaces.length > 0 && this.currentWorkspace) {
       return { workspaces: this._workspaces, workspace: this.currentWorkspace };
     }

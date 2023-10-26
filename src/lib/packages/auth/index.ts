@@ -1,23 +1,17 @@
 import { GraphQLClient } from 'graphql-request';
-import { LOG_OUT, USER_INFO } from '../../graphql/user';
-import { DtUserInfo, LoginPayload, UserInfoRes } from '../../types/user';
-import { HxbAbstract } from '../../../HxbAbstract';
-import { DtLogin, DtLogOut, LoginRes } from '../../types/auth';
+import { LOG_OUT } from '../../graphql/user';
+import { LoginPayload } from '../../types/user';
+import { DtLogin, DtLogOut } from '../../types/auth';
 import { LOGIN } from '../../graphql/auth';
-import { ModelRes } from '../../util/type';
 import { AuthChangeEvent, Session } from '../../types/auth/input';
 import { Subscription } from '../../types/auth/response';
-import { ApiError } from '../../types/auth/response';
 import { uuid } from '../../util/helper';
 
 export default class Auth {
+  public client: GraphQLClient;
   protected stateChangeEmitters: Map<string, Subscription> = new Map();
 
-  // public urlGr: string;
-  public client: GraphQLClient;
-
   constructor(protected urlGraphql: string) {
-    // this.urlGr = urlGraphql;
     this.client = new GraphQLClient(urlGraphql);
   }
 
