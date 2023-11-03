@@ -1,5 +1,4 @@
 import HexabaseClient from './HexabaseClient';
-import Hexabase from './HexabaseClient';
 import Item from './lib/packages/item';
 import Project from './lib/packages/project';
 import Report from './lib/packages/report';
@@ -43,6 +42,6 @@ const createClient = async ({
 export * from './lib/types';
 
 export {
-  createClient, HexabaseClient, Hexabase,
+  createClient, HexabaseClient,
   Item, Project, Report, HexabaseSQL, User, Workspace, FileObject,
 };
