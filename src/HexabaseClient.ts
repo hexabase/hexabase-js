@@ -28,7 +28,7 @@ type InitializeOptions = {
   env?: string;
   url?: string;
   rest?: string;
-  sse?: string;
+  pubsub?: string;
 };
 
 export default class HexabaseClient {
@@ -39,7 +39,7 @@ export default class HexabaseClient {
   public currentUser?: User;
   public urlHxb: string;
   public restHxb: string;
-  public sseHxb: string;
+  public pubSubHxb: string;
   public connection?: signalR.HubConnection;
   private _workspaces: Workspace[];
 
@@ -50,23 +50,23 @@ export default class HexabaseClient {
       case 'dev':
         this.urlHxb = 'https://stg-hxb-graph.hexabase.com/graphql';
         this.restHxb = 'https://stg-api.hexabase.com';
-        this.sseHxb = 'https://stg-pubsub.hexabase.com/hub';
+        this.pubSubHxb = 'https://stg-pubsub.hexabase.com/hub';
         break;
       default:
         this.urlHxb = 'https://graphql.hexabase.com/graphql';
         this.restHxb = 'https://api.hexabase.com';
-        this.sseHxb = 'https://pubsub.hexabase.com/hub';
+        this.pubSubHxb = 'https://pubsub.hexabase.com/hub';
         break;
     }
-    const { url, sse, rest } = options;
+    const { url, pubsub, rest } = options;
     if (url && url.trim() !== '') {
       this.urlHxb = url;
     }
     if (rest && rest.trim() !== '') {
       this.restHxb = rest;
     }
-    if (sse && sse.trim() !== '') {
-      this.sseHxb = sse;
+    if (pubsub && pubsub.trim() !== '') {
+      this.pubSubHxb = pubsub;
     }
     this.auth = this._initAuth();
   }
@@ -124,8 +124,8 @@ export default class HexabaseClient {
     return true;
   }
 
-  public sseUrl(): string {
-    return `${this.sseHxb}?token=${this.tokenHxb}`;
+  public pubSubUrl(): string {
+    return `${this.pubSubHxb}?token=${this.tokenHxb}`;
   }
 
   /**
@@ -190,12 +190,12 @@ export default class HexabaseClient {
     return res as UserInviteResponse[];
   }
 
-  async connectSse(): Promise<boolean> {
+  async connectPubSub(): Promise<boolean> {
     if (this.connection) {
       return true;
     }
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(this.sseUrl(), {
+      .withUrl(this.pubSubUrl(), {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
       })
@@ -206,7 +206,7 @@ export default class HexabaseClient {
     return true;
   }
 
-  async closeSse(): Promise<boolean> {
+  async closePubSub(): Promise<boolean> {
     if (!this.connection) return true;
     await this.connection.stop();
     this.connection = undefined;
