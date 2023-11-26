@@ -215,4 +215,9 @@ export default class Project extends HxbAbstract {
     const res: DtDeleteProject = await this.request(DELETE_PROJECT, { payload });
     return res.deleteProject.success;
   }
+
+  async execute<T>(functionId: string, params: {[key: string]: any} = {}): Promise<T> {
+    const res = this.rest('POST', `/api/v0/applications/${this.id}/functions/${functionId}`, {}, params);
+    return res as T;
+  }
 }

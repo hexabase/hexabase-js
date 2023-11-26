@@ -44,7 +44,6 @@ export class HxbAbstract {
       if (options.binary) return JSON.parse(await res.text());
       return await res.json();
     } catch (error: any) {
-      console.log(error);
       throw error.response.data;
     }
   }
@@ -78,14 +77,6 @@ export class HxbAbstract {
     for (const key in bodies) {
       const body = bodies[key];
       if (body instanceof Blob) {
-        /*
-        const buffer = Buffer.from(await body.arrayBuffer());
-        form.append(key, buffer, {
-          filename,
-          contentType: body.type,
-          knownLength: buffer.length,
-        });
-        */
         form.append(key, body, filename);
       } else {
         form.append(key, body);
