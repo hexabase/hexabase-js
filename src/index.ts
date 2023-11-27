@@ -1,6 +1,4 @@
 import HexabaseClient from './HexabaseClient';
-import Hexabase from './HexabaseClient';
-import Auth from './lib/packages/auth';
 import Item from './lib/packages/item';
 import Project from './lib/packages/project';
 import Report from './lib/packages/report';
@@ -9,38 +7,41 @@ import User from './lib/packages/user';
 import Workspace from './lib/packages/workspace';
 import FileObject from './lib/packages/fileObject';
 
-interface HexabaseConfig {
-  url?: string;
-  token?: string;
+type Config = {
+  env?: string;
   email?: string;
   password?: string;
-}
-export interface Config {
-  url_production: string;
-}
+  token?: string;
+};
 
 /**
- * create client for hexabase-sdk
+ * Creates a new Hexabase Client.
+ * @param string env
+ * @param string email
+ * @param string password
+ * @param string token
+ * @returns HexabaseClient
  */
 const createClient = async ({
-  url = 'https://graphql.hexabase.com/graphql',
-  token,
+  env,
   email,
   password,
-}: HexabaseConfig): Promise<HexabaseClient> => {
-  const auth = new Auth(url);
-  if (!token || (!email && !password)) {
-    throw Error('Need token or email and password to initialize sdk');
+  token,
+}: Config = {}): Promise<HexabaseClient> => {
+  const client = new HexabaseClient({ env });
+  if (token) {
+    await client.setToken(token);
+    return client;
   }
-  const tokenHx = (email && password) ? await auth.login({ email, password }) : token;
-  const client = new HexabaseClient({ url });
-  await client.setToken(tokenHx);
+  if (email && password) {
+    await client.login({ email, password });
+  }
   return client;
 };
 
 export * from './lib/types';
 
 export {
-  createClient, HexabaseClient, Hexabase,
+  createClient, HexabaseClient,
   Item, Project, Report, HexabaseSQL, User, Workspace, FileObject,
 };

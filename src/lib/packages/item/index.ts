@@ -639,11 +639,11 @@ export default class Item extends HxbAbstract {
   }
 
   public async subscribe(event: string, func: (message: ItemSubscription) => void): Promise<void> {
-    await Item.client.connectSse();
+    await Item.client.connectPubSub();
     const eventID = this.getEventName(event);
     Item.client.connection?.on(eventID, (msg: SubscriptionUpdateItem) => {
-      const data = new ItemSubscription(msg);
-      data.item = this;
+      const data = ItemSubscription.fromJson(msg) as ItemSubscription;
+      // data.item = this;
       func(data);
     });
     Item.client.connection?.on('messagereceived', (msg: {[key: string]: any}) => {
@@ -653,7 +653,7 @@ export default class Item extends HxbAbstract {
   }
 
   public async unsubscribe(): Promise<boolean> {
-    await Item.client.closeSse();
+    await Item.client.closePubSub();
     return true;
   }
 
