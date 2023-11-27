@@ -30,6 +30,11 @@ export default class ItemHistory extends HxbAbstract {
   updatedAt: Date;
   mediaLink: string;
   isUpdated: boolean;
+  isChanged: boolean;
+  isFetchreplymail: boolean;
+  postForRel: boolean;
+  postMode: string;
+
   constructor(params: any) {
     super(params);
     this.user = new User;
@@ -70,6 +75,9 @@ export default class ItemHistory extends HxbAbstract {
       case 'is_status_action':
         this.isStatusAction = value;
         break;
+      case 'UserObjID':
+        this.user.id = value;
+        break;
       case 'user':
         this.user = new User({id: value});
         break;
@@ -96,9 +104,25 @@ export default class ItemHistory extends HxbAbstract {
         break;
       case 'datastore_name':
       case 'datastore_id':
+      case 'i_id':
+      case 'item_id':
+      case 'project_id':
+      case 'workspace_id':
+        break;
+      case 'is_fetchreplymail':
+        this.isFetchreplymail = value;
+        break;
+      case 'IsChanged':
+        this.isChanged = value;
+        break;
+      case 'post_for_rel':
+        this.postForRel = value;
+        break;
+      case 'post_mode':
+        this.postMode = value;
         break;
       default:
-        console.log({ key, value});
+        // console.log({ key, value});
         break;
     }
     return this;
