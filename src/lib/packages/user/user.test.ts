@@ -7,7 +7,7 @@ const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const groupId = process.env.GROUP_ID || '';
 
-const client = new HexabaseClient({ env: 'dev' });
+const client = new HexabaseClient();
 
 beforeAll(async () => {
   const token = client.login({ email, password });

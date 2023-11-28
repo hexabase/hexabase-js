@@ -6,7 +6,7 @@ require('dotenv').config();
 jest.useRealTimers();
 
 const token = process.env.TOKEN || '';
-const hexabase = new HexabaseClient({ env: 'dev' });
+const client = new HexabaseClient();
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 const datastoreID = process.env.DEV_DATASOTRE_ID || '';
@@ -23,8 +23,8 @@ const params = {
  */
 
 beforeAll(async () => {
-  await hexabase.login({email, password, token});
-  const project = await hexabase.currentWorkspace!.project(projectID);
+  await client.login({email, password, token});
+  const project = await client.currentWorkspace!.project(projectID);
   const datastore = await project.datastore(datastoreID);
   for (let i = 0; i < 10; i++) {
     const item = await datastore.item();
@@ -37,7 +37,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  const query = hexabase.query(projectID);
+  const query = client.query(projectID);
   await query
     .from(datastoreID)
     .delete();
@@ -45,11 +45,11 @@ afterAll(async () => {
 
 describe('Hexabase SQL', () => {
   it('Select all fields', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     const res = await query
       .from(datastoreID)
       .select('*');
-    const project = await hexabase.currentWorkspace!.project(projectID);
+    const project = await client.currentWorkspace!.project(projectID);
     const datastore = await project.datastore(datastoreID);
     const items = await datastore.items({per_page: 0, page: 1});
     expect(res.length).toEqual(items.length);
@@ -57,7 +57,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Select limited fields', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     const res = await query
       .from(datastoreID)
       .select('textInputUnique, autoNum');
@@ -70,7 +70,7 @@ describe('Hexabase SQL', () => {
 
   it('Change limit rows', async () => {
     const LIMIT = 5;
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     const res = await query
       .from(datastoreID)
       .limit(LIMIT)
@@ -80,7 +80,7 @@ describe('Hexabase SQL', () => {
 
   it('Change page', async () => {
     const LIMIT = 5;
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     const res = await query
       .from(datastoreID)
       .limit(LIMIT)
@@ -97,7 +97,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Where equalTo', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     const c = query.condition;
     const res = await query
       .from(datastoreID)
@@ -114,7 +114,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Count', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     const res = await query
       .from(datastoreID)
       .limit(0)
@@ -127,7 +127,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Insert one', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     // get randam string
     const randamString = Math.random().toString(36).substring(7);
     const textInputUnique = `${(new Date).toISOString()}-${randamString}`;
@@ -145,7 +145,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Insert multi', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     // get randam string
     const textInputUnique = name();
     const items = await query
@@ -173,7 +173,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Update one', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     // get randam string
     const NUMBER1 = 200;
     const NUMBER2 = 300;
@@ -204,7 +204,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('Update multiple', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     // get randam string
     const NUMBER1 = 510;
     const NUMBER2 = 610;
@@ -251,7 +251,7 @@ describe('Hexabase SQL', () => {
   });
 
   it('delete one', async () => {
-    const query = hexabase.query(projectID);
+    const query = client.query(projectID);
     // get randam string
     const NUMBER1 = 220;
     const NUMBER2 = 330;

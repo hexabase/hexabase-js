@@ -28,7 +28,7 @@ const createClient = async ({
   password,
   token,
 }: Config = {}): Promise<HexabaseClient> => {
-  const client = new HexabaseClient({ env });
+  const client = new HexabaseClient();
   if (token) {
     await client.setToken(token);
     return client;
