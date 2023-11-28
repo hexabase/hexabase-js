@@ -10,6 +10,7 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/project/project.test.ts
  */
 
+const workspaceId = process.env.WORKSPACEID || '';
 const projectId = process.env.APPLICATIONID || '';
 const tokenApp = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
@@ -20,6 +21,7 @@ const client = new HexabaseClient();
 // local variable in file for testing
 beforeAll(async () => {
   await client.login({ email, password, token: tokenApp });
+  await client.setWorkspace(workspaceId);
 });
 
 describe('Project', () => {
@@ -34,6 +36,18 @@ describe('Project', () => {
         console.error(error);
       }
     });
+  });
+
+  it('should execute project custom function', async () => {
+    try {
+      jest.useFakeTimers('legacy');
+      const workspace = client.currentWorkspace!;
+      const project = await workspace.project(projectId);
+      const res = await project.execute<{[key: string]: string}>('func', { a: 'b' });
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   describe('#getProjectsAndDatastores()', () => {
@@ -84,6 +98,7 @@ describe('Project', () => {
       const bol = await project.save();
       expect(bol).toBe(true);
       expect(typeof project.id).toBe('string');
+      await project.delete();
     });
   });
 
@@ -112,6 +127,7 @@ describe('Project', () => {
       await project.save();
       await project.fetch();
       expect(project.theme).toBe('blue');
+      await project.delete();
     });
   });
 
@@ -127,6 +143,7 @@ describe('Project', () => {
       };
       const bol = await project.save();
       expect(bol).toBe(true);
+      await project.delete();
     });
   });
 
@@ -146,5 +163,4 @@ describe('Project', () => {
       expect(res).toBe(true);
     });
   });
-
 });
