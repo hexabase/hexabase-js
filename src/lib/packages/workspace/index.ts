@@ -40,6 +40,7 @@ import {
   UserInviteOptions,
   UserInvitePl,
   UserInviteResponse,
+  UserInviteArgs,
 } from '../../types/workspace';
 import Language from '../language';
 import PasswordPolicy from '../passwordPolicy';
@@ -355,7 +356,7 @@ export default class Workspace extends HxbAbstract {
     return Template.all();
   }
 
-  async invite(emails: string[], domain: string, options?: UserInviteOptions): Promise<UserInviteResponse[]> {
-    return Workspace.client.invite(emails, domain, options, this);
+  async invite(emails: string[], options: UserInviteArgs = {}): Promise<UserInviteResponse[]> {
+    return Workspace.client.invite(emails, options, this);
   }
 }

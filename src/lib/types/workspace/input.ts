@@ -206,11 +206,20 @@ export interface UserInvitePl extends UserInviteOptions {
     email: string;
     exclusive_w_id?: string;
   }[];
-  domain: string;
+}
+
+export interface UserInviteArgs {
+  senderAddress?: string;
+  domain?: string;
+  invitationPath?: string;
+  noConfirmEmail?: boolean;
+  emailTemplatesId?: string;
 }
 
 export interface UserInviteOptions {
   sender_address?: string;
   invitation_path?: string;
   email_templates_id?: string;
+  domain?: string;
+  no_confirm_email?: boolean;
 }
