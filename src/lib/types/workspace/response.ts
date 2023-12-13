@@ -286,5 +286,6 @@ export interface WorkspaceIDRes {
 
 export interface UserInviteResponse {
   email: string;
-  stats: number;
+  stats?: number;
+  confirmation_id?: string;
 }
