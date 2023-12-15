@@ -10,7 +10,7 @@ import HexabaseSQL from './lib/sql';
 import { HxbAbstract } from './HxbAbstract';
 import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
-import { UserInviteOptions, UserInvitePl, UserInviteResponse } from './lib/types/workspace';
+import { UserInviteArgs, UserInviteOptions, UserInvitePl, UserInviteResponse } from './lib/types/workspace';
 import * as signalR from '@microsoft/signalr';
 
 /**
@@ -176,16 +176,15 @@ export default class HexabaseClient {
     return f;
   }
 
-  async invite(emails: string[], domain: string, options?: UserInviteOptions, workspace?: Workspace): Promise<UserInviteResponse[]> {
-    const params: UserInvitePl = {domain, ...{
-      users: emails.map(email => {
-        if (workspace) {
-          return { email, exclusive_w_id: workspace.id };
-        } else {
-          return { email };
-        }
-      }),
-    }, ...options};
+  async invite(emails: string[], args: UserInviteArgs = {}, workspace?: Workspace): Promise<UserInviteResponse[]> {
+    const params: UserInvitePl = {
+      users: emails.map(email => workspace ? { email, exclusive_w_id: workspace.id } : { email }),
+    };
+    if (args.senderAddress) params.sender_address = args.senderAddress;
+    if (args.domain) params.domain = args.domain;
+    if (args.invitationPath) params.invitation_path = args.invitationPath;
+    if (args.noConfirmEmail) params.no_confirm_email = args.noConfirmEmail;
+    if (args.emailTemplatesId) params.email_templates_id = args.emailTemplatesId;
     const res = this.currentWorkspace!.rest('post', '/api/v0/userinvite', {}, params) as unknown;
     return res as UserInviteResponse[];
   }
