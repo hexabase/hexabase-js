@@ -298,6 +298,10 @@ export const ITEM_DETAIL = gql`
       status_order
       status_action_order
       item_action_order
+      created_at
+      created_by
+      updated_at
+      updated_by
     }
   }
 `;
