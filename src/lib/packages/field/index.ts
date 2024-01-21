@@ -153,6 +153,10 @@ export default class Field extends HxbAbstract {
         if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/)) {
           return true;
         }
+        // For yyyy-mm-ddThh:mm:ss.286Z
+        if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z/)) {
+          return true;
+        }
         return value instanceof Date;
       case DataType.SELECT:
       case DataType.RADIO:
