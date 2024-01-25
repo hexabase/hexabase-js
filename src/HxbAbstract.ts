@@ -2,6 +2,7 @@ import { GraphQLClient } from 'graphql-request';
 import HexabaseClient from './HexabaseClient';
 // import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { Buffer } from 'buffer';
+import { Blob } from 'buffer';
 import fetch, { Response, RequestInit, Body } from 'node-fetch';
 import FormData from 'form-data';
 
@@ -44,6 +45,7 @@ export class HxbAbstract {
       if (options.binary) return JSON.parse(await res.text());
       return await res.json();
     } catch (error: any) {
+      console.log(error);
       throw error.response.data;
     }
   }
@@ -77,7 +79,12 @@ export class HxbAbstract {
     for (const key in bodies) {
       const body = bodies[key];
       if (body instanceof Blob) {
-        form.append(key, body, filename);
+        if (typeof window !== 'undefined') {
+          form.append(key, body, filename);
+        } else {
+          // Node.js
+          form.append(key, Buffer.from(await body.arrayBuffer()), filename);
+        }
       } else {
         form.append(key, body);
       }

@@ -34,7 +34,6 @@ export default class LinkItem extends HxbAbstract {
         link_item_id: this.linkedItem.id,
       }
     };
-    console.log(params);
     const res: DtAddItemLink = await this.request(ADD_ITEM_LINK, params);
     this.saved = true;
     return res.addItemLink.success;

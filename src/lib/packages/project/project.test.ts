@@ -10,8 +10,8 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/project/project.test.ts
  */
 
-const workspaceId = process.env.WORKSPACEID || '';
-const projectId = process.env.APPLICATIONID || '';
+const workspaceId = process.env.WORKSPACE_ID || '';
+const projectId = process.env.PROJECT_ID || '';
 const tokenApp = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
@@ -22,6 +22,12 @@ const client = new HexabaseClient();
 beforeAll(async () => {
   await client.login({ email, password, token: tokenApp });
   await client.setWorkspace(workspaceId);
+  const projects = await client.currentWorkspace!.projects();
+  for (const project of projects) {
+    if (project.name === '新しいプロジェクト') {
+      await project.delete();
+    }
+  }
 });
 
 describe('Project', () => {
@@ -53,22 +59,17 @@ describe('Project', () => {
   describe('#getProjectsAndDatastores()', () => {
     it('should get project and datastore by workspace id', async () => {
       jest.useFakeTimers('legacy');
-      try {
-        const workspace = client.currentWorkspace!;
-        const { projects, datastores } = await workspace.projectsAndDatastores();
-        const project = projects[0];
-        expect(typeof project.id).toBe('string');
-        const name = project.name as FieldNameENJP;
-        expect(typeof name.en).toBe('string');
-        expect(typeof project.displayId).toBe('string');
+      const workspace = client.currentWorkspace!;
+      const { projects, datastores } = await workspace.projectsAndDatastores();
+      const project = projects[0];
+      expect(typeof project.id).toBe('string');
+      expect(typeof project.name).toBe('string');
+      expect(typeof project.displayId).toBe('string');
 
-        const datastore = datastores[0];
-        if (datastore) {
-          expect(typeof datastore.id).toBe('string');
-          expect(typeof datastore.name).toBe('string');
-        }
-      } catch (error) {
-        console.error(error);
+      const datastore = datastores[0];
+      if (datastore) {
+        expect(typeof datastore.id).toBe('string');
+        expect(typeof datastore.name).toBe('string');
       }
     });
   });
@@ -110,10 +111,10 @@ describe('Project', () => {
       const projects = await workspace.projects();
       const project = projects[0];
       await project.fetch();
-      const name = project.name as FieldNameENJP;
-      expect(typeof name.ja).toBe('string');
-      expect(name.ja !== '').toBe(true);
-      expect(typeof name.en).toBe('string');
+      // const name = project.name as FieldNameENJP;
+      expect(typeof project.name).toBe('string');
+      expect(project.name !== '').toBe(true);
+      // expect(typeof name).toBe('string');
     });
   });
 
@@ -127,7 +128,7 @@ describe('Project', () => {
       await project.save();
       await project.fetch();
       expect(project.theme).toBe('blue');
-      await project.delete();
+      // await project.delete();
     });
   });
 
@@ -135,14 +136,21 @@ describe('Project', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
       const workspace = client.currentWorkspace!;
-      const projects = await workspace.projects();
-      const project = projects[0];
+      const project = await workspace.project();
+      project.name = {
+        ja: '新しいプロジェクト',
+        en: 'new project'
+      };
+      await project.save();
+      expect(typeof project.id).toBe('string');
       project.name = {
         en: 'test update',
         ja: 'test update',
       };
       const bol = await project.save();
       expect(bol).toBe(true);
+      await project.fetch();
+      expect(project.name.en).toBe('test update');
       await project.delete();
     });
   });

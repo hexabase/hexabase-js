@@ -246,7 +246,6 @@ export default class Item extends HxbAbstract {
     if (value === undefined || value === null && defaultValue) {
       return defaultValue;
     }
-    if (!value) return undefined;
     return value as T;
   }
 
@@ -339,11 +338,19 @@ export default class Item extends HxbAbstract {
     return res.datastoreDeleteDatastoreItems.success;
   }
 
-  async save(comment?: string, actionName?: string): Promise<boolean> {
+  async save({
+    comment,
+    actionName,
+    params
+  }: {
+    comment?: string;
+    actionName?: string;
+    params?: any;
+  } = {}): Promise<boolean> {
     if (!this.id || this.id === '') {
-      await this.create(actionName);
+      await this.create({ actionName, params});
     } else {
-      await this.update(comment, actionName);
+      await this.update({ comment, actionName, params});
     }
     await this.fetch();
     await Promise.all(this._linkItems.map(linkItem => linkItem.create()));
@@ -363,9 +370,13 @@ export default class Item extends HxbAbstract {
     return this;
   }
 
-  async create(actionName: string = 'CreateItem'): Promise<boolean> {
+  async create({ actionName, params}:
+  {
+    actionName?: string;
+    params?: any;
+  } = {}): Promise<boolean> {
     if (!this.datastore) throw new Error('Datastore is required');
-    const action = await this.actionOrStatusAction(actionName);
+    const action = await this.actionOrStatusAction(actionName || 'CreateItem');
     const payload: CreateNewItemPl = {
       action_id: action && action.id,
       return_item_result: true,
@@ -374,6 +385,7 @@ export default class Item extends HxbAbstract {
       exec_children_post_procs: true,
       item: await this.toJson(),
     };
+    if (params) payload.as_params = params;
     // handle call graphql
     const res: DtNewItem = await this.request(CREATE_NEW_ITEM, {
       projectId: this.datastore.project.id,
@@ -381,24 +393,24 @@ export default class Item extends HxbAbstract {
       payload,
     });
     if (this.datastore._fields.length === 0) await this.datastore.fields();
-    const params: {[key: string]: any} = {};
+    const options: {[key: string]: any} = {};
     Object.keys(res.datastoreCreateNewItem.item).forEach((id) => {
       const field = this.datastore._fields.find((f) => f.id === id || f.displayId === id);
       if (!field) {
-        params[id] = res.datastoreCreateNewItem.item[id];
+        options[id] = res.datastoreCreateNewItem.item[id];
       } else {
-        params[field.displayId] = res.datastoreCreateNewItem.item[id];
+        options[field.displayId] = res.datastoreCreateNewItem.item[id];
       }
     });
     // Check db lookup item
-    for (const key in params) {
-      if (!params[key].d_id) continue;
-      const datastore = this.datastore.project.datastoreSync(params[key].d_id);
+    for (const key in options) {
+      if (!options[key].d_id) continue;
+      const datastore = this.datastore.project.datastoreSync(options[key].d_id);
       if (datastore) {
-        params[key] = await datastore.item(params[key].item_id);
+        options[key] = await datastore.item(options[key].item_id);
       }
     }
-    this.sets(params);
+    this.sets(options);
     this._setStatus(this._status);
     if (this._existAttachment) {
       await this.update();
@@ -407,10 +419,14 @@ export default class Item extends HxbAbstract {
     return true;
   }
 
-  async execute(actionName: string): Promise<boolean> {
+  async execute(actionName: string, {
+    params
+  }: {
+    params?: any;
+  } = {}): Promise<boolean> {
     const action = await this.actionOrStatusAction(actionName);
     if (!action) throw new Error(`Action ${actionName} not found`);
-    const params: ItemActionParameters = {
+    const payload: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
       action_id: action && action.id,
@@ -420,12 +436,13 @@ export default class Item extends HxbAbstract {
       return_item_result: true,
       item: await this.toJson(),
     };
+    if (params) payload.as_params = params;
     const res: DtExecuteItemAction = await this.request(EXECUTE_ITEM_ACTION, {
       actionId: action.id,
       datastoreId: this.datastore.id,
       itemId: this.id,
       projectId: this.datastore.project.id,
-      itemActionParameters: params
+      itemActionParameters: payload
     });
     // this.sets(res.datastoreExecuteItemAction.item);
     // this._setStatus(this._status);
@@ -440,9 +457,14 @@ export default class Item extends HxbAbstract {
     if (statusAction) return statusAction;
   }
 
-  async update(comment?: string, actionName = 'UpdateItem'): Promise<boolean> {
-    const action = await this.actionOrStatusAction(actionName);
-    const params: ItemActionParameters = {
+  async update({
+    comment, actionName, params}: {
+    comment?: string;
+    actionName?: string;
+    params?: any;
+  } = {}): Promise<boolean> {
+    const action = await this.actionOrStatusAction(actionName || 'UpdateItem');
+    const payload: ItemActionParameters = {
       rev_no: this.revNo,
       datastore_id: this.datastore.id,
       action_id: action && action.id,
@@ -453,16 +475,17 @@ export default class Item extends HxbAbstract {
       item: await this.toJson(),
     };
     if (comment) {
-      params.history = {
+      payload.history = {
         comment,
         datastore_id: this.datastore.id,
       };
     }
+    if (params) payload.as_params = params;
     const res: DtUpdateItem = await this.request(DATASTORE_UPDATE_ITEM, {
       datastoreId: this.datastore.id,
       itemId: this.id,
       projectId: this.datastore.project.id,
-      itemActionParameters: params
+      itemActionParameters: payload
     });
     this.sets(res.datastoreUpdateItem.item);
     this._setStatus(this._status);
@@ -648,7 +671,6 @@ export default class Item extends HxbAbstract {
     });
     Item.client.connection?.on('messagereceived', (msg: {[key: string]: any}) => {
       if (msg.ok === 200) return;
-      console.log({ msg });
     });
   }
 

@@ -9,9 +9,9 @@ import { Blob } from 'buffer';
  */
 const token = process.env.TOKEN || '';
 const client = new HexabaseClient();
-const workspaceId = process.env.DEV_WORKSPACE_ID;
-const datastoreId = process.env.DEV_DATASOTRE_ID || '';
-const projectId = process.env.DEV_PROJECT_ID || '';
+const workspaceId = process.env.WORKSPACE_ID;
+const datastoreId = process.env.DATASTORE_MAIN || '';
+const projectId = process.env.PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
