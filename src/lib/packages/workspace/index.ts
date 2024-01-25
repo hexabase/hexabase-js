@@ -67,7 +67,7 @@ export default class Workspace extends HxbAbstract {
   public userId: string;
   public languages: Language[];
   public wsAdmin: string[];
-  public passwordPolicy: PasswordPolicy;
+  public _passwordPolicy: PasswordPolicy;
   public redirect: Redirect;
   public workspaceFunction: WorkspaceFunction;
   public workspaceUsage: WorkspaceUsage;
@@ -173,7 +173,7 @@ export default class Workspace extends HxbAbstract {
           .map((lang: any) => Language.fromJson(lang) as Language);
         break;
       case 'pwd_policy':
-        this.passwordPolicy = PasswordPolicy.fromJson(value) as PasswordPolicy;
+        this._passwordPolicy = PasswordPolicy.fromJson(value) as PasswordPolicy;
         break;
       case 'redirect':
         this.redirect = Redirect.fromJson(value) as Redirect;
@@ -219,17 +219,17 @@ export default class Workspace extends HxbAbstract {
    * function getPasswordPolicy: get workspace password policy
    * @returns PasswordPolicy
    */
-  async getPasswordPolicy(): Promise<PasswordPolicy> {
+  async passwordPolicy(): Promise<PasswordPolicy> {
     const res: DtWsPasswordPolicy = await this.request(WORKSPACE_PASSWORD_POLICY, { workingspaceId: this.id });
-    this.passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy) as PasswordPolicy;
-    return this.passwordPolicy;
+    this._passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy) as PasswordPolicy;
+    return this._passwordPolicy;
   }
 
   /**
    * function getFunctionality: get workspace functionlity
    * @returns WorkspaceFunction
    */
-  async getFunctionality(): Promise<WorkspaceFunction> {
+  async functionality(): Promise<WorkspaceFunction> {
     const data: WsFunctionalityRes = {
       wsFunctionality: undefined,
       error: undefined,
@@ -247,10 +247,10 @@ export default class Workspace extends HxbAbstract {
    * function getUsage: get workspace usage
    * @returns WorkspaceUsage
    */
-  async getUsage(): Promise<WorkspaceUsage> {
+  async usage(): Promise<WorkspaceUsage> {
     // handle call graphql
     const res: DtWsUsage = await this.request(WORKSPACE_USAGE, { workingspaceId: this.id });
-    this.workspaceUsage = WorkspaceUsage.fromJson({ ...{workspace: this}, ...res.workspaceUsage}) as WorkspaceUsage;
+    this.workspaceUsage = WorkspaceUsage.fromJson({ ...{workspace: this}, ...res.workspaceUsage.usage}) as WorkspaceUsage;
     return this.workspaceUsage;
   }
 
