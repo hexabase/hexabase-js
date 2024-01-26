@@ -292,7 +292,7 @@ export default class Field extends HxbAbstract {
         return value.map((v: any) => {
           const option = this.option(v);
           if (!option) throw new Error(`Field ${this.name} has not option (${v})`);
-          return option.displayId;
+          return option.id;
         });
       }
       case DataType.SELECT:
@@ -300,7 +300,7 @@ export default class Field extends HxbAbstract {
         if (value === null) return null;
         const option = this.option(value);
         if (!option) throw new Error(`Field ${this.name} has not option (${value})`);
-        return option.displayId;
+        return option.id;
       }
       case DataType.USERS:
         if (value === null) return null;
