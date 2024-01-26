@@ -1,8 +1,8 @@
 import { GraphQLClient } from 'graphql-request';
 import HexabaseClient from './HexabaseClient';
 // import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { Buffer } from 'buffer';
-import { Blob } from 'buffer';
+// import { Buffer } from 'buffer';
+// import { Blob } from 'buffer';
 import fetch, { Response, RequestInit, Body } from 'node-fetch';
 import FormData from 'form-data';
 
