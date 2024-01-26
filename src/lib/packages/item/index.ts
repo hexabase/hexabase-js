@@ -160,7 +160,7 @@ export default class Item extends HxbAbstract {
         this.updatedBy = value as string;
         break;
       case 'lookup_items':
-        // console.log(value);
+        // console.log({ value });
         break;
       case 'item_actions':
         this.actions = Object.keys(value)

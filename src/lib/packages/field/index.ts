@@ -188,7 +188,7 @@ export default class Field extends HxbAbstract {
   option(value: any): FieldOption | undefined {
     if (value === null) return undefined;
     if (typeof value === 'string') {
-      return this._options.find(o => o.displayId === value || o.value.en === value || o.value.ja === value);
+      return this._options.find(o => o.id === value || o.displayId === value || o.value.en === value || o.value.ja === value);
     } else {
       return this._options.find(o => o.value === value);
     }
@@ -289,7 +289,7 @@ export default class Field extends HxbAbstract {
         if (!Array.isArray(value)) {
           value = [value];
         }
-        value.map((v: any) => {
+        return value.map((v: any) => {
           const option = this.option(v);
           if (!option) throw new Error(`Field ${this.name} has not option (${v})`);
           return option.displayId;
