@@ -10,8 +10,8 @@ require('dotenv').config();
  * @cmdruntest yarn jest src/lib/packages/project/project.test.ts
  */
 
-const workspaceId = process.env.WORKSPACEID || '';
-const projectId = process.env.APPLICATIONID || '';
+const workspaceId = process.env.WORKSPACE_ID || '';
+const projectId = process.env.PROJECT_ID || '';
 const tokenApp = process.env.TOKEN || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
@@ -24,65 +24,57 @@ beforeAll(async () => {
   await client.setWorkspace(workspaceId);
 });
 
+afterAll(async () => {
+  // await new Promise(resolve => setTimeout(resolve, 3000));
+  const projects = await client.currentWorkspace!.projects();
+  for (const project of projects) {
+    if (project.name === '新しいプロジェクト') {
+      await project.delete();
+      // console.log(`Project ${project.id} deleted.`);
+    }
+  }
+});
+
 describe('Project', () => {
   describe('#get()', () => {
     it('should get project by workspace id', async () => {
-      try {
-        jest.useFakeTimers('legacy');
-        const workspace = client.currentWorkspace!;
-        const projects = await workspace.projects();
-        expect(typeof projects[0].id).toBe('string');
-      } catch (error) {
-        console.error(error);
-      }
+      jest.useFakeTimers('legacy');
+      const workspace = client.currentWorkspace!;
+      const projects = await workspace.projects();
+      expect(typeof projects[0].id).toBe('string');
     });
   });
 
   it('should execute project custom function', async () => {
-    try {
-      jest.useFakeTimers('legacy');
-      const workspace = client.currentWorkspace!;
-      const project = await workspace.project(projectId);
-      const res = await project.execute<{[key: string]: string}>('func', { a: 'b' });
-      console.log(res.data);
-    } catch (error) {
-      console.error(error);
-    }
+    jest.useFakeTimers('legacy');
+    const workspace = client.currentWorkspace!;
+    const project = await workspace.project(projectId);
+    const res = await project.execute<{[key: string]: string}>('func', { a: 'b' });
+    console.log(res.data);
   });
 
   describe('#getProjectsAndDatastores()', () => {
     it('should get project and datastore by workspace id', async () => {
       jest.useFakeTimers('legacy');
-      try {
-        const workspace = client.currentWorkspace!;
-        const { projects, datastores } = await workspace.projectsAndDatastores();
-        const project = projects[0];
-        expect(typeof project.id).toBe('string');
-        const name = project.name as FieldNameENJP;
-        expect(typeof name.en).toBe('string');
-        expect(typeof project.displayId).toBe('string');
+      const workspace = client.currentWorkspace!;
+      const { projects, datastores } = await workspace.projectsAndDatastores();
+      const project = projects[0];
+      expect(typeof project.id).toBe('string');
+      expect(typeof project.name).toBe('string');
+      expect(typeof project.displayId).toBe('string');
 
-        const datastore = datastores[0];
-        if (datastore) {
-          expect(typeof datastore.id).toBe('string');
-          expect(typeof datastore.name).toBe('string');
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      const datastore = datastores[0];
+      expect(typeof datastore.id).toBe('string');
+      expect(typeof datastore.name).toBe('string');
     });
   });
 
   describe('#getTemplates()', () => {
     it('should get templates without error', async () => {
       jest.useFakeTimers('legacy');
-      try {
-        const workspace = client.currentWorkspace!;
-        const templates = await workspace.projectTemplates();
-        expect(typeof templates[0].name).toBe('string');
-      } catch (error) {
-        console.error(error);
-      }
+      const workspace = client.currentWorkspace!;
+      const templates = await workspace.projectTemplates();
+      expect(typeof templates[0].name).toBe('string');
     });
   });
 
@@ -110,10 +102,10 @@ describe('Project', () => {
       const projects = await workspace.projects();
       const project = projects[0];
       await project.fetch();
-      const name = project.name as FieldNameENJP;
-      expect(typeof name.ja).toBe('string');
-      expect(name.ja !== '').toBe(true);
-      expect(typeof name.en).toBe('string');
+      // const name = project.name as FieldNameENJP;
+      expect(typeof project.name).toBe('string');
+      expect(project.name !== '').toBe(true);
+      // expect(typeof name).toBe('string');
     });
   });
 
@@ -124,10 +116,10 @@ describe('Project', () => {
       const projects = await workspace.projects();
       const project = projects[0];
       project.theme = 'blue';
-      await project.save();
+      // await project.save();
       await project.fetch();
       expect(project.theme).toBe('blue');
-      await project.delete();
+      // await project.delete();
     });
   });
 
@@ -135,14 +127,21 @@ describe('Project', () => {
     it('should update project by id project current without error', async () => {
       jest.useFakeTimers('legacy');
       const workspace = client.currentWorkspace!;
-      const projects = await workspace.projects();
-      const project = projects[0];
+      const project = await workspace.project();
+      project.name = {
+        ja: '新しいプロジェクト',
+        en: 'new project'
+      };
+      await project.save();
+      expect(typeof project.id).toBe('string');
       project.name = {
         en: 'test update',
         ja: 'test update',
       };
       const bol = await project.save();
       expect(bol).toBe(true);
+      await project.fetch();
+      expect(project.name.en).toBe('test update');
       await project.delete();
     });
   });

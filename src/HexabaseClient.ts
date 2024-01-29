@@ -41,7 +41,7 @@ export default class HexabaseClient {
   public restHxb: string;
   public pubSubHxb: string;
   public connection?: signalR.HubConnection;
-  private _workspaces: Workspace[];
+  private _workspaces: Workspace[] = [];
 
   constructor(
     options: InitializeOptions = {},
@@ -152,8 +152,17 @@ export default class HexabaseClient {
     return res;
   }
 
-  public workspace(id?: string): Workspace {
-    return new Workspace({ id });
+  public async workspace(id?: string): Promise<Workspace> {
+    if (this._workspaces.length > 0 && id) {
+      console.log(this._workspaces);
+      const workspace = this._workspaces.find(workspace => workspace.id === id);
+      if (!workspace) throw new Error(`No workspace ${id}`);
+      await workspace.fetch();
+      return workspace;
+    }
+    const workspace = id ? new Workspace({ id }) : new Workspace();
+    if (workspace.id) await workspace.fetch();
+    return workspace;
   }
 
   /**

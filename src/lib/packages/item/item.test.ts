@@ -2,13 +2,13 @@ require('dotenv').config();
 import HexabaseClient from '../../../HexabaseClient';
 import { Blob } from 'buffer';
 import FileObject from '../fileObject';
+import { FieldNameENJP } from '../../util/type';
 
 const token = process.env.TOKEN || '';
 const client = new HexabaseClient();
-const workspaceId = process.env.DEV_WORKSPACE_ID;
-const datastoreId = process.env.DEV_DATASOTRE_ID || '';
-const linkedDatastoreId = process.env.DEV_RELATED_DATASOTRE_ID || '';
-const projectId = process.env.DEV_PROJECT_ID || '';
+const workspaceId = process.env.WORKSPACE_ID;
+const datastoreId = process.env.DATASTORE_MAIN || '';
+const projectId = process.env.PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
@@ -100,6 +100,53 @@ describe('Item', () => {
       item.set('test_number', 200);
       await item.save();
       expect(item.revNo).toBe(2);
+    });
+
+    it('should update select item in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const project = await client.currentWorkspace!.project(projectId);
+      const datastore = await project.datastore(datastoreId);
+      const item = await datastore.item();
+      item.set('test_text_unique', name());
+      const field = await datastore.field('test_select');
+      const options = await field.options();
+      const original = options![1];
+      item.set('test_select', original.id);
+      const bol = await item.save();
+      expect(bol).toBe(true);
+      await item.fetch();
+      const option = item.get('test_select') as FieldNameENJP;
+      expect(option.ja).toBe(original.value.ja);
+      item.set('test_select', options![2].id);
+      const bol2 = await item.save();
+      expect(bol2).toBe(true);
+      await item.fetch();
+      const option2 = item.get('test_select') as FieldNameENJP;
+      expect(option2.ja).toBe(options![2].value.ja);
+    });
+
+    it('should update select items in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const project = await client.currentWorkspace!.project(projectId);
+      const datastore = await project.datastore(datastoreId);
+      const item = await datastore.item();
+      item.set('test_text_unique', name());
+      const field = await datastore.field('test_checkbox');
+      const options = await field.options();
+      const o1 = [options![0], options![1]];
+      item.set('test_checkbox', o1.map(o => o.id));
+      const bol = await item.save();
+      expect(bol).toBe(true);
+      await item.fetch();
+      const values = item.get('test_checkbox') as FieldNameENJP[];
+      expect(values.map(v => v.ja)).toStrictEqual(o1.map(o => o.value.ja));
+      const o2 = [options![1], options![2]];
+      item.set('test_checkbox', o2.map(o => o.id));
+      const bol2 = await item.save();
+      expect(bol2).toBe(true);
+      await item.fetch();
+      const values2 = item.get('test_checkbox') as FieldNameENJP[];
+      expect(values2.map(v => v.ja)).toStrictEqual(o2.map(o => o.value.ja));
     });
   });
 

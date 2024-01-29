@@ -12,9 +12,9 @@ require('dotenv').config();
  */
 const tokenDs = process.env.TOKEN || '';
 const client = new HexabaseClient();
-const workspaceId = process.env.DEV_WORKSPACE_ID;
-const datastoreId = process.env.DEV_DATASOTRE_ID || '';
-const projectId = process.env.DEV_PROJECT_ID || '';
+const workspaceId = process.env.WORKSPACE_ID;
+const datastoreId = process.env.DATASTORE_MAIN || '';
+const projectId = process.env.PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
@@ -195,7 +195,7 @@ describe('Datastore', () => {
       try {
         const project = await client.currentWorkspace!.project(projectId);
         const datastore = await project.datastore(datastoreId);
-        const number = await datastore.autoNumber('autoNum');
+        const number = await datastore.autoNumber('test_autonum');
         expect(typeof number).toBe('number');
       } catch (e) {
         throw new Error(`Error: ${e}`);

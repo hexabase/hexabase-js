@@ -145,10 +145,7 @@ export default class Project extends HxbAbstract {
   }
 
   async save(): Promise<boolean> {
-    if (this.id) {
-      return this.update();
-    }
-    return this.create();
+    return this.id ? this.update() : this.create();
   }
 
   /**

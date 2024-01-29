@@ -39,7 +39,7 @@ export interface ProjectName {
 
 export interface UpdateProjectNameParamsProject {
   project_id: string;
-  project_name: ProjectName;
+  project_name?: ProjectName;
   project_displayid?: string;
   theme?: 'blue' | 'white' | 'gray' | 'black';
 }

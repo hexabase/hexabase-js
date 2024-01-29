@@ -24,6 +24,7 @@ module.exports = {
     ],
   },
   resolve: {
+    fallback: { "buffer": false },
     extensions: ['.ts', '.js', '.json'],
   },
   plugins: [

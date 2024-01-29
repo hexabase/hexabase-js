@@ -7,38 +7,23 @@ import {
   WORKSPACE_PASSWORD_POLICY,
   WORKSPACE_FUNCTIONALITY,
   WORKSPACE_USAGE,
-  WORKSPACE_GROUP_CHILDREN,
-  TASK_QUEUE_LIST,
-  TASK_QUEUE_STATUS,
   CREATE_WORKSPACE,
   SET_CURRENT_WORKSPACE,
-  UPDATE_WORKSPACE_SETTINGS,
   WORKSPACE_DETAIL,
   ARCHIVE_WORKSPACE,
-  WORKSPACE_CURRENT
 } from '../../graphql/workspace';
 import {
-  QueryTaskList,
   WsAdminUser,
   WsFunctionalityRes,
-  TaskQueueListRes,
-  TaskQueueStatusRes,
   DtWorkspaces,
-  DtWorkspaceCurrent,
   DtWsPasswordPolicy,
   DtWsFunctionality,
   DtWsUsage,
-  DtWsGroupChildren,
-  DtTaskQueueList,
-  DtTaskQueueStatus,
   CreateWsInput,
   DtWorkspaceID,
   DtCurrentWs,
-  SetWsInput,
   WorkspaceSettingPl,
   WorkspaceDetailRes,
-  UserInviteOptions,
-  UserInvitePl,
   UserInviteResponse,
   UserInviteArgs,
 } from '../../types/workspace';
@@ -67,13 +52,15 @@ export default class Workspace extends HxbAbstract {
   public userId: string;
   public languages: Language[];
   public wsAdmin: string[];
-  public passwordPolicy: PasswordPolicy;
+  public _passwordPolicy: PasswordPolicy;
   public redirect: Redirect;
   public workspaceFunction: WorkspaceFunction;
   public workspaceUsage: WorkspaceUsage;
   public workspaceAdminUsers: User[];
   public userSession: UserSession;
   public _groups: Group[] = [];
+  public _projects: Project[] = [];
+
   // public projects = Project;
 
   /**
@@ -173,7 +160,7 @@ export default class Workspace extends HxbAbstract {
           .map((lang: any) => Language.fromJson(lang) as Language);
         break;
       case 'pwd_policy':
-        this.passwordPolicy = PasswordPolicy.fromJson(value) as PasswordPolicy;
+        this._passwordPolicy = PasswordPolicy.fromJson(value) as PasswordPolicy;
         break;
       case 'redirect':
         this.redirect = Redirect.fromJson(value) as Redirect;
@@ -219,17 +206,17 @@ export default class Workspace extends HxbAbstract {
    * function getPasswordPolicy: get workspace password policy
    * @returns PasswordPolicy
    */
-  async getPasswordPolicy(): Promise<PasswordPolicy> {
+  async passwordPolicy(): Promise<PasswordPolicy> {
     const res: DtWsPasswordPolicy = await this.request(WORKSPACE_PASSWORD_POLICY, { workingspaceId: this.id });
-    this.passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy) as PasswordPolicy;
-    return this.passwordPolicy;
+    this._passwordPolicy = PasswordPolicy.fromJson(res.workspacePasswordPolicy) as PasswordPolicy;
+    return this._passwordPolicy;
   }
 
   /**
    * function getFunctionality: get workspace functionlity
    * @returns WorkspaceFunction
    */
-  async getFunctionality(): Promise<WorkspaceFunction> {
+  async functionality(): Promise<WorkspaceFunction> {
     const data: WsFunctionalityRes = {
       wsFunctionality: undefined,
       error: undefined,
@@ -247,10 +234,10 @@ export default class Workspace extends HxbAbstract {
    * function getUsage: get workspace usage
    * @returns WorkspaceUsage
    */
-  async getUsage(): Promise<WorkspaceUsage> {
+  async usage(): Promise<WorkspaceUsage> {
     // handle call graphql
     const res: DtWsUsage = await this.request(WORKSPACE_USAGE, { workingspaceId: this.id });
-    this.workspaceUsage = WorkspaceUsage.fromJson({ ...{workspace: this}, ...res.workspaceUsage}) as WorkspaceUsage;
+    this.workspaceUsage = WorkspaceUsage.fromJson({ ...{workspace: this}, ...res.workspaceUsage.usage}) as WorkspaceUsage;
     return this.workspaceUsage;
   }
 
@@ -339,13 +326,20 @@ export default class Workspace extends HxbAbstract {
   }
 
   async project(id?: string): Promise<Project> {
-    const project = new Project({workspace: this, id });
-    if (id) await project.fetch();
+    if (!id) return new Project({ workspace: this });
+    if (this._projects.length === 0) {
+      await this.projects();
+    }
+    const project = this._projects.find(p => p.id === id);
+    if (!project) throw new Error(`No such project ${id}`);
+    await project.fetch();
     return project;
   }
 
-  projects(): Promise<Project[]> {
-    return Project.all(this);
+  async projects(): Promise<Project[]> {
+    if (this._projects.length > 0) return this._projects;
+    this._projects = await Project.all(this);
+    return this._projects;
   }
 
   projectsAndDatastores(): Promise<{ projects: Project[]; datastores: Datastore[]}> {
