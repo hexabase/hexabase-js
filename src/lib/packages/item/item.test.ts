@@ -3,6 +3,9 @@ import HexabaseClient from '../../../HexabaseClient';
 import { Blob } from 'buffer';
 import FileObject from '../fileObject';
 import { FieldNameENJP } from '../../util/type';
+import Datastore from '../datastore';
+import Project from '../project';
+import Item from '.';
 
 const token = process.env.TOKEN || '';
 const client = new HexabaseClient();
@@ -12,29 +15,47 @@ const projectId = process.env.PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
+const params: {
+  datastore?: Datastore;
+  project?: Project;
+} = {
+  datastore: undefined,
+  project: undefined,
+};
 
 beforeAll(async () => {
   await client.login({ email, password, token });
+  await client.setWorkspace(workspaceId!);
+  params.project = await client.currentWorkspace!.project(projectId);
+  params.datastore = await params.project.datastore(datastoreId);
 });
 
 describe('Item', () => {
   describe('#get()', () => {
     it('should get items in Ds', async () => {
       jest.useFakeTimers('legacy');
-      await client.setWorkspace(workspaceId!);
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const { totalCount } = await datastore.itemsWithCount();
+      const { project, datastore } = params;
+      const { totalCount } = await datastore!.itemsWithCount();
       expect(typeof totalCount).toBe('number');
+    });
+
+    it('should get item with related in Ds', async () => {
+      jest.useFakeTimers('legacy');
+      const { project, datastore } = params;
+      const query = client.query(project!.id);
+      const [item] = await query
+        .from(datastore!.id)
+        .where(query.condition.equalTo('test_text_unique', 'テストテキストユニーク'))
+        .select('*', {deep: true});
+      expect(item.get('test_dslookup') instanceof Item).toBe(true);
     });
   });
 
   describe('#createItemId()', () => {
     it('should create new item id', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const itemId = await datastore.createItemId();
+      const { datastore } = params;
+      const itemId = await datastore!.createItemId();
       expect(typeof itemId).toBe('string');
     });
   });
@@ -42,9 +63,8 @@ describe('Item', () => {
   describe('#create()', () => {
     it('should create new items', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       item.set('test_text_unique', name());
       const bol = await item.save();
       // Save item id for next test
@@ -58,9 +78,8 @@ describe('Item', () => {
   describe('#getHistories()', () => {
     it('should get items histories', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       item.set('test_text_unique', name());
       await item.save();
       item.set('test_text_unique', name());
@@ -76,12 +95,12 @@ describe('Item', () => {
   describe('#getItemDetail()', () => {
     it('should get item detail', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       item.set('test_text_unique', name());
       await item.save();
       expect(typeof item.title).toBe('string');
+      await item.delete();
     });
   });
 
@@ -89,9 +108,8 @@ describe('Item', () => {
   describe('#update()', () => {
     it('should update item in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       item.set('test_text_unique', name());
       item.set('test_number', 100);
       const bol = await item.save();
@@ -100,16 +118,16 @@ describe('Item', () => {
       item.set('test_number', 200);
       await item.save();
       expect(item.revNo).toBe(2);
+      await item.delete();
     });
 
     it('should update select item in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       item.set('test_text_unique', name());
-      const field = await datastore.field('test_select');
-      const options = await field.options();
+      const field = await datastore!.field('test_select');
+      const options = await field!.options();
       const original = options![1];
       item.set('test_select', original.id);
       const bol = await item.save();
@@ -123,16 +141,16 @@ describe('Item', () => {
       await item.fetch();
       const option2 = item.get('test_select') as FieldNameENJP;
       expect(option2.ja).toBe(options![2].value.ja);
+      await item.delete();
     });
 
     it('should update select items in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       item.set('test_text_unique', name());
-      const field = await datastore.field('test_checkbox');
-      const options = await field.options();
+      const field = await datastore!.field('test_checkbox');
+      const options = await field!.options();
       const o1 = [options![0], options![1]];
       item.set('test_checkbox', o1.map(o => o.id));
       const bol = await item.save();
@@ -147,18 +165,18 @@ describe('Item', () => {
       await item.fetch();
       const values2 = item.get('test_checkbox') as FieldNameENJP[];
       expect(values2.map(v => v.ja)).toStrictEqual(o2.map(o => o.value.ja));
+      await item.delete();
     });
   });
 
   describe('#execute()', () => {
     it('should execute action for item in datastore', async () => {
       jest.useFakeTimers('legacy');
-      const project = await client.currentWorkspace!.project(projectId);
-      const datastore = await project.datastore(datastoreId);
-      const item = await datastore.item();
+      const { datastore } = params;
+      const item = await datastore!.item();
       await item.save();
       await item.execute('TestItemActionWithNoAS');
-      const item2 = await datastore.item(item.id);
+      const item2 = await datastore!.item(item.id);
       expect(item.status).toBe(item2.status);
       await item.delete();
     });
