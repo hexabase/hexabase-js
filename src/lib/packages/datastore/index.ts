@@ -118,7 +118,10 @@ export default class Datastore extends HxbAbstract {
     const res: DtDatastoreRes = await Datastore.request(GET_DATASTORES, {
       projectId: project.id,
     });
-    return res.datastores.map(params => Datastore.fromJson({...{ project }, ...params}) as Datastore);
+    const datastores = res.datastores
+      .map(params => Datastore.fromJson({...{ project }, ...params}) as Datastore);
+    await Promise.all(datastores.map(d => d.fields()));
+    return datastores;
   }
 
   async createItemId(): Promise<string> {
@@ -316,14 +319,11 @@ export default class Datastore extends HxbAbstract {
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */
-  async field(id: string): Promise<Field> {
-    const field = this._fields.find(f => f.id === id || f.displayId === id);
-    if (field) return field;
-    const f = await Field.get(this, id);
-    if (!this._fields.find(f => f.id === id || f.displayId === id)) {
-      this._fields.push(f);
+  async field(id: string): Promise<Field | undefined> {
+    if (this._fields.length === 0) {
+      await this.fields();
     }
-    return f;
+    return this._fields.find(f => f.id === id || f.displayId === id);
   }
 
   fieldSync(id: string): Field {
@@ -402,8 +402,10 @@ export default class Datastore extends HxbAbstract {
     return resUpdate?.deleteDatastore.success;
   }
 
-  async items(params?: GetItemsPl): Promise<Item[]> {
-    const { items } = await this.itemsWithCount(params);
+  async items(params?: GetItemsPl, options: {
+    deep?: boolean;
+  } = {}): Promise<Item[]> {
+    const { items } = await this.itemsWithCount(params, options);
     return items;
   }
 
@@ -448,10 +450,12 @@ export default class Datastore extends HxbAbstract {
     return Item.searchWithCount(payload, this);
   }
 
-  itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}): Promise<{items: Item[]; totalCount: number}> {
+  itemsWithCount(params: GetItemsPl = {page: 1, per_page: 10}, options: {
+    deep?: boolean;
+  } = {}): Promise<{items: Item[]; totalCount: number}> {
     if (typeof params.page === 'undefined') params.page = 1;
     if (typeof params.per_page === 'undefined') params.per_page = 10;
-    return Item.all(params, this);
+    return Item.all(params, this, options);
   }
 
   async item(id?: string): Promise<Item> {

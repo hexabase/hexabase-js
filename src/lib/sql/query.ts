@@ -33,15 +33,18 @@ export default class Query extends HxbAbstract {
     return this;
   }
 
-  async select(columns?: string | string[]): Promise<Item[]> {
+  async select(columns?: string | string[], options: {
+    deep?: boolean;
+  } = {}): Promise<Item[]> {
     if (columns !== '*') {
       if (typeof columns === 'string') {
-        this.query.select_fields = (columns ?? '*').split(',').map((column) => column.trim());
+        this.query.select_fields = (columns ?? '*')
+          .split(',').map((column) => column.trim());
       } else if (Array.isArray(columns)) {
         this.query.select_fields = columns;
       }
     }
-    const { items } = await this._execute();
+    const { items } = await this._execute(options);
     return items;
   }
 
@@ -84,11 +87,13 @@ export default class Query extends HxbAbstract {
   }
 
   async count(): Promise<number> {
-    const { totalCount } = await this._execute({ return_count_only: true });
+    const { totalCount } = await this._execute();
     return totalCount;
   }
 
-  private async _execute(options: MapType = {}): Promise<{ items: Item[]; totalCount: number}> {
+  private async _execute(options: {
+    deep?: boolean;
+  } = {}): Promise<{ items: Item[]; totalCount: number}> {
     const project = await Query.client.currentWorkspace?.project(this.queryClient.projectId);
     const datastore = await project?.datastore(this.queryClient.datastoreId)!;
     const payload = this._baseParams();
@@ -98,7 +103,7 @@ export default class Query extends HxbAbstract {
     if (this.query.select_fields) {
       payload.select_fields = this.query.select_fields;
     }
-    return Item.searchWithCount(payload, datastore);
+    return Item.searchWithCount(payload, datastore, options);
   }
 
   private _baseParams(): GetItemsParameters {

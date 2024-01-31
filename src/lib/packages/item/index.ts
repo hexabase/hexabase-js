@@ -37,6 +37,7 @@ import {
   DatastoreDeleteDatastoreItemsRes,
   DtExecuteItemAction,
   SubscriptionUpdateItem,
+  LookupItem,
 } from '../../types/item';
 import HexabaseClient from '../../../HexabaseClient';
 import Field from '../field';
@@ -107,6 +108,7 @@ export default class Item extends HxbAbstract {
         if (value.item_count === 0) break;
         const project = this.datastore.project;
         (value.links as any[]).forEach(params => {
+          // console.log({ params});
           const datastore = project.datastoreSync(params.d_id);
           (params.items as any[]).forEach(itemParams => {
             const linkedItem = Item.fromJson({ datastore, i_id: itemParams.i_id });
@@ -160,7 +162,15 @@ export default class Item extends HxbAbstract {
         this.updatedBy = value as string;
         break;
       case 'lookup_items':
-        // console.log({ value });
+        if (value === '' || !value) break;
+        const project = this.datastore.project;
+        value = value as unknown as {[key: string]: LookupItem};
+        Object.keys(value).map(name => {
+          const params = value[name] as LookupItem;
+          const datastore = project.datastoreSync(params.d_id);
+          const item = Item.fromJson({ ...{ datastore }, ...params });
+          this.setFieldValue(name, item);
+        });
         break;
       case 'item_actions':
         this.actions = Object.keys(value)
@@ -194,7 +204,7 @@ export default class Item extends HxbAbstract {
             const params = val.value.lookup_item;
             params.datastore = datastore;
             const item = Item.fromJson(params);
-            this.fields[fieldName] = item;
+            this.setFieldValue(fieldName, item);
           } else {
             this.setFieldValue(fieldName, val.value);
           }
@@ -254,14 +264,16 @@ export default class Item extends HxbAbstract {
    * @params getItemsParameters and datastoreId are requirement, projectId is option
    * @returns DsItemsRes
    */
-  static async all(params: GetItemsPl, datastore: Datastore): Promise<{ items: Item[]; totalCount: number}> {
+  static async all(params: GetItemsPl, datastore: Datastore, options: {
+    deep?: boolean;
+  } = {}): Promise<{ items: Item[]; totalCount: number}> {
     const payload = {
       getItemsParameters: params,
       datastoreId: datastore.id,
       projectId: datastore.project.id,
     };
     payload.getItemsParameters.return_number_value = true;
-    // payload.getItemsParameters.include_lookups = true;
+    payload.getItemsParameters.include_lookups = true;
     payload.getItemsParameters.include_links = true;
     payload.getItemsParameters.format = 'map';
     // handle call graphql
@@ -276,8 +288,11 @@ export default class Item extends HxbAbstract {
       }
     }
     const items = res.datastoreGetDatastoreItems.items
-      .map((params: any) => Item.fromJson({ ...{ datastore }, ...params}) as Item);
+      .map((params: any) => Item.fromJson({ ...{ datastore }, ...params}) as Item) as Item[];
     const totalCount = res.datastoreGetDatastoreItems.totalItems;
+    if (options.deep) {
+      await Promise.all(items.map(item => item.fetch()));
+    }
     return {
       totalCount, items,
     };
@@ -295,7 +310,12 @@ export default class Item extends HxbAbstract {
     return res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
   }
 
-  static async searchWithCount(payload: GetItemsParameters, datastore: Datastore): Promise<{items: Item[]; totalCount: number}> {
+  static async searchWithCount(
+    payload: GetItemsParameters,
+    datastore: Datastore,
+    options: {
+      deep?: boolean;
+    } = {}): Promise<{items: Item[]; totalCount: number}> {
     if (typeof payload.page === 'undefined') payload.page = 1;
     if (typeof payload.per_page === 'undefined') payload.per_page = 100;
     payload.include_lookups = true;
@@ -307,8 +327,14 @@ export default class Item extends HxbAbstract {
     payload.datastore_id = datastore.id;
     payload.project_id = datastore.project.id;
     const res: DtItemWithSearch = await this.request(ITEM_WITH_SEARCH, { payload });
-    const items = res.itemWithSearch.items.map((params: any) => Item.fromJson({ ...{ datastore }, ...params }) as Item);
+    await datastore.project.datastores();
+    // await Promise.all(datastores.map(d => d.fields()));
+    const items = res.itemWithSearch.items
+      .map(params => Item.fromJson({ ...{ datastore }, ...params }) as Item);
     const totalCount = res.itemWithSearch.totalItems;
+    if (options.deep) {
+      await Promise.all(items.map(item => item.fetch()));
+    }
     return {
       totalCount, items,
     };
@@ -392,16 +418,16 @@ export default class Item extends HxbAbstract {
       datastoreId: this.datastore.id,
       payload,
     });
-    if (this.datastore._fields.length === 0) await this.datastore.fields();
+    await this.datastore.project.datastores();
     const options: {[key: string]: any} = {};
-    Object.keys(res.datastoreCreateNewItem.item).forEach((id) => {
-      const field = this.datastore._fields.find((f) => f.id === id || f.displayId === id);
+    for (const id of Object.keys(res.datastoreCreateNewItem.item)) {
+      const field = await this.datastore.field(id);
       if (!field) {
         options[id] = res.datastoreCreateNewItem.item[id];
       } else {
         options[field.displayId] = res.datastoreCreateNewItem.item[id];
       }
-    });
+    };
     // Check db lookup item
     for (const key in options) {
       if (!options[key].d_id) continue;

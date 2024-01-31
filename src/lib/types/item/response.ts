@@ -130,6 +130,23 @@ export interface ItemDetail {
   item_action_order?: any;
 }
 
+export interface LookupItem {
+  created_at: string;
+  created_by: string;
+  d_id: string;
+  i_id: string;
+  p_id: string;
+  rev_no: number;
+  seed_i_id: string;
+  status: string;
+  status_id: string;
+  title: string;
+  updated_at: string;
+  updated_by: string;
+  w_id: string;
+  [key: string]: any;
+}
+
 export class ItemHistoryComment {
   IsChanged: boolean;
   UserObjID: string;
@@ -316,22 +333,53 @@ export interface ItemWithSearchRes {
   errors?: any;
 }
 
-export interface ItemWithSearchResItem {
-  Id: string;
-  Status: string;
-  Title: string;
-  a_id: string;
-  created_at: string;
-  created_by: string;
-  d_id: string;
-  i_id: string;
-  p_id: string;
-  rev_no: string;
-  status_id: string;
+export interface ItemWithSearchResLookupItem {
+  created_at?: string;
+  created_by?: string;
+  d_id?: string;
+  i_id?: string;
+  id?: string;
+  p_id?: string;
+  rev_no?: number;
+  seed_i_id?: string;
+  status?: string;
+  status_id?: string;
   title?: string;
-  unread: string;
-  updated_at: string;
-  updated_by: string;
+  updated_at?: string;
+  updated_by?: string;
+  w_id?: string;
+}
+
+export interface ItemWithSearchResItemLinks {
+  db_count?: number;
+  item_count?: number;
+  links?: {
+    d_id?: string;
+    items?: {
+      i_id: string;
+      type: string;
+    }[];
+    item_count?: number;
+  }[];
+}
+
+export interface ItemWithSearchResItem {
+  Status?: string;
+  created_at?: string;
+  created_by?: string;
+  d_id?: string;
+  i_id?: string;
+  item_links?: ItemWithSearchResItemLinks;
+  lookup_items?: {[key: string]: ItemWithSearchResLookupItem};
+  p_id?: string;
+  related_key?: string;
+  rev_no?: number;
+  seed_i_id?: string;
+  status_id?: string;
+  unread?: number;
+  updated_at?: string;
+  updated_by?: string;
+  w_id?: string;
 }
 
 export interface DatastoreDeleteDatastoreItemsRes {
