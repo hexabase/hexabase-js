@@ -553,6 +553,9 @@ export default class Item extends HxbAbstract {
       return_item_result: true,
       item: await this.toJson(),
     };
+    for (const key in payload.item) {
+      if (!payload.item[key]) delete payload.item[key];
+    }
     if (params) payload.as_params = params;
     const res: DtExecuteItemAction = await this.request(EXECUTE_ITEM_ACTION, {
       actionId: action.id,
@@ -617,7 +620,7 @@ export default class Item extends HxbAbstract {
     const options: {[key: string]: any} = {};
     for (const key in res.datastoreUpdateItem.item) {
       options[key] = res.datastoreUpdateItem.item[key];
-      if (!options[key].d_id) continue;
+      if (!options[key] || !options[key].d_id) continue;
       const datastore = this.datastore.project.datastoreSync(options[key].d_id);
       if (datastore) {
         options[key] = await datastore.item(options[key].item_id);
@@ -646,7 +649,7 @@ export default class Item extends HxbAbstract {
         }
       }
       const value = await field.convert(this.fields[key]);
-      if (typeof value !== 'undefined' && this.fields[key]) {
+      if (typeof value !== 'undefined') {
         json[key] = value;
       }
     }
