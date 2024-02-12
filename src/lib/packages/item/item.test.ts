@@ -73,6 +73,23 @@ describe('Item', () => {
       expect(typeof item.id).toBe('string');
       await item.delete();
     });
+
+    it('should create item with link in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const { datastore } = params;
+      const master = await params.project?.datastore(process.env.DATASTORE_TEST_MASTER1!);
+      const masterItems = await master?.items();
+      const item = await datastore!.item();
+      item.set('test_text_unique', name());
+      item.set('test_number', 100);
+      item.set('test_dslookup', masterItems![0]);
+      const bol = await item.save();
+      expect(bol).toBe(true);
+      const item2 = await datastore!.item(item.id);
+      const masterItem2 = item2.get<Item>('test_dslookup');
+      expect(masterItem2?.id).toBe(masterItems![0].id);
+      await item.delete();
+    });
   });
 
   describe('#getHistories()', () => {
@@ -118,6 +135,28 @@ describe('Item', () => {
       item.set('test_number', 200);
       await item.save();
       expect(item.revNo).toBe(2);
+      await item.delete();
+    });
+
+    it('should update item with link in datastore', async () => {
+      jest.useFakeTimers('legacy');
+      const { datastore } = params;
+      const master = await params.project?.datastore(process.env.DATASTORE_TEST_MASTER1!);
+      const masterItems = await master?.items();
+      const item = await datastore!.item();
+      item.set('test_text_unique', name());
+      item.set('test_number', 100);
+      item.set('test_dslookup', masterItems![0]);
+      const bol = await item.save();
+      expect(bol).toBe(true);
+      const item2 = await datastore!.item(item.id);
+      const masterItem2 = item2.get<Item>('test_dslookup');
+      expect(masterItem2?.id).toBe(masterItems![0].id);
+      item2.set('test_dslookup', masterItems![1]);
+      await item2.save();
+      const item3 = await datastore!.item(item.id);
+      const masterItem3 = item3.get<Item>('test_dslookup');
+      expect(masterItem3?.id).toBe(masterItems![1].id);
       await item.delete();
     });
 
@@ -181,6 +220,7 @@ describe('Item', () => {
       await item.delete();
     });
   });
+
 });
 
 const name = () => {

@@ -329,7 +329,7 @@ export default class Datastore extends HxbAbstract {
   fieldSync(id: string): Field {
     const field = this._fields.find(f => f.id === id || f.displayId === id);
     if (field) return field;
-    throw new Error(`Field ${id} not found`);
+    throw new Error(`Field ${id} not found in datastore ${this.id}. This datastore has ${this._fields.length} fields.`);
   }
 
   /**
