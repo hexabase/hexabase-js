@@ -313,7 +313,6 @@ export default class Field extends HxbAbstract {
         if (value === null) return null;
         return (value as Date).toISOString();
       case DataType.AUTONUM:
-        return value;
       case DataType.CALC:
       case DataType.LABEL:
       case DataType.SEPARATOR:
