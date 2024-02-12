@@ -180,6 +180,14 @@ describe('Item', () => {
       expect(item.status).toBe(item2.status);
       await item.delete();
     });
+
+    it('should execute action with as_params', async () => {
+      jest.useFakeTimers('legacy');
+      const { datastore } = params;
+      const item = await datastore!.item();
+      await item.save();
+      const res = await item.execute('ExecuteActionScript', {test: 'test'});
+    });
   });
 });
 
