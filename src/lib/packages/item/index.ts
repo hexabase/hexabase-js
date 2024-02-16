@@ -542,11 +542,7 @@ export default class Item extends HxbAbstract {
    * @params {any} params - action params for ActionScript
    * @returns {Promise<boolean>} - true if success
    */
-  async execute(actionName: string, {
-    params
-  }: {
-    params?: any;
-  } = {}): Promise<boolean> {
+  async execute(actionName: string, params: any = undefined): Promise<boolean> {
     const action = await this.actionOrStatusAction(actionName);
     if (!action) throw new Error(`Action ${actionName} not found`);
     const payload: ItemActionParameters = {
@@ -570,6 +566,7 @@ export default class Item extends HxbAbstract {
       projectId: this.datastore.project.id,
       itemActionParameters: payload
     });
+
     // this.sets(res.datastoreExecuteItemAction.item);
     // this._setStatus(this._status);
     await this.fetch();
