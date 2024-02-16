@@ -391,7 +391,13 @@ export default class Item extends HxbAbstract {
     await datastore.project.datastores();
     // await Promise.all(datastores.map(d => d.fields()));
     const items = res.itemWithSearch.items
-      .map(params => Item.fromJson({ ...{ datastore }, ...params }) as Item);
+      .map(params => {
+        const item = Item.fromJson({ ...{ datastore }, ...params }) as Item;
+        if (params.lookup_items) {
+          item.set('lookup_items', params.lookup_items);
+        }
+        return item;
+      });
     const totalCount = res.itemWithSearch.totalItems;
     if (options.deep) {
       await Promise.all(items.map(item => item.fetch()));

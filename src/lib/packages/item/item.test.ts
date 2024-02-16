@@ -46,7 +46,7 @@ describe('Item', () => {
       const [item] = await query
         .from(datastore!.id)
         .where(query.condition.equalTo('test_text_unique', 'テストテキストユニーク'))
-        .select('*', {deep: true});
+        .select('*');
       expect(item.get('test_dslookup') instanceof Item).toBe(true);
     });
   });
