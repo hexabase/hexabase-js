@@ -199,7 +199,7 @@ describe('Item', () => {
     const datastore = await project.datastore(datastoreId);
     const item = await datastore.item();
     const field = await datastore.field(ITEM_FIELD);
-    const refItem = await field.datastore.item();
+    const refItem = await field!.datastore.item();
     refItem.set('Title', 'test');
     await refItem.save();
     item.set(ITEM_FIELD, null);
