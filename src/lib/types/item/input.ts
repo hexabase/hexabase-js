@@ -30,7 +30,7 @@ export interface GetItemsPl {
   include_lookups?: boolean;
   return_number_value?: boolean;
   format?: string;
-
+  use_default_search?: boolean;
   return_count_only?: boolean;
   omit_fields_data?: boolean;
   omit_total_items?: boolean;
@@ -266,6 +266,7 @@ export interface GetItemsParameters {
   per_page: number;
   use_field_id?: boolean;
   use_display_id?: boolean;
+  use_default_search?: boolean;
   include_links?: boolean;
   include_lookups?: boolean;
   return_number_value?: boolean;

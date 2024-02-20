@@ -145,37 +145,40 @@ export default class Field extends HxbAbstract {
         return typeof value === 'number';
       case DataType.FILE:
         if (value === '') return true;
+        if (typeof value === 'undefined' || value === null) return true;
         if (value instanceof FileObject) return true;
-        if (typeof value === 'string') return true;
         if (Array.isArray(value)) return true;
         return false;
       case DataType.DATETIME:
         if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/)) {
           return true;
         }
+        // For yyyy-mm-ddThh:mm:ss.286Z
+        if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z/)) {
+          return true;
+        }
         return value instanceof Date;
       case DataType.SELECT:
       case DataType.RADIO:
         if (typeof value !== 'string') return false;
-        return !!this._findOption(value);
+        return !!this.option(value);
       case DataType.CHECKBOX:
         if (typeof value === 'string') {
           value = value.split(',');
         }
         return (value as any[])
-          .every((v: any) => this._findOption(v));
+          .every((v: any) => this.option(v));
       case DataType.USERS:
-        if (typeof value === 'string') {
-          value = value.split(',');
-        }
+        if (typeof value === 'string') return true;
         return (value as any[])
-          .every(v => v instanceof User || (v.email && v.user_id) || typeof v === 'string');
+          .every(v => v instanceof User || (v.email && v.user_id));
       case DataType.DSLOOKUP:
         if (value === null) return true;
         if (value instanceof Item) return true;
         if (typeof value === 'string') return true;
         if (typeof value !== 'object') return false;
         if (value.item_id && value.title) return true;
+        return false;
       case DataType.AUTONUM:
       case DataType.CALC:
       case DataType.LABEL:
@@ -186,10 +189,10 @@ export default class Field extends HxbAbstract {
     return true;
   }
 
-  _findOption(value: any): FieldOption | undefined {
+  option(value: any): FieldOption | undefined {
     if (value === null) return undefined;
     if (typeof value === 'string') {
-      return this._options.find(o => o.displayId === value || o.value.en === value || o.value.ja === value);
+      return this._options.find(o => o.id === value || o.displayId === value || o.value.en === value || o.value.ja === value);
     } else {
       return this._options.find(o => o.value === value);
     }
@@ -223,12 +226,12 @@ export default class Field extends HxbAbstract {
           value = [value];
         }
         return value.map((v: any) => {
-          const option = this._findOption(v);
+          const option = this.option(v);
           return option ? option.value : null;
         });
       case DataType.SELECT:
       case DataType.RADIO:
-        const option = this._findOption(value);
+        const option = this.option(value);
         return option ? option.value : null;
       case DataType.USERS:
         if (!Array.isArray(value)) {
@@ -290,18 +293,18 @@ export default class Field extends HxbAbstract {
         if (!Array.isArray(value)) {
           value = [value];
         }
-        value.map((v: any) => {
-          const option = this._findOption(v);
+        return value.map((v: any) => {
+          const option = this.option(v);
           if (!option) throw new Error(`Field ${this.name} has not option (${v})`);
-          return option.displayId;
+          return option.id;
         });
       }
       case DataType.SELECT:
       case DataType.RADIO: {
         if (value === null) return null;
-        const option = this._findOption(value);
+        const option = this.option(value);
         if (!option) throw new Error(`Field ${this.name} has not option (${value})`);
-        return option.displayId;
+        return option.id;
       }
       case DataType.USERS:
         if (value === null) return null;
@@ -310,7 +313,6 @@ export default class Field extends HxbAbstract {
         if (value === null) return null;
         return (value as Date).toISOString();
       case DataType.AUTONUM:
-        return value;
       case DataType.CALC:
       case DataType.LABEL:
       case DataType.SEPARATOR:

@@ -33,7 +33,7 @@ describe('Item', () => {
         item.unsubscribe();
       });
       item.set('name', name());
-      await item.save('notify');
+      await item.save({ comment: 'notify'});
       expect(item.revNo).toBe(2);
     });
   });

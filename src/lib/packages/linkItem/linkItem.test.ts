@@ -1,20 +1,20 @@
 require('dotenv').config();
 import HexabaseClient from '../../../HexabaseClient';
-import { Blob } from 'buffer';
-import FileObject from '../fileObject';
+
 
 const token = process.env.TOKEN || '';
 const client = new HexabaseClient();
-const workspaceId = process.env.DEV_WORKSPACE_ID;
-const datastoreId = process.env.DEV_DATASOTRE_ID || '';
-const linkedDatastoreId = process.env.DEV_RELATED_DATASOTRE_ID || '';
-const projectId = process.env.DEV_PROJECT_ID || '';
+const workspaceId = process.env.WORKSPACE_ID;
+const datastoreId = process.env.DATASTORE_MAIN || '';
+const linkedDatastoreId = process.env.DATASTORE_TEST_RELATED_CHILD1 || '';
+const projectId = process.env.PROJECT_ID || '';
 const email = process.env.EMAIL || '';
 const password = process.env.PASSWORD || '';
 
 
 beforeAll(async () => {
   await client.login({ email, password, token });
+  await client.setWorkspace(workspaceId);
 });
 
 describe('ItemLink', () => {
@@ -67,7 +67,6 @@ describe('ItemLink', () => {
         .link(item3)
         .save();
       const ary = await item1.links(item2.datastore.id);
-      console.log({ ary });
       const bol = await item1
         .unlink(item2)
         .save();
