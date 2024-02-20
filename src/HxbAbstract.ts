@@ -45,7 +45,6 @@ export class HxbAbstract {
       if (options.binary) return JSON.parse(await res.text());
       return await res.json();
     } catch (error: any) {
-      console.log(error);
       throw error.response.data;
     }
   }
