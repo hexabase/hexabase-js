@@ -153,16 +153,16 @@ export default class HexabaseClient {
   }
 
   public async workspace(id?: string): Promise<Workspace> {
-    if (this._workspaces.length > 0 && id) {
-      console.log(this._workspaces);
-      const workspace = this._workspaces.find(workspace => workspace.id === id);
+    if (this._workspaces.length == 0) {
+      await this.workspaces();
+    }
+    if (id) {
+      const workspace = this._workspaces.find(workspace => workspace.id === id || workspace.name === id);
       if (!workspace) throw new Error(`No workspace ${id}`);
       await workspace.fetch();
       return workspace;
     }
-    const workspace = id ? new Workspace({ id }) : new Workspace();
-    if (workspace.id) await workspace.fetch();
-    return workspace;
+    return new Workspace();
   }
 
   /**

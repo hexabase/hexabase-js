@@ -140,6 +140,14 @@ describe('Workspace', () => {
     });
   });
 
+  describe('#getWorkspace()', () => {
+    it('should get workspace by name in Japanese', async () => {
+      jest.useFakeTimers('legacy');
+      const workspace = await client.workspace(process.env['WORKSPACE_NAME_JA']);
+      expect(workspace.id).toEqual(process.env['WORKSPACE_ID']);
+    });
+  });
+
   /*
   TODO: need type of taskQueueList
   describe('#getTaskQueueList()', () => {
