@@ -330,7 +330,7 @@ export default class Workspace extends HxbAbstract {
     if (this._projects.length === 0) {
       await this.projects();
     }
-    const project = this._projects.find(p => p.id === id || p.name === id);
+    const project = this._projects.find(p => p.id === id || p.name === id || p.displayId === id);
     if (!project) throw new Error(`No such project ${id}`);
     await project.fetch();
     return project;
