@@ -43,6 +43,13 @@ describe('Project', () => {
       const projects = await workspace.projects();
       expect(typeof projects[0].id).toBe('string');
     });
+
+    it('should get project by name', async () => {
+      jest.useFakeTimers('legacy');
+      const workspace = client.currentWorkspace!;
+      const project = await workspace.project(process.env.PROJECT_NAME_JA || '');
+      expect(project.id).toEqual(process.env.PROJECT_ID);
+    });
   });
 
   it('should execute project custom function', async () => {
