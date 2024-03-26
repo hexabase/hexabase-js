@@ -148,6 +148,7 @@ export default class Field extends HxbAbstract {
         if (typeof value === 'undefined' || value === null) return true;
         if (value instanceof FileObject) return true;
         if (Array.isArray(value)) return true;
+        if (typeof value === 'string') return true;
         return false;
       case DataType.DATETIME:
         if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/)) {
