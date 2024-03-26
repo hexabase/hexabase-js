@@ -284,7 +284,8 @@ export default class Field extends HxbAbstract {
           const res = await Promise.all(value.map((file: FileObject) => {
             return file.id ? file : file.save(this);
           }));
-          return res.map((file: FileObject) => file.id);
+          const ids = res.map((file: FileObject) => file.id);
+          return ids;
         } else {
           throw new Error(`Field ${this.name} is not FileObject (${value})`);
         }

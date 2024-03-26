@@ -116,7 +116,11 @@ export default class HexabaseClient {
   public async setWorkspace(workspace?: Workspace | string): Promise<boolean> {
     const id = workspace ? (typeof workspace === 'string' ? workspace : workspace.id) : undefined;
     if (id) {
-      this.currentWorkspace = await Workspace.current(id);
+      const workspace = await this.workspace(id);
+      if (!workspace) {
+        throw new Error(`No workspace ${id}`);
+      }
+      this.currentWorkspace = await Workspace.current(workspace.id);
     }
     if (!this.currentWorkspace!.id) {
       this.currentWorkspace = Workspace.fromJson({ w_id: id }) as Workspace;
@@ -153,7 +157,7 @@ export default class HexabaseClient {
   }
 
   public async workspace(id?: string): Promise<Workspace> {
-    if (this._workspaces.length == 0) {
+    if (this._workspaces.length === 0) {
       await this.workspaces();
     }
     if (id) {
