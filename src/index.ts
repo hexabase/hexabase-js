@@ -5,6 +5,7 @@ import Report from './lib/packages/report';
 import HexabaseSQL from './lib/sql';
 import User from './lib/packages/user';
 import Workspace from './lib/packages/workspace';
+import Datastore from './lib/packages/datastore';
 import FileObject from './lib/packages/fileObject';
 
 type Config = {
@@ -43,5 +44,5 @@ export * from './lib/types';
 
 export {
   createClient, HexabaseClient,
-  Item, Project, Report, HexabaseSQL, User, Workspace, FileObject,
+  Item, Project, Report, HexabaseSQL, User, Workspace, FileObject, Datastore,
 };

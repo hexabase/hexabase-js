@@ -171,6 +171,7 @@ export default class Field extends HxbAbstract {
           .every((v: any) => this.option(v));
       case DataType.USERS:
         if (typeof value === 'string') return true;
+        if (value instanceof User) return true;
         return (value as any[])
           .every(v => v instanceof User || (v.email && v.user_id));
       case DataType.DSLOOKUP:
@@ -310,7 +311,7 @@ export default class Field extends HxbAbstract {
       }
       case DataType.USERS:
         if (value === null) return null;
-        return value;
+        return value.map((user: User) => user.id);
       case DataType.DATETIME:
         if (value === null) return null;
         return (value as Date).toISOString();
