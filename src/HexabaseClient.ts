@@ -114,6 +114,9 @@ export default class HexabaseClient {
   }
 
   public async setWorkspace(workspace?: Workspace | string): Promise<boolean> {
+    if (this.currentWorkspace && (this.currentWorkspace == workspace || this.currentWorkspace.id === workspace)) {
+      return true;
+    }
     const id = workspace ? (typeof workspace === 'string' ? workspace : workspace.id) : undefined;
     if (id) {
       const workspace = await this.workspace(id);
