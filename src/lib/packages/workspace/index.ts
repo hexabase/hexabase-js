@@ -243,19 +243,18 @@ export default class Workspace extends HxbAbstract {
     return this.workspaceUsage;
   }
 
-  /**
-   * function getGroup: get workspace group and their children
-   * @returns Group
-   */
+  async groups(): Promise<Group[]> {
+    if (this._groups.length > 0) return this._groups;
+    this._groups = await Group.all(this);
+    return this._groups;
+  }
+
   async group(id?: string): Promise<Group> {
-    if (id) {
-      const g = this._groups.find(g => g.id === id);
-      if (g) return g;
-    }
-    const group = new Group({ workspace: this, id });
-    await group.fetch();
-    this._groups.push(group);
-    return group;
+    if (!id) return new Group({ workspace: this });
+    if (this._groups.length === 0) await this.groups();
+    const g = this._groups.find(g => g.id === id || g.name === id || g.displayId === id);
+    if (!g) throw new Error(`No such group ${id}`);
+    return g;
   }
 
   /**

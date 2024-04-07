@@ -36,6 +36,7 @@ import Datastore from '../datastore';
 import TemplateCategory from '../templateCategory';
 import Language from '../language';
 import Report from '../report';
+import Role from '../role';
 
 export default class Project extends HxbAbstract {
   workspace: Workspace;
@@ -46,6 +47,7 @@ export default class Project extends HxbAbstract {
   displayOrder: number;
   _datastores: Datastore[] = [];
   templateId: string;
+  _roles: Role[] = [];
 
   set(key: string, value: any): Project {
     switch (key) {
@@ -97,6 +99,12 @@ export default class Project extends HxbAbstract {
       project: this
     });
     return this._datastores;
+  }
+
+  async roles(): Promise<Role[]> {
+    if (this._roles.length > 0) return this._roles;
+    this._roles = await Role.all(this);
+    return this._roles;
   }
 
   async datastore(id?: string): Promise<Datastore> {
