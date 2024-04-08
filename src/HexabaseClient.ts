@@ -114,9 +114,16 @@ export default class HexabaseClient {
   }
 
   public async setWorkspace(workspace?: Workspace | string): Promise<boolean> {
+    if (this.currentWorkspace && (this.currentWorkspace == workspace || this.currentWorkspace.id === workspace)) {
+      return true;
+    }
     const id = workspace ? (typeof workspace === 'string' ? workspace : workspace.id) : undefined;
     if (id) {
-      this.currentWorkspace = await Workspace.current(id);
+      const workspace = await this.workspace(id);
+      if (!workspace) {
+        throw new Error(`No workspace ${id}`);
+      }
+      this.currentWorkspace = await Workspace.current(workspace.id);
     }
     if (!this.currentWorkspace!.id) {
       this.currentWorkspace = Workspace.fromJson({ w_id: id }) as Workspace;
@@ -153,16 +160,16 @@ export default class HexabaseClient {
   }
 
   public async workspace(id?: string): Promise<Workspace> {
-    if (this._workspaces.length > 0 && id) {
-      console.log(this._workspaces);
-      const workspace = this._workspaces.find(workspace => workspace.id === id);
+    if (this._workspaces.length === 0) {
+      await this.workspaces();
+    }
+    if (id) {
+      const workspace = this._workspaces.find(workspace => workspace.id === id || workspace.name === id);
       if (!workspace) throw new Error(`No workspace ${id}`);
       await workspace.fetch();
       return workspace;
     }
-    const workspace = id ? new Workspace({ id }) : new Workspace();
-    if (workspace.id) await workspace.fetch();
-    return workspace;
+    return new Workspace();
   }
 
   /**

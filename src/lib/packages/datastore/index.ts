@@ -455,6 +455,10 @@ export default class Datastore extends HxbAbstract {
   } = {}): Promise<{items: Item[]; totalCount: number}> {
     if (typeof params.page === 'undefined') params.page = 1;
     if (typeof params.per_page === 'undefined') params.per_page = 10;
+    if (typeof params.use_display_id === 'undefined') params.use_display_id = true;
+    if (typeof params.format === 'undefined') params.format = 'map';
+    if (typeof params.include_links === 'undefined') params.include_links = true;
+    if (typeof params.include_lookups === 'undefined') params.include_lookups = true;
     return Item.all(params, this, options);
   }
 

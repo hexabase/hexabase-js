@@ -50,6 +50,18 @@ export const APPLICATION_CREATE_PROJECT = gql`
   }
 `;
 
+export const PROJECT_ROLES_AND_MEMBER = gql`
+  query getProjectRolesAndMember(
+    $workspace_id: String!
+    $project_id: String!
+  ) {
+    getProjectRolesAndMember(
+      workspace_id: $workspace_id
+      project_id: $project_id
+    )
+  }
+`;
+
 export const GET_INFO_PROJECT = gql`
  query Query($projectId: String!) {
     getInfoProject(projectId: $projectId) {

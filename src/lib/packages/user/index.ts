@@ -32,6 +32,7 @@ import Workspace from '../workspace';
 export default class User extends HxbAbstract {
   public id: string;
   public userName: string;
+  public code: string;
   public accessKey: string;
   public email: string;
   public profilePicture: string;
@@ -44,6 +45,9 @@ export default class User extends HxbAbstract {
       case 'user_name':
       case 'username':
         this.userName = value;
+        break;
+      case 'user_code':
+        this.code = value;
         break;
       case 'access_key':
         this.accessKey = value;

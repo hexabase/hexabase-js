@@ -10,3 +10,4 @@ export * from './fileObject';
 export * from './fieldOption';
 export * from './field';
 export * from './group';
+export * from './role';
