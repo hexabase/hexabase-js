@@ -94,6 +94,18 @@ export interface WsGroupChildren {
   count?: number;
 }
 
+export interface WsGroupTree {
+  error?: string;
+  result: {
+    id: string;
+    name: string;
+    display_id: string;
+    index: number;
+    show_child: boolean;
+    disable_ui_access: boolean;
+  }[];
+}
+
 export interface FieldStatusQueue {
   name: string;
   id: number;
@@ -140,6 +152,10 @@ export interface DtWsUsage {
 
 export interface DtWsGroupChildren {
   workspaceGetGroupChildren: WsGroupChildren;
+}
+
+export interface DtWsGroupTree {
+  getGroupTree: WsGroupTree;
 }
 
 export interface DtTaskQueueList {

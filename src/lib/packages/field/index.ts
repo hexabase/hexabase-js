@@ -148,6 +148,7 @@ export default class Field extends HxbAbstract {
         if (typeof value === 'undefined' || value === null) return true;
         if (value instanceof FileObject) return true;
         if (Array.isArray(value)) return true;
+        if (typeof value === 'string') return true;
         return false;
       case DataType.DATETIME:
         if (typeof value === 'string' && value.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/)) {
@@ -170,6 +171,7 @@ export default class Field extends HxbAbstract {
           .every((v: any) => this.option(v));
       case DataType.USERS:
         if (typeof value === 'string') return true;
+        if (value instanceof User) return true;
         return (value as any[])
           .every(v => v instanceof User || (v.email && v.user_id));
       case DataType.DSLOOKUP:
@@ -284,7 +286,8 @@ export default class Field extends HxbAbstract {
           const res = await Promise.all(value.map((file: FileObject) => {
             return file.id ? file : file.save(this);
           }));
-          return res.map((file: FileObject) => file.id);
+          const ids = res.map((file: FileObject) => file.id);
+          return ids;
         } else {
           throw new Error(`Field ${this.name} is not FileObject (${value})`);
         }
@@ -308,7 +311,7 @@ export default class Field extends HxbAbstract {
       }
       case DataType.USERS:
         if (value === null) return null;
-        return value;
+        return value.map((user: User) => user.id);
       case DataType.DATETIME:
         if (value === null) return null;
         return (value as Date).toISOString();

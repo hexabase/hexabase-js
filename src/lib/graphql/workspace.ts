@@ -233,6 +233,22 @@ export const WORKSPACE_GROUP_CHILDREN = gql`
   }
 `;
 
+export const WORKSPACE_GROUP_TREE = gql`
+query getGroupTree {
+  getGroupTree {
+    error
+    result {
+      id
+      name
+      display_id
+      index
+      show_child
+      disable_ui_access
+    }
+  }
+}
+`;
+
 export const TASK_QUEUE_LIST = gql`
   query TaskGetQueueList($workspaceId: String, $queryTaskList: QueryTaskList) {
     taskGetQueueList(workspaceId: $workspaceId, queryTaskList: $queryTaskList)
@@ -290,3 +306,4 @@ export const ARCHIVE_WORKSPACE = gql`
     }
   }
 `;
+

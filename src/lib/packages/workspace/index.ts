@@ -77,7 +77,7 @@ export default class Workspace extends HxbAbstract {
    * static function get: get a workspace
    * @returns Workspace
    */
-  static async get(id?: string): Promise<Workspace | undefined> {
+  static async get(id?: string): Promise<Workspace> {
     if (id) await this._current(id);
     const res = await this.request(WORKSPACE_DETAIL);
     // if (!res.workspace.id) throw new Error('Workspace not found');
@@ -89,12 +89,14 @@ export default class Workspace extends HxbAbstract {
    * @param: option: workspaceId: workspace id
    * @returns boolean
    */
-  static async current(workspaceId?: string): Promise<Workspace | undefined> {
-    if (workspaceId) {
-      const bol = await this._current(workspaceId);
+  static async current(id?: string): Promise<Workspace | undefined> {
+    if (id) {
+      const bol = await this._current(id);
       if (!bol) throw new Error('Set current workspace failed');
     }
-    return this.get();
+    const workspace = await this.get();
+    if (id) workspace.set('w_id', id);
+    return workspace;
   }
 
   static async _current(workspaceId: string): Promise<boolean> {
@@ -241,19 +243,18 @@ export default class Workspace extends HxbAbstract {
     return this.workspaceUsage;
   }
 
-  /**
-   * function getGroup: get workspace group and their children
-   * @returns Group
-   */
+  async groups(): Promise<Group[]> {
+    if (this._groups.length > 0) return this._groups;
+    this._groups = await Group.all(this);
+    return this._groups;
+  }
+
   async group(id?: string): Promise<Group> {
-    if (id) {
-      const g = this._groups.find(g => g.id === id);
-      if (g) return g;
-    }
-    const group = new Group({ workspace: this, id });
-    await group.fetch();
-    this._groups.push(group);
-    return group;
+    if (!id) return new Group({ workspace: this });
+    if (this._groups.length === 0) await this.groups();
+    const g = this._groups.find(g => g.id === id || g.name === id || g.displayId === id);
+    if (!g) throw new Error(`No such group ${id}`);
+    return g;
   }
 
   /**
@@ -330,7 +331,7 @@ export default class Workspace extends HxbAbstract {
     if (this._projects.length === 0) {
       await this.projects();
     }
-    const project = this._projects.find(p => p.id === id);
+    const project = this._projects.find(p => p.id === id || p.name === id || p.displayId === id);
     if (!project) throw new Error(`No such project ${id}`);
     await project.fetch();
     return project;

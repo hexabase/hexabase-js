@@ -36,6 +36,7 @@ import Datastore from '../datastore';
 import TemplateCategory from '../templateCategory';
 import Language from '../language';
 import Report from '../report';
+import Role from '../role';
 
 export default class Project extends HxbAbstract {
   workspace: Workspace;
@@ -46,6 +47,7 @@ export default class Project extends HxbAbstract {
   displayOrder: number;
   _datastores: Datastore[] = [];
   templateId: string;
+  _roles: Role[] = [];
 
   set(key: string, value: any): Project {
     switch (key) {
@@ -99,12 +101,23 @@ export default class Project extends HxbAbstract {
     return this._datastores;
   }
 
+  async roles(): Promise<Role[]> {
+    if (this._roles.length > 0) return this._roles;
+    this._roles = await Role.all(this);
+    return this._roles;
+  }
+
   async datastore(id?: string): Promise<Datastore> {
     if (!id) {
       return new Datastore({ project: this, id });
     }
     if (this._datastores.length === 0) await this.datastores();
-    const datastore = this._datastores.find(datastore => datastore.id === id || datastore.displayId === id);
+    const datastore = this._datastores.find(datastore => {
+      if (datastore.id === id) return datastore;
+      if (datastore.displayId === id) return datastore;
+      if (typeof datastore.name === 'string' && datastore.name === id) return datastore;
+      if (typeof datastore.name === 'object' && (datastore.name.ja === id || datastore.name.en === id)) return datastore;
+    });
     if (!datastore) throw new Error(`Datastore ${id} not found`);
     await datastore.fetch();
     return datastore;

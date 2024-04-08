@@ -72,6 +72,15 @@ describe('Datastore', () => {
         throw new Error(`Error: ${e}`);
       }
     });
+    it('should get datastore by name', async () => {
+      // jest.useFakeTimers('legacy');
+      try {
+        const datastore = await project.datastore(process.env.DATASTORE_MAIN_NAME_JA);
+        expect(datastore.id).toBe(process.env.DATASTORE_MAIN);
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
   });
 
   describe('#getDetail()', () => {

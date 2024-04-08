@@ -77,7 +77,7 @@ export class HxbAbstract {
     const filename = bodies.fileName || bodies.filename;
     for (const key in bodies) {
       const body = bodies[key];
-      if (body instanceof Blob) {
+      if (new String(body) === '[object File]') {
         if (typeof window !== 'undefined') {
           form.append(key, body, filename);
         } else {
