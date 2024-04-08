@@ -15,3 +15,24 @@ export enum DataType {
   LABEL = 'label',
   SEPARATOR = 'separator',
 }
+
+
+export interface datastoreCreateFieldRequest {
+  payload: {
+    dataType: string;
+    display_id: string;
+    name: {
+      ja: string;
+      en: string;
+    };
+    unique: boolean;
+    search: boolean;
+    show_list: boolean;
+    as_title: boolean;
+    full_text: boolean;
+    hide_from_api: boolean;
+    has_index: boolean;
+    roles: any;
+  };
+  datastoreId: string;
+}

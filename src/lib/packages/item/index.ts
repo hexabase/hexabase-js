@@ -391,13 +391,7 @@ export default class Item extends HxbAbstract {
     await datastore.project.datastores();
     // await Promise.all(datastores.map(d => d.fields()));
     const items = res.itemWithSearch.items
-      .map(params => {
-        const item = Item.fromJson({ ...{ datastore }, ...params }) as Item;
-        if (params.lookup_items) {
-          item.set('lookup_items', params.lookup_items);
-        }
-        return item;
-      });
+      .map(params => Item.fromJson({ ...{ datastore }, ...params }) as Item);
     const totalCount = res.itemWithSearch.totalItems;
     if (options.deep) {
       await Promise.all(items.map(item => item.fetch()));
@@ -542,7 +536,11 @@ export default class Item extends HxbAbstract {
    * @params {any} params - action params for ActionScript
    * @returns {Promise<boolean>} - true if success
    */
-  async execute(actionName: string, params: any = undefined): Promise<boolean> {
+  async execute(actionName: string, {
+    params
+  }: {
+    params?: any;
+  } = {}): Promise<boolean> {
     const action = await this.actionOrStatusAction(actionName);
     if (!action) throw new Error(`Action ${actionName} not found`);
     const payload: ItemActionParameters = {
@@ -566,7 +564,6 @@ export default class Item extends HxbAbstract {
       projectId: this.datastore.project.id,
       itemActionParameters: payload
     });
-
     // this.sets(res.datastoreExecuteItemAction.item);
     // this._setStatus(this._status);
     await this.fetch();

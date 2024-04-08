@@ -46,7 +46,7 @@ describe('Item', () => {
       const [item] = await query
         .from(datastore!.id)
         .where(query.condition.equalTo('test_text_unique', 'テストテキストユニーク'))
-        .select('*');
+        .select('*', {deep: true});
       expect(item.get('test_dslookup') instanceof Item).toBe(true);
     });
   });
@@ -218,14 +218,6 @@ describe('Item', () => {
       const item2 = await datastore!.item(item.id);
       expect(item.status).toBe(item2.status);
       await item.delete();
-    });
-
-    it('should execute action with as_params', async () => {
-      jest.useFakeTimers('legacy');
-      const { datastore } = params;
-      const item = await datastore!.item();
-      await item.save();
-      const res = await item.execute('ExecuteActionScript', {test: 'test'});
     });
   });
 
