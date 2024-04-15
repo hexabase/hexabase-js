@@ -33,6 +33,7 @@ export default class Group extends HxbAbstract {
         this.name = value;
         break;
       case 'group_id':
+      case 'groupId':
         this.groupId = value;
         break;
       case 'g_id':
@@ -40,12 +41,15 @@ export default class Group extends HxbAbstract {
         this.id = value;
         break;
       case 'display_id':
+      case 'displayId':
         this.displayId = value;
         break;
       case 'show_child':
+      case 'showChild':
         this.showChild = value;
         break;
       case 'disable_ui_access':
+      case 'disableUiAccess':
         this.disableUiAccess = value;
         break;
       case 'workspace':
@@ -55,12 +59,15 @@ export default class Group extends HxbAbstract {
         this._parent = value;
         break;
       case 'is_root':
+      case 'isRoot':
         this.isRoot = value;
         break;
       case 'access_key':
+      case 'accessKey':
         this.accessKey = value;
         break;
       case 'created_at':
+      case 'createdAt':
         this.createdAt = new Date(value);
         break;
     }
