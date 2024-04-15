@@ -12,6 +12,8 @@ import FileObject from './lib/packages/fileObject';
 import { Blob } from 'buffer';
 import { UserInviteArgs, UserInviteOptions, UserInvitePl, UserInviteResponse } from './lib/types/workspace';
 import * as signalR from '@microsoft/signalr';
+import { AuthStorage } from './lib/types/auth/input';
+import Cookies from 'js-cookie';
 
 /**
  * ログインパラメータを表すオブジェクトの型
@@ -89,6 +91,14 @@ export default class HexabaseClient {
     await this._init();
   }
 
+  public async setPersistence(storage: AuthStorage | typeof Cookies) {
+    this.auth.setPersistence(storage);
+    const token = await this.auth.getToken();
+    if (token) {
+      await this.setToken(token);
+    }
+  }
+
   /**
    * login to Hexabase
    */
@@ -109,8 +119,15 @@ export default class HexabaseClient {
   }
 
   public async logout(): Promise<boolean> {
-    this.auth.client.setHeaders({ authorization: `Bearer ${this.tokenHxb}` });
-    return await this.auth.logout();
+    try {
+      this.auth.client.setHeaders({ authorization: `Bearer ${this.tokenHxb}` });
+      await this.auth.logout();
+    } catch (e) {
+    }
+    this.currentUser = undefined;
+    this.currentWorkspace = undefined;
+    this.tokenHxb = '';
+    return true;
   }
 
   public async setWorkspace(workspace?: Workspace | string): Promise<boolean> {
