@@ -17,10 +17,10 @@ type Config = {
 
 /**
  * Creates a new Hexabase Client.
- * @param {string} env
- * @param {string} email
- * @param {string} password
- * @param {string} token
+ * @param string env
+ * @param string email
+ * @param string password
+ * @param string token
  * @returns HexabaseClient
  */
 const createClient = async ({
@@ -29,7 +29,7 @@ const createClient = async ({
   password,
   token,
 }: Config = {}): Promise<HexabaseClient> => {
-  const client = new HexabaseClient({ env: env });
+  const client = new HexabaseClient();
   if (token) {
     await client.setToken(token);
     return client;

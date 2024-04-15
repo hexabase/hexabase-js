@@ -129,6 +129,7 @@ describe('Workspace', () => {
       expect(typeof wsUsage.datastores).toBe('number');
     });
   });
+
   /*
   describe('#getGroupChildren()', () => {
     it('should get workspace childrent in group', async () => {

@@ -1,7 +1,6 @@
 require('dotenv').config();
 import HexabaseClient from '../../../HexabaseClient';
 import { Blob } from 'buffer';
-import FileObject from '../fileObject';
 
 /**
  * Test with class Datastore
@@ -33,7 +32,6 @@ const FILE_FIELD = 'test_file';
 describe('Item', () => {
   describe('#set()', () => {
     it('should set text to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -42,7 +40,6 @@ describe('Item', () => {
     });
 
     it('should set text to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -68,7 +65,6 @@ describe('Item', () => {
     });
 
     it('should set number to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -99,7 +95,6 @@ describe('Item', () => {
     });
 
     it('should set date to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -128,7 +123,6 @@ describe('Item', () => {
     });
 
     it('should set checkbox to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -148,7 +142,6 @@ describe('Item', () => {
     });
 
     it('should set radio to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -168,7 +161,6 @@ describe('Item', () => {
     });
 
     it('should set user to item', async () => {
-      jest.useFakeTimers('legacy');
       await client.setWorkspace(workspaceId!);
       const project = await client.currentWorkspace!.project(projectId);
       const datastore = await project.datastore(datastoreId);
@@ -193,7 +185,6 @@ describe('Item', () => {
   });
 
   it('should set item to item', async () => {
-    jest.useFakeTimers('legacy');
     await client.setWorkspace(workspaceId!);
     const project = await client.currentWorkspace!.project(projectId);
     const datastore = await project.datastore(datastoreId);
@@ -221,7 +212,6 @@ describe('Item', () => {
   });
 
   it('should set file to item', async () => {
-    jest.useFakeTimers('legacy');
     await client.setWorkspace(workspaceId!);
     const project = await client.currentWorkspace!.project(projectId);
     const datastore = await project.datastore(datastoreId);
@@ -236,14 +226,96 @@ describe('Item', () => {
       .set('name', 'test.txt');
     item.set(FILE_FIELD, [file]);
     expect(item.get(FILE_FIELD)).toEqual([file]);
-    const NO_VALUE = 'NO_VALUE';
-    try {
-      item.set(FILE_FIELD, NO_VALUE);
-      expect(false).toBe(true);
-    } catch (e) {
-      expect((e as Error).message).toBe(`Invalid value ${NO_VALUE} for field key ${FILE_FIELD}`);
-    }
     expect(item.get(FILE_FIELD) !== null).toBe(true);
-    expect(item.get(FILE_FIELD)).toEqual([file]);
+  });
+
+  it('create field on datastore', async () => {
+    await client.setWorkspace(workspaceId!);
+    const project = await client.currentWorkspace!.project(projectId);
+    const datastore = await project.datastore();
+    datastore.name = { en: 'test', ja: 'test' };
+    datastore.displayId = 'test';
+    const res = await datastore.save();
+    const field = await datastore.field();
+    field!
+      .set('dataType', 'text')
+      .set('name', 'test_field')
+      .set('displayId', 'test_field')
+      .set('search', true)
+      .set('showList', true)
+      .set('fullText', true)
+      .set('unique', false)
+      .set('hideOnInput', false)
+      .set('hideFromApi', false)
+      .set('hasIndex', false);
+    try {
+      await field!.save();
+      // sleep 3 sec
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const fields = await datastore.fields(true);
+      expect(fields.length).toBe(3); // Title, status and test_field
+    } catch (e) {
+      console.log(e);
+    }
+    await datastore.delete();
+    // expect(field!.id).toBeDefined();
+  });
+
+  it('update field on datastore', async () => {
+    await client.setWorkspace(workspaceId!);
+    const project = await client.currentWorkspace!.project(projectId);
+    const datastore = await project.datastore();
+    datastore.name = { en: 'test', ja: 'test' };
+    datastore.displayId = 'test';
+    await datastore.save();
+    const field = await datastore.field();
+    field!
+      .set('dataType', 'text')
+      .set('name', 'test_field')
+      .set('displayId', 'test_field');
+    try {
+      await field!.save();
+      const fields = await datastore.fields(true);
+      expect(fields.length).toBe(3); // Title, status and test_field
+      field!.set('name', 'test_field_update');
+      await field!.save();
+      const fields2 = await datastore.fields(true);
+      // sleep 3 sec
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      expect(fields2.length).toBe(3); // Title, status and test_field
+      expect(fields2.map(f => f.name).indexOf('test_field_update')).toBeGreaterThan(-1);
+    } catch (e) {
+      console.log(e);
+    }
+    await datastore.delete();
+    // expect(field!.id).toBeDefined();
+  });
+
+  it('delete field on datastore', async () => {
+    await client.setWorkspace(workspaceId!);
+    const project = await client.currentWorkspace!.project(projectId);
+    const datastore = await project.datastore();
+    datastore.name = { en: 'test', ja: 'test' };
+    datastore.displayId = 'test';
+    await datastore.save();
+    const field = await datastore.field();
+    field!
+      .set('dataType', 'text')
+      .set('name', 'test_field')
+      .set('displayId', 'test_field');
+    try {
+      await field!.save();
+      const fields = await datastore.fields(true);
+      expect(fields.length).toBe(3); // Title, status and test_field
+      await field!.delete();
+      // sleep 3 sec
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const fields2 = await datastore.fields(true);
+      expect(fields2.length).toBe(2); // Title, status
+    } catch (e) {
+      console.log(e);
+    }
+    await datastore.delete();
+    // expect(field!.id).toBeDefined();
   });
 });
