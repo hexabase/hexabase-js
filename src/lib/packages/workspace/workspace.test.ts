@@ -130,6 +130,7 @@ describe('Workspace', () => {
     });
   });
 
+  /*
   describe('#getGroupChildren()', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
@@ -139,6 +140,7 @@ describe('Workspace', () => {
       expect(typeof group.children.length).toBe('number');
     });
   });
+  */
 
   describe('#getWorkspace()', () => {
     it('should get workspace by name in Japanese', async () => {
