@@ -1,51 +1,32 @@
-import { FieldNameENJP, ModelRes } from '../../util/type';
+import { FieldNameENJP } from '../../util/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import {
   DS_ACTIONS,
-  DS_FIELD_SETTING,
-  DS_ACTION_SETTING,
   DS_STATUS,
   UPDATE_DATASTORE_SETTING,
   CREATE_DATASTORE_FROM_TEMPLATE,
   DELETE_DATASTORE,
   VALIDATE_DS_DISPLAY_ID,
-  DS_FIELDS,
   GET_DATASTORES,
   GET_DATASTORE_DETAIL,
   DATASTORE_GET_FIELD_AUTO_NUMBER,
 } from '../../graphql/datastore';
 import {
   CreateDatastoreFromSeedInput,
-  CreateDatastoreFromSeedReq,
-  CreateDatastoreFromSeedRes,
-  DatastoreFieldsAutoNumRes,
-  DatastoreGetFieldsRes,
-  DatastoreRes,
-  DatastoreSettingRes,
   DatastoreUpdateNameInput,
-  DatastoreUpdateSetting,
   DsAction,
-  DsActionRes,
-  DsActionSettingRes,
-  DsFieldSettingsRes,
   DsStatus,
-  DsStatusRes,
   DtCreateDatastoreFromSeed,
   DtDatastoreFieldsAutoNum,
-  DtDatastoreGetFieldsRes,
   DtDatastoreRes,
   DtDatastoreSettingRes,
   DtDeleteDatastore,
   DtDsActions,
-  DtDsActionSetting,
-  DtDsFieldSettings,
   DtDsStatus,
   DtUpdateDatastore,
   DtValidateBeforeUpdateDsRes,
   ExistsDSDisplayIDExcludeOwnInput,
-  ExistsDSDisplayIDExcludeOwnRes,
   GetFieldAutoNumberQuery,
-  IsExistsDSDisplayIDExcludeOwnReq,
 } from '../../types/datastore';
 import Project from '../project';
 import Language from '../language';
@@ -142,18 +123,22 @@ export default class Datastore extends HxbAbstract {
         this.name = value;
         break;
       case 'display_id':
+      case 'displayId':
         this.displayId = value;
         break;
       case 'dipaly_order':
+      case 'displayOrder':
         this.displayOrder = value;
         break;
       case 'data_source':
+      case 'dataSource':
         this.dataSource = value;
         break;
       case 'deleted':
         this.deleted = value;
         break;
       case 'external_service_data':
+      case 'externalServiceData':
         this.externalServiceData = value;
         break;
       case 'imported':
@@ -163,21 +148,27 @@ export default class Datastore extends HxbAbstract {
         this.invisible = value;
         break;
       case 'is_external_service':
+      case 'isExternalService':
         this.isExternalService = value;
         break;
       case 'no_status':
+      case 'noStatus':
         this.noStatus = value;
         break;
       case 'show_display_id_to_list':
+      case 'showDisplayIdToList':
         this.showDisplayIdToList = value;
         break;
       case 'show_in_menu':
+      case 'showInMenu':
         this.showInMenu = value;
         break;
       case 'show_info_to_list':
+      case 'showInfoToList':
         this.showInfoToList = value;
         break;
       case 'show_only_dev_mode':
+      case 'showOnlyDevMode':
         this.showOnlyDevMode = value;
         break;
       case 'unread':
@@ -187,24 +178,31 @@ export default class Datastore extends HxbAbstract {
         this.uploading = value;
         break;
       case 'use_board_view':
+      case 'useBoardView':
         this.useBoardView = value;
         break;
       case 'use_csv_update':
+      case 'useCsvUpdate':
         this.useCsvUpdate = value;
         break;
       case 'use_external_sync':
+      case 'useExternalSync':
         this.useExternalSync = value;
         break;
       case 'use_grid_view':
+      case 'useGridView':
         this.useGridView = value;
         break;
       case 'use_grid_view_by_default':
+      case 'useGridViewByDefault':
         this.useGridViewByDefault = value;
         break;
       case 'use_qr_download':
+      case 'useQrDownload':
         this.useQrDownload = value;
         break;
       case 'use_replace_upload':
+      case 'useReplaceUpload':
         this.useReplaceUpload = value;
         break;
     }
@@ -252,6 +250,7 @@ export default class Datastore extends HxbAbstract {
     // handle call graphql
     const res: DtCreateDatastoreFromSeed = await this.request(CREATE_DATASTORE_FROM_TEMPLATE, { payload });
     this.id = res?.createDatastoreFromTemplate?.datastoreId!;
+    await this.update(); // Update datastore name
     return true;
   }
 
@@ -307,7 +306,8 @@ export default class Datastore extends HxbAbstract {
    * @params projectId and datastoreId are requirement
    * @returns DatastoreGetFieldsRes
    */
-  async fields(): Promise<Field[]> {
+  async fields(refresh?: boolean): Promise<Field[]> {
+    if (refresh) this._fields = [];
     if (this._fields.length > 0) return this._fields;
     this._fields = await Field.all(this);
     return this._fields;
@@ -319,7 +319,10 @@ export default class Datastore extends HxbAbstract {
    * @params fieldId and datastoreId are requirement
    * @returns DsFieldSettingsRes
    */
-  async field(id: string): Promise<Field | undefined> {
+  async field(id?: string): Promise<Field | undefined> {
+    if (!id) {
+      return Field.fromJson({ datastore: this }) as Field;
+    }
     if (this._fields.length === 0) {
       await this.fields();
     }

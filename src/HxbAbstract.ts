@@ -42,9 +42,11 @@ export class HxbAbstract {
     try {
       const res = await this.exec(method, url, bodies, options);
       if (options.response === 'blob') return await res.blob();
-      if (options.binary) return JSON.parse(await res.text());
-      return await res.json();
+      const text = await res.text();
+      if (!text) return {};
+      return JSON.parse(text);
     } catch (error: any) {
+      console.log(error);
       throw error.response.data;
     }
   }
@@ -62,6 +64,9 @@ export class HxbAbstract {
       }};
     }
     if (['get', 'delete'].indexOf(method.toLocaleLowerCase()) > -1) {
+      if (bodies) {
+        params.body = JSON.stringify(bodies);
+      }
       return fetch(url, params);
     }
     if (['post', 'put'].indexOf(method.toLocaleLowerCase()) > -1) {

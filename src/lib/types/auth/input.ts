@@ -11,3 +11,9 @@ export interface Session {
   token?: string;
   user?: UserInfo;
 }
+
+export interface AuthStorage {
+  setItem(key: string, value: string): void | Promise<void>;
+  getItem(key: string): string | null | Promise<string> | Promise<null>;
+  removeItem(key: string): void | Promise<void>;
+}

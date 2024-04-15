@@ -19,7 +19,7 @@ export interface GetFieldSettingsRes {
   hide_from_api: boolean;
   has_index: boolean;
   roles: Role[];
-  options: FieldOption[];
+  options?: FieldOption[];
 }
 
 export interface Role {

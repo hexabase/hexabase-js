@@ -129,23 +129,22 @@ describe('Workspace', () => {
       expect(typeof wsUsage.datastores).toBe('number');
     });
   });
-  /*
+
   describe('#getGroupChildren()', () => {
     it('should get workspace childrent in group', async () => {
       jest.useFakeTimers('legacy');
       const workspace = client.currentWorkspace!;
       const group = await workspace.group();
       // expect response
-      expect(typeof group.children.length).toBe('number');
+      expect(typeof (await group.groups()).length).toBe('number');
     });
   });
-  */
 
   describe('#getWorkspace()', () => {
     it('should get workspace by name in Japanese', async () => {
       jest.useFakeTimers('legacy');
       const workspace = await client.workspace(process.env['WORKSPACE_NAME_JA']);
-      expect(workspace.id).toEqual(process.env['WORKSPACE_ID']);
+      expect(workspace.name).toEqual(process.env['WORKSPACE_ID']);
     });
   });
 
