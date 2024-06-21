@@ -1,4 +1,5 @@
 import { FieldNameENJP } from '../../util/type';
+import { GetItemsParameters, GlobalSearchCategory } from '../item/input';
 
 export interface CreateDatastoreFromSeedInput {
   lang_cd: string;
@@ -50,4 +51,14 @@ export class GetFieldAutoNumberQuery {
   branch_key?: string;
   zero_padding?: boolean;
   digit?: number;
+}
+
+export interface GlobalSearchProps {
+  query?: string;
+  category?: GlobalSearchCategory;
+  app_id?: string;
+  datastore_id?: string;
+  field_id?: string;
+  return_item_list?: boolean;
+  item_search_params?: GetItemsParameters;
 }

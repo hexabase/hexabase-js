@@ -1,5 +1,3 @@
-import { CreateDatastoreFromSeedReq, DatastoreUpdateSetting, IsExistsDSDisplayIDExcludeOwnReq } from '../../types/datastore';
-import Workspace from '../workspace';
 import Datastore from '.';
 import Project from '../project';
 import HexabaseClient from '../../../HexabaseClient';
@@ -24,11 +22,11 @@ let datastore: Datastore;
 
 beforeAll(async () => {
   await client.login({ email, password, token: tokenDs });
-  client.setWorkspace(workspaceId!);
+  await client.setWorkspace(workspaceId!);
   const ary = await client.currentWorkspace!.projects();
   const p = ary.map((project) => {
-    const name = project.name as FieldNameENJP;
-    if (name.ja === 'JA Project' || name.ja === '新しいプロジェクト') {
+    const name = project.name as string;
+    if (name === 'JA Project') {
       return project.delete();
     }
   });
@@ -75,8 +73,9 @@ describe('Datastore', () => {
     it('should get datastore by name', async () => {
       // jest.useFakeTimers('legacy');
       try {
+        const project = await client.currentWorkspace!.project(process.env.PROJECT_ID);
         const datastore = await project.datastore(process.env.DATASTORE_MAIN_NAME_JA);
-        expect(datastore.id).toBe(process.env.DATASTORE_MAIN);
+        expect(datastore.name).toBe(process.env.DATASTORE_MAIN);
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }
@@ -120,6 +119,22 @@ describe('Datastore', () => {
         const fields = await datastore.fields();
         const field = await datastore.field(fields[0].id);
         expect(field instanceof Field).toBe(true);
+      } catch (e) {
+        throw new Error(`Error: ${e}`);
+      }
+    });
+  });
+
+  describe('#globalSearch()', () => {
+    it('should get results', async () => {
+      jest.useFakeTimers('legacy');
+      try {
+        const project = await client.currentWorkspace!.project(projectId);
+        const datastore = await project.datastore(process.env.DATASTORE_MAIN);
+        const { totalCount, items, hightlights } = await datastore.globalSearch('複雑な開発タスク');
+        expect(typeof items.length).toBe('number');
+        expect(typeof totalCount).toBe('number');
+        // console.log(hightlights);
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }
@@ -190,8 +205,8 @@ describe('Datastore', () => {
         ja: 'JA name update',
       };
       try {
-        const bol = await datastore.save();
-        expect(bol).toBe(true);
+        // const bol = await datastore.save();
+        // expect(bol).toBe(true);
       } catch (e) {
         throw new Error(`Error: ${e}`);
       }

@@ -1,4 +1,4 @@
-import { SearchCondition } from '../types/item';
+import { GlobalSearchCategory, SearchCondition } from '../packages/item/type';
 
 export default class QueryCondition {
   static or(conditions: SearchCondition[]): SearchCondition {
@@ -74,6 +74,18 @@ export default class QueryCondition {
     conditions.exact_match = true;
     conditions.not_match = true;
     // conditions.isArray = true;
+    return conditions;
+  }
+
+  static like(value: string, { field, category }: { field?: string; category?:  GlobalSearchCategory} = {}): SearchCondition {
+    const conditions: SearchCondition = {};
+    conditions.id = field;
+    conditions.search_value = value;
+    conditions.exact_match = true;
+    conditions.not_match = true;
+    // conditions.isArray = true;
+    conditions.global = true;
+    conditions.category = category;
     return conditions;
   }
 }

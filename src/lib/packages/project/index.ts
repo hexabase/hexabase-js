@@ -95,9 +95,7 @@ export default class Project extends HxbAbstract {
 
   async datastores(): Promise<Datastore[]> {
     if (this._datastores.length > 0) return this._datastores;
-    this._datastores = await Datastore.all({
-      project: this
-    });
+    this._datastores = await Datastore.all(this);
     return this._datastores;
   }
 

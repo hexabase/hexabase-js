@@ -1,4 +1,4 @@
-import { SubscriptionUpdateItem } from '../../types/item';
+import { SubscriptionUpdateItem } from '../item/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import Item from '../item';
 import User from '../user';

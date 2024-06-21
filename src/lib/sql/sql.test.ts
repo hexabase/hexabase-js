@@ -113,6 +113,24 @@ describe('Hexabase SQL', () => {
     expect(res2[0].id).toEqual(item.id);
   });
 
+  it('Where like', async () => {
+    const query = client.query(projectID);
+    const c = query.condition;
+    const res = await query
+      .from(datastoreID)
+      .limit(6)
+      .where(c.like('files', '#'))
+      .select('*');
+    const item = res[5];
+    const res2 = await query
+      .from(datastoreID)
+      .where(c.equalTo('i_id', item.id))
+      .limit(6)
+      .select('*');
+    expect(res2.length).toEqual(1);
+    expect(res2[0].id).toEqual(item.id);
+  });
+
   it('Count', async () => {
     const query = client.query(projectID);
     const res = await query

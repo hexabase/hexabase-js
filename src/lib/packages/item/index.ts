@@ -36,7 +36,7 @@ import {
   DtExecuteItemAction,
   SubscriptionUpdateItem,
   LookupItem,
-} from '../../types/item';
+} from './type';
 import ItemHistory from '../itemHistory';
 import ItemAction from '../itemAction';
 import ItemStatus from '../itemStatus';
@@ -46,6 +46,7 @@ import FileObject from '../fileObject';
 import { DataType } from '../../../lib/types/field';
 import Action from '../action';
 import ItemSubscription from '../itemSubscription/itemSubscription';
+import Project from '../project';
 
 /**
  * class Item: Item class

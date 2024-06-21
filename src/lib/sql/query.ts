@@ -1,15 +1,11 @@
-import fetch from 'cross-fetch';
-import { createClient } from '../../index';
 import { HxbAbstract } from '../../HxbAbstract';
-import { CREATE_NEW_ITEM, DATASTORE_UPDATE_ITEM, DELETE_ITEM, DELETE_ITEMS, ITEM_WITH_SEARCH } from '../graphql/item';
-import { CreateNewItem, DeleteItem, DeleteItemParameter, DeleteItemsParameter, DeleteItemsParameters, GetItemsParameters, ItemWithSearchRes, NewItem, NewItemRes, NewItems, UpdateCurrentItem, UpdateItemRes, ItemWithSearch, DeleteItemReq, DtItemWithSearch, SearchCondition, ConditionDeleteItems, SortField } from '../types/item';
+import { GetItemsParameters, GlobalSearchCategory, SearchCondition, SortField } from '../packages/item/type';
 import { SearchParameter } from '../types/sql';
-import { QueryParameter, SortOrder } from '../types/sql/input';
-import { ModelRes } from '../util/type';
+import { SortOrder } from '../types/sql/input';
 import Item from '../packages/item';
 import QueryClient from '.';
-import Datastore from '../packages/datastore';
 import Project from '../packages/project';
+import { GlobalSearchProps } from '../packages/datastore/input';
 
 type MapType = {[key: string]: any};
 
@@ -97,11 +93,23 @@ export default class Query extends HxbAbstract {
     const project = await Query.client.currentWorkspace?.project(this.queryClient.projectId);
     const datastore = await project?.datastore(this.queryClient.datastoreId)!;
     const payload = this._baseParams();
-    if (this.query.conditions) {
-      payload.conditions = this.query.conditions;
-    }
     if (this.query.select_fields) {
       payload.select_fields = this.query.select_fields;
+    }
+    // Check use global search
+    const g = this.query.conditions?.find(c => c.global) as SearchCondition | undefined;
+    if (g) {
+      payload.conditions = this.query.conditions?.filter(c => !c.global);
+      const params: GlobalSearchProps = {
+        app_id: project?.id,
+        datastore_id: datastore.id,
+        category: g.category as GlobalSearchCategory,
+        item_search_params: payload,
+      };
+      return datastore.globalSearch(g.search_value as string, params);
+    }
+    if (this.query.conditions) {
+      payload.conditions = this.query.conditions;
     }
     return Item.searchWithCount(payload, datastore, options);
   }
@@ -126,27 +134,21 @@ export default class Query extends HxbAbstract {
     const project = new Project({id: this.queryClient.projectId!});
     const datastore = await project.datastore(this.queryClient.datastoreId!);
     const item = await datastore.item();
-    return new Promise((resolve, reject) => {
-      item.sets(params);
-      item.save()
-        .then(() => resolve(item))
-        .catch(reject);
-    });
+    item.sets(params);
+    await item.save();
+    return item;
   }
 
   async update(params: MapType): Promise<Item[]> {
     this.limit(0).page(1);
     const items = await this.select();
-    return await Promise.all(items.map(item => this._update(item, params)));
+    return Promise.all(items.map(item => this._update(item, params)));
   }
 
   private async _update(item: Item, params: MapType): Promise<Item> {
-    return new Promise(async (resolve, reject) => {
-      item.sets(params);
-      item.save()
-        .then(() => resolve(item))
-        .catch(reject);
-    });
+    item.sets(params);
+    await item.save();
+    return item;
   }
 
   async delete(): Promise<boolean> {
@@ -154,17 +156,6 @@ export default class Query extends HxbAbstract {
     const items = await this.select();
     await Promise.all(items.map(item => item.delete()));
     return true;
-    /*
-    const conditions: ConditionDeleteItems[] = this.query.conditions?.map((condition) => {
-      return {
-        id: condition.id!,
-        seach_value: condition.search_value!,
-      }
-    }) || [];
-    const project = new Project({id: this.queryClient.projectId!});
-    const datastore = await project.datastore(this.queryClient.datastoreId!);
-    return await Item.delete(conditions, datastore);
-    */
   }
 }
 

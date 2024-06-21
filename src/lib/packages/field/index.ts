@@ -1,4 +1,4 @@
-import { DtDatastoreGetFieldsRes, DtDsFieldSettings } from '../../types/datastore';
+import { DtDatastoreGetFieldsRes, DtDsFieldSettings } from '../datastore/type';
 import { HxbAbstract } from '../../../HxbAbstract';
 import Datastore from '../datastore';
 import FieldLayout from '../fieldLayout';

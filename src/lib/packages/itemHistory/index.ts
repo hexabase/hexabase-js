@@ -6,7 +6,7 @@ import { UpdateCommentItemsParameters, DtDatastoreDeleteCommentItem,
   DtDatastoreCreateCommentItem,
   CreateCommentItemsParameters,
   DtDatastoreUpdateCommentItem,
-} from '../../types/item';
+} from '../item/type';
 import {
   POST_UPDATE_ITEM_HISTORY,
   POST_DELETE_ITEM_HISTORY,

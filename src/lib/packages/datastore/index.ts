@@ -26,15 +26,19 @@ import {
   DtUpdateDatastore,
   DtValidateBeforeUpdateDsRes,
   ExistsDSDisplayIDExcludeOwnInput,
+  GetDatastoresResponse,
   GetFieldAutoNumberQuery,
-} from '../../types/datastore';
+  GlobalSearchHighlightResponse,
+  GlobalSearchProps,
+  GlobalSearchResponse,
+} from './type';
 import Project from '../project';
 import Language from '../language';
 import Field from '../field';
 import Action from '../action';
 import Status from '../status';
 import Item from '../item';
-import { GetItemsParameters, GetItemsPl } from '../../types/item';
+import { GetItemsParameters, GetItemsPl } from '../item/type';
 
 type allArgs = {
   project: Project;
@@ -95,11 +99,9 @@ export default class Datastore extends HxbAbstract {
    * @params projectId is requirement
    * @returns DatastoreRes
    */
-  static async all({ project }: allArgs): Promise<Datastore[]> {
-    const res: DtDatastoreRes = await Datastore.request(GET_DATASTORES, {
-      projectId: project.id,
-    });
-    const datastores = res.datastores
+  static async all(project: Project): Promise<Datastore[]> {
+    const res = await Datastore.rest('GET', `/api/v0/applications/${project.id}/datastores`) as GetDatastoresResponse[];
+    const datastores = res
       .map(params => Datastore.fromJson({...{ project }, ...params}) as Datastore);
     await Promise.all(datastores.map(d => d.fields()));
     return datastores;
@@ -250,7 +252,7 @@ export default class Datastore extends HxbAbstract {
     // handle call graphql
     const res: DtCreateDatastoreFromSeed = await this.request(CREATE_DATASTORE_FROM_TEMPLATE, { payload });
     this.id = res?.createDatastoreFromTemplate?.datastoreId!;
-    await this.update(); // Update datastore name
+    // await this.update(); // Update datastore name
     return true;
   }
 
@@ -278,7 +280,7 @@ export default class Datastore extends HxbAbstract {
   async update(): Promise<boolean> {
     const payload: DatastoreUpdateNameInput = {
       datastore_id: this.id,
-      display_id: this.displayId,
+      display_id: this.displayId || this.id,
       extend_limit_textarea_length: this.extendLimitEextareaLength,
       ignore_save_template: this.ignoreSaveTemplate,
       is_extend_limit_textarea: this.extendLimitEextareaLength !== DEFAULT_TEXTAREA_LENGTH,
@@ -309,7 +311,11 @@ export default class Datastore extends HxbAbstract {
   async fields(refresh?: boolean): Promise<Field[]> {
     if (refresh) this._fields = [];
     if (this._fields.length > 0) return this._fields;
-    this._fields = await Field.all(this);
+    try {
+      this._fields = await Field.all(this);
+    } catch (e) {
+      this._fields = [];
+    }
     return this._fields;
   }
 
@@ -420,6 +426,37 @@ export default class Datastore extends HxbAbstract {
       per_page: 100,
     };
     return Item.search(payload, this);
+  }
+
+  async globalSearch(query: string,
+    payload: GlobalSearchProps = {},
+  ): Promise<{items: Item[]; totalCount: number; hightlights?: GlobalSearchHighlightResponse[]}> {
+    if (!query) throw new Error('Query is required');
+    payload.return_item_list = true;
+    payload.query = query;
+    payload.datastore_id = this.id;
+    payload.app_id = this.project.id;
+    const res = await this.rest('POST', '/api/v0/globalsearch', {}, payload as any) as GlobalSearchResponse;
+    await this.fields();
+    console.log(res.search_result);
+    const items = res.item_list.items
+      .map((params: any) => Item.fromJson({ ...{ datastore: this }, ...params }) as Item);
+    const hightlights = res.search_result?.map(params => {
+      const item = items.find(i => i.id === params.i_id);
+      return {
+        item,
+        category: params.category,
+        fieldName: params.field_name,
+        fileName: params.file_name,
+        highlightValue: params.highlight_value,
+      } as GlobalSearchHighlightResponse;
+    });
+    await Promise.all(items.map(item => item.fetch()));
+    return {
+      totalCount: res.item_list.totalItems,
+      items,
+      hightlights,
+    };
   }
 
   async searchWithCount(options: GetItemsParameters): Promise<{ items: Item[]; totalCount: number }> {

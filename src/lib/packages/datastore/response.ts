@@ -1,4 +1,5 @@
 import { FieldRoles, FieldNameENJP, ResponseOkModel } from '../../util/type';
+import Item from '../item';
 
 export interface Datastore {
   name?: string;
@@ -272,4 +273,46 @@ export interface DatastoreSettingRes {
 export interface DatastoreFieldsAutoNumRes {
   dsGetFieldAutoNum?: DatastoreFieldsAutoNum;
   error?: string;
+}
+
+export interface GlobalSearchResponse {
+  item_list: {
+    items: {[key: string]: any}[];
+    totalItems: number;
+  };
+  search_result: {
+    category: string;
+    d_id: string;
+    datastore_name: string;
+    f_id: string;
+    field_name: FieldNameENJP;
+    file_name: string;
+    highlight_value: {
+      value: string[];
+    };
+    i_id: string;
+    p_id: string;
+    project_name: string;
+    title: string;
+    w_id: string;
+  }[];
+}
+
+export interface GetDatastoresResponse {
+  datastore_id: string;
+  name: string;
+  display_id: string;
+  deleted: boolean;
+  imported: boolean;
+  uploading: boolean;
+}
+
+export interface GlobalSearchHighlightResponse {
+  category: string;
+  fieldName?: FieldNameENJP;
+  fileName?: string;
+  highlightValue: {
+    [key: string]: string[];
+  };
+  item: Item;
 }

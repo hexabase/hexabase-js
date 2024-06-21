@@ -8,7 +8,11 @@ export interface SearchCondition {
   include_null?: boolean;
   conditions?: SearchCondition[];
   use_or_condition?: boolean;
+  global?: boolean;
+  category?: string;
 }
+
+export type GlobalSearchCategory = 'items' | 'files' | 'histories';
 
 export interface SortField {
   id?: string;
@@ -281,3 +285,4 @@ export interface GetItemsParameters {
   select_fields?: any;
   select_fields_lookup?: any;
 }
+
