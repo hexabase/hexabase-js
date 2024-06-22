@@ -1,6 +1,6 @@
 export * from './auth';
 export * from '../packages/user/type';
-export * from './report';
+export * from '../packages/report/type';
 export * from './project';
 export * from './sql';
 export * from './workspace';

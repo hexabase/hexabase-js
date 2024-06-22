@@ -1,10 +1,10 @@
 
-import { DtGetReports, DtReportData, GetReportsRes, ReportDataPayload, ReportDataRes } from '../../types/report';
+import { DtGetReports, DtReportData, GetReportDataResponse, GetReportsRes, ItemIdDatastoreId, ReportDataPayload, ReportDataRes, ReportDataRow } from './type';
 import { HxbAbstract } from '../../../HxbAbstract';
-import { REPORT_DEFAULT, GET_REPORTS } from '../../graphql/report';
+import { REPORT_DEFAULT, GET_REPORTS } from './graphql';
 import Project from '../project';
+import Item from '../item';
 
-type ReportDataRow = {[key: string]: string | number};
 
 export default class Report extends HxbAbstract {
   project: Project;
@@ -12,7 +12,7 @@ export default class Report extends HxbAbstract {
   title: string;
   displayOrder: number;
   hideMenu: boolean;
-  _data: ReportDataRow[] = [];
+  _data: GetReportDataResponse[] = [];
 
   set(key: string, value: any): Report {
     switch (key) {
@@ -48,9 +48,8 @@ export default class Report extends HxbAbstract {
       .map((params: {[key: string]: any}) => Report.fromJson({...{ project }, ...params }) as Report);
   }
 
-  async data({ page = 1, perPage = 0, total = true } = {}): Promise<ReportDataRow[]> {
+  async data({ page = 1, perPage = 0, total = true } = {}): Promise<GetReportDataResponse[]> {
     if (this._data.length > 0) return this._data;
-
     const reportDataPayload: ReportDataPayload = {
       include_date_at: true,
       include_lookups: true,
@@ -66,33 +65,27 @@ export default class Report extends HxbAbstract {
       reportId: this.id,
       reportDataPayload,
     });
-    this._data = res.reportData.report_results;
+    res.reportData.report_fields;
+    await this.project.datastores();
+    this._data = res.reportData.report_results.map((row: ReportDataRow) => {
+      const params: GetReportDataResponse = {
+        createdAt: new Date(row.created_at! as string),
+        updatedAt: new Date(row.updated_at! as string),
+        items: (row.items as ItemIdDatastoreId[]).map((params) => {
+          const database = this.project.datastoreSync(params.d_id);
+          const item = new Item({i_id: params.i_id});
+          item.datastore = database;
+          return item;
+        })
+      };
+      for (const key in row) {
+        if (['created_at', 'updated_at', 'items'].includes(key)) continue;
+        const fieldName = res.reportData.report_fields.find((field: any) => field.rpf_id === key)?.title;
+        if (!fieldName) continue;
+        params[fieldName] = row[key];
+      }
+      return params;
+    });
     return this._data;
   }
-
-  /**
-   * function getReport: get data report by report id in project
-   * @params projectId, reportId, reportDataPayload
-   * @returns ReportDataRes
-   */
-  /*
-  async getReport(projectId: string, reportId: string, reportDataPayload?: ReportDataPayload): Promise<ReportDataRes> {
-    const data: ReportDataRes = {
-      Report: undefined,
-      error: undefined,
-    };
-
-    // handle call graphql
-    try {
-      const res: DtReportData = await this.request(REPORT_DEFAULT, { projectId, reportId, reportDataPayload });
-
-      data.Report = res.reportData;
-    } catch (error: any) {
-
-      data.error = JSON.stringify(error.response.errors);
-    }
-
-    return data;
-  }
-    */
 }

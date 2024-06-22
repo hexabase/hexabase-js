@@ -1,6 +1,7 @@
 import DataReport from '.';
 import Auth from '../auth';
 import HexabaseClient from '../../../HexabaseClient';
+import Item from '../item';
 require('dotenv').config();
 
 const token = process.env.TOKEN || '';
@@ -31,8 +32,8 @@ describe('#getReportData()', () => {
     const reports = await project!.reports();
     const report = reports[0];
     const data = await report.data();
-    console.log(data);
     expect(data.length > 0).toBe(true);
-    expect(typeof data[0].i_id).toBe('string');
+    expect(typeof data[0].createdAt).toBe('object');
+    expect(data[0].items[0] instanceof Item).toBe(true);
   });
 });

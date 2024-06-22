@@ -1,4 +1,5 @@
 import { GenericAPIError } from '../../util/type';
+import Item from '../item';
 
 export interface ReportListItem {
   rp_id?: string;
@@ -96,4 +97,18 @@ export interface GetReportsRes {
 export interface ReportDataRes {
   dataReport?: ReportDefaultData;
   error?: string;
+}
+
+export interface ItemIdDatastoreId {
+  i_id: string;
+  d_id: string;
+}
+
+export type ReportDataRow = {[key: string]: string | number | Date | boolean | null | ItemIdDatastoreId[]};
+
+export interface GetReportDataResponse {
+  createdAt: Date;
+  updatedAt: Date;
+  items: Item[];
+  [key: string]: any;
 }
