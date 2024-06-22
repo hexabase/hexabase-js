@@ -1,5 +1,5 @@
 import HexabaseClient from '../../../HexabaseClient';
-import { UserInfo } from '../user';
+import { UserInfo } from '../../packages/user/type';
 
 export type AuthChangeEvent =
   | 'SIGNED_IN'

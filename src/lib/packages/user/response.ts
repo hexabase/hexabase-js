@@ -1,4 +1,4 @@
-import { ProfilePic } from './input';
+import { ProfilePic } from '../../packages/user/input';
 
 export interface UserInfo {
   username: string;
@@ -16,7 +16,7 @@ export interface UserRole {
   p_id: string;
   application_id: string;
   application_name: string;
-  application_display_order: string;
+  application_display_order: string | number;
 }
 export interface UserInfoRegister {
   username: string;
@@ -143,4 +143,40 @@ export interface PostInviteUsersResp {
 
 export interface UserRegisterConfirmRes {
   token?: string;
+}
+
+export interface GetUserInfoResponse {
+  u_id: string;
+  username: string;
+  email: string;
+  profile_pic: string;
+  current_workspace_id: string;
+  is_ws_admin: boolean;
+  user_roles: UserRole[];
+  user_groups: UserGroup[];
+  last_login_datetime: string;
+  user_code: string;
+}
+
+export interface UserGroup {
+  g_id: string;
+  group_name: string;
+  group_id: string;
+}
+
+export interface UpdateUserInfoRequest {
+  user_id: string;
+  username?: string;
+  user_code?: string;
+}
+
+export interface UploadUserProfilePictureResponse {
+  code: number;
+  error_code: string;
+  message: string;
+  error?: boolean;
+}
+
+export interface DeleteUserProfilePictureResponse {
+  error?: string;
 }

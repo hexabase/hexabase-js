@@ -1,6 +1,4 @@
-import { TokenModel } from '../../util/type/response';
-import { SearchCondition, SortField } from '../item';
-import { SortOrder, TypeOrder } from './input';
+import { SearchCondition, SortField } from '../../packages/item/type';
 /** Data response from request graphql */
 /*
 export interface DtLogin {

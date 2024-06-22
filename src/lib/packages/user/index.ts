@@ -4,28 +4,23 @@ import {
   USER_INFO,
   USER_PASSWORD_EXPIRY,
   USER_REGISTER,
-  USER_REGISTER_CONFIRM
-} from '../../graphql/user';
+} from './graphql';
 import {
   DtPostInviteUsersRes,
   DtUserConfirm,
   DtUserInfo,
-  DtUsernameExistsRes,
   DtUserPassEx,
   DtUserRegister,
   PostInviteUsersPl,
   PostInviteUsersResp,
-  UserConfirmRes,
-  UserInfoRes,
-  AddUserParams,
-  UsernameExistsPl,
-  UsernameExistsResp,
-  UserPassExRes,
-  UserRegisterRes,
   ConfirmationsFullInfo,
-  UserRegisterConfirmRes,
-  ConfirmRegisterUserPl
-} from '../../types/user';
+  ConfirmRegisterUserPl,
+  GetUserInfoResponse,
+  UpdateUserInfoRequest,
+  UploadUserProfilePictureResponse,
+  DeleteUserProfilePictureResponse
+} from './type';
+import { Blob } from 'buffer';
 
 import { HxbAbstract } from '../../../HxbAbstract';
 import Workspace from '../workspace';
@@ -39,6 +34,7 @@ export default class User extends HxbAbstract {
   public currentWorkspace: Workspace;
   public isWorkspaceAdmin: boolean;
   public mediaLink: string;
+  public lastLoginDatetime: Date;
 
   set(key: string, value: any): User {
     switch (key) {
@@ -63,7 +59,7 @@ export default class User extends HxbAbstract {
         this.profilePicture = value;
         break;
       case 'current_workspace_id':
-        this.currentWorkspace = new Workspace(value);
+        this.currentWorkspace = new Workspace({w_id: value});
         break;
       case 'is_ws_admin':
         this.isWorkspaceAdmin = value;
@@ -73,6 +69,13 @@ export default class User extends HxbAbstract {
         break;
       case 'user_roles':
         // console.log(value);
+        break;
+      case 'user_groups':
+        break;
+      case 'last_login_datetime':
+        if (value === null) {
+          this.lastLoginDatetime = new Date(value);
+        }
         break;
     }
     return this;
@@ -87,6 +90,39 @@ export default class User extends HxbAbstract {
     // handle call graphql
     const res: DtUserRegister = await this.request(USER_REGISTER, { confirmationId });
     return new User(res.userRegister.user);
+  }
+
+  async fetch(): Promise<User> {
+    const res = await this.rest('get', '/api/v0/userinfo') as GetUserInfoResponse;
+    this.sets(res);
+    return this;
+  }
+
+  async save(): Promise<boolean> {
+    if (!this.id) throw new Error('User id is required');
+    const params: UpdateUserInfoRequest = {
+      user_id: this.id,
+    };
+    if (this.userName) params.username = this.userName;
+    if (this.code) params.user_code = this.code;
+    const res = await this.rest('put', '/api/v0/userinfo', {}, params) as {error: string | null};
+    if (res.error) throw new Error(res.error);
+    return true;
+  }
+
+  async updatePicture(file: Blob): Promise<boolean> {
+    const res = await this
+      .rest('post', '/api/v0/userinfo/profilepic', {}, {file, filename: 'default.jpg'}, {binary: true}) as UploadUserProfilePictureResponse;
+    if (res.code) throw new Error(res.message);
+    this.set('profile_pic', `${User.client.restHxb}/api/v0/public/userinfo/profilepic/${this.id}`);
+    return true;
+  }
+
+  async deletePicture(): Promise<boolean> {
+    const res = await this
+      .rest('delete', '/api/v0/userinfo/profilepic') as DeleteUserProfilePictureResponse;
+    if (res.error) throw new Error(res.error);
+    return true;
   }
 
   static async registerConfirm(params: ConfirmRegisterUserPl): Promise<string> {
@@ -137,7 +173,6 @@ export default class User extends HxbAbstract {
       postInviteUsers: undefined,
       error: undefined,
     };
-
     // handle call graphql
     try {
       const res: DtPostInviteUsersRes = await this.request(POST_INVITE_USERS, { payload });

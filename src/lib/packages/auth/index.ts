@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
-import { LOG_OUT } from '../../graphql/user';
-import { LoginPayload } from '../../types/user';
+import { LOG_OUT } from '../user/graphql';
+import { LoginPayload } from '../user/type';
 import { DtLogin, DtLogOut } from '../../types/auth';
 import { LOGIN } from '../../graphql/auth';
 import { AuthChangeEvent, AuthStorage, Session } from '../../types/auth/input';

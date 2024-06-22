@@ -1,6 +1,5 @@
-import { GenericAPIError, ResponseOkModel } from '../../util/type/response';
-import { CreateProgram } from 'typescript';
-import { Datastore } from '../datastore';
+import { ResponseOkModel } from '../../util/type/response';
+import { Datastore } from '../../packages/datastore/type';
 
 export interface ApplicationAndDataStore {
   application_id?: string;

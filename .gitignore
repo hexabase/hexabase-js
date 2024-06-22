@@ -5,3 +5,4 @@ package-lock.json
 .node-version
 .DS_Store
 *.zip
+test.png

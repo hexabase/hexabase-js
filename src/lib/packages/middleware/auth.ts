@@ -1,9 +1,9 @@
 import { GraphQLClient } from 'graphql-request';
-import { DtUserInfo } from '../../types/user';
+import { DtUserInfo } from '../user/type';
 import { LOGIN } from '../../graphql/auth';
-import { USER_INFO } from '../../graphql/user';
+import { USER_INFO } from '../user/graphql';
 import { DtLogin, LoginRes } from '../../types/auth';
-import { UserInfoRes } from '../../types/user';
+import { UserInfoRes } from '../user/type';
 
 export default class AuthMw {
 

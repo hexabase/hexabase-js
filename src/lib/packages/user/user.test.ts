@@ -1,6 +1,9 @@
 require('dotenv').config();
 
 import { HexabaseClient } from '../../../';
+import fs from 'fs';
+import { promisify } from 'util';
+import { Blob } from 'buffer';
 
 const confirmationId = process.env.CONFIRMATION_ID || '';
 const email = process.env.EMAIL || '';
@@ -10,8 +13,8 @@ const groupId = process.env.GROUP_ID || '';
 const client = new HexabaseClient();
 
 beforeAll(async () => {
-  const token = client.login({ email, password });
-  return token;
+  await client.login({ email, password });
+  await client.setWorkspace(process.env.WORKSPACE_ID);
 });
 
 describe('User', () => {
@@ -90,6 +93,46 @@ describe('User', () => {
       const res = await client.currentWorkspace?.invite(['test@hexabase.com'], 'test.hexabase.com');
       expect(typeof res![0].email).toBe('string');
       */
+    });
+  });
+
+  describe('#GetUserInfo()', () => {
+    it('should get user information', async () => {
+      const user = await client.currentUser!.fetch();
+      expect(user.email).toBe(email);
+      expect(user.currentWorkspace.id).toBe(client.currentWorkspace!.id);
+    });
+  });
+
+  describe('#UpdateUserInfo()', () => {
+    it('should update user information', async () => {
+      const user = await client.currentUser!.fetch();
+      const newUsername = 'test';
+      const oldUsername = user.userName;
+      user.set('username', newUsername);
+      const res = await user.save();
+      expect(res).toBe(true);
+      await user.fetch();
+      expect(user.userName).toBe(newUsername);
+      user.set('username', oldUsername);
+      await user.save();
+    });
+
+    it('should update user picture', async () => {
+      const user = await client.currentUser!.fetch();
+      const file = await promisify(fs.readFile)('./test.png');
+      const blob = new Blob([file], { type: 'image/png' });
+      const res = await user.updatePicture(blob);
+      expect(res).toBe(true);
+    });
+
+    it('should delete user picture', async () => {
+      const user = await client.currentUser!.fetch();
+      const file = await promisify(fs.readFile)('./test.png');
+      const blob = new Blob([file], { type: 'image/png' });
+      await user.updatePicture(blob);
+      const res = await user.deletePicture();
+      expect(res).toBe(true);
     });
   });
 
